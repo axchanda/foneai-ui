@@ -125,7 +125,7 @@ export function Bots() {
         action={
           <Button
             component={RouterLink}
-            href="/bots/new"
+            href="/bots/create"
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >

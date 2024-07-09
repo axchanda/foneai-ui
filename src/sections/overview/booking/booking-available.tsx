@@ -7,7 +7,6 @@ import { useTheme } from '@mui/material/styles';
 import CardHeader from '@mui/material/CardHeader';
 
 import { sumBy } from 'src/utils/helper';
-import { fNumber } from 'src/utils/format-number';
 
 import { varAlpha } from 'src/theme/styles';
 
@@ -37,6 +36,8 @@ export function BookingAvailable({ title, subheader, chart, ...other }: Props) {
 
   const chartColors = chart.colors ?? [theme.palette.primary.light, theme.palette.primary.main];
 
+  const percentageUsed = Math.floor((chart.series[0].value / total) * 100);
+
   const chartOptions = useChart({
     chart: { sparkline: { enabled: true } },
     stroke: { width: 0 },
@@ -56,7 +57,8 @@ export function BookingAvailable({ title, subheader, chart, ...other }: Props) {
         dataLabels: {
           name: { offsetY: -12 },
           value: { offsetY: 6 },
-          total: { label: 'minutes', formatter: () => fNumber(total) },
+          // total: { label: 'minutes', formatter: () => fNumber(total) },
+          total: { label: 'minutes', formatter: () => `${percentageUsed} %` },
         },
       },
     },

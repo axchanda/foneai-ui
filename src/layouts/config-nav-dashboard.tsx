@@ -59,6 +59,11 @@ export const navData = [
         path: '/users',
         icon: ICONS.user,
       },
+      {
+        title: 'Payments',
+        path: '/payments',
+        icon: ICONS.invoice,
+      },
     ],
   },
 ];

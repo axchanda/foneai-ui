@@ -2,6 +2,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 
 import { Bots } from 'src/pages/bots';
 import { BotEdit } from 'src/pages/bots/edit';
+import { Payments } from 'src/pages/payments';
 import { BotsCreate } from 'src/pages/bots/create';
 import { DashboardLayout } from 'src/layouts/dashboard';
 
@@ -40,7 +41,7 @@ export const Router = () => (
       />
 
       <Route
-        path="new"
+        path="create"
         element={
           <DashboardLayout>
             <BotsCreate />
@@ -80,6 +81,18 @@ export const Router = () => (
         element={
           <DashboardLayout>
             <UserEditView />
+          </DashboardLayout>
+        }
+      />
+    </Route>
+
+    <Route path="payments">
+      <Route
+        path=""
+        index
+        element={
+          <DashboardLayout>
+            <Payments />
           </DashboardLayout>
         }
       />
