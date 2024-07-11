@@ -35,7 +35,7 @@ export const signInWithPassword = async ({ email, password }: SignInParams): Pro
     setSession(accessToken);
   } catch (error) {
     console.error('Error during sign in:', error);
-    throw error;
+    throw error.errors;
   }
 };
 

@@ -46,6 +46,7 @@ export function JwtSignInView() {
   const { checkUserSession } = useAuthContext();
 
   const [errorMsg, setErrorMsg] = useState('');
+  const [errorMessages, setErrorMessages] = useState<Record<string, string>>({});
 
   const password = useBoolean();
 
@@ -72,7 +73,9 @@ export function JwtSignInView() {
       router.refresh();
     } catch (error) {
       console.error(error);
-      setErrorMsg(error instanceof Error ? error.message : error);
+
+      // setErrorMsg(error instanceof Error ? error.message : error);
+      setErrorMessages(error as Record<string, string>);
     }
   });
 
@@ -154,6 +157,12 @@ export function JwtSignInView() {
           {errorMsg}
         </Alert>
       )}
+      {Object.keys(errorMessages).length > 0 &&
+        Object.values(errorMessages).map((err) => (
+          <Alert key={err} severity="error" sx={{ mb: 3 }}>
+            {err}
+          </Alert>
+        ))}
 
       <Form methods={methods} onSubmit={onSubmit}>
         {renderForm}

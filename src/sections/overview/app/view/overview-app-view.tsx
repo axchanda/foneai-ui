@@ -10,7 +10,7 @@ import { useMockedUser } from 'src/auth/hooks';
 
 import { AppWelcome } from '../app-welcome';
 import { AppFeatured } from '../app-featured';
-import { AppAreaInstalled } from '../app-area-installed';
+import { AppMinutesUsed } from '../app-minutes-used';
 import { AppWidgetSummary } from '../app-widget-summary';
 import { BookingAvailable } from '../../booking/booking-available';
 
@@ -104,52 +104,64 @@ export function OverviewAppView() {
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>
-          <AppAreaInstalled
-            title="Area installed"
-            subheader="(+43%) than last year"
+          <AppMinutesUsed
+            title="Minutes used"
+            // subheader="(+43%) than last year"
             chart={{
-              categories: ['01', '05', '10', '15', '20', '25', '30'],
-              series: [
+              categories: [
+                '01',
+                '',
+                '',
+                '',
+                '05',
+                '',
+                '',
+                '',
+                '',
+                '10',
+                '',
+                '',
+                '',
+                '',
+                '15',
+                '',
+                '',
+                '',
+                '',
+                '20',
+                '',
+                '',
+                '',
+                '',
+                '25',
+                '',
+                '',
+                '',
+                '',
+                '30',
+                // '',
+              ],
+              data: [
                 {
                   name: 'Jul',
-                  data: [
-                    {
-                      name: 'Asia',
-                      data: [6, 8, 10, 12, 14, 16, 18],
-                    },
-                    // {
-                    //   name: 'Europe',
-                    //   data: [
-                    //     6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42,
-                    //     44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66,
-                    //   ],
-                    // },
-                    // {
-                    //   name: 'Americas',
-                    //   data: [
-                    //     6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42,
-                    //     44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66,
-                    //   ],
-                    // },
-                  ],
+                  data: Array.from(
+                    { length: 30 },
+                    () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
+                  ),
                 },
                 {
                   name: 'Aug',
-                  data: [
-                    {
-                      name: 'Asia',
-                      data: [44, 46, 48, 50, 52, 54, 56],
-                    },
-                  ],
+                  data: Array.from(
+                    { length: 30 },
+                    () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
+                  ),
                 },
                 {
                   name: 'Sep',
-                  data: [
-                    {
-                      name: 'Asia',
-                      data: [17, 18, 10, 6, 20, 15, 18],
-                    },
-                  ],
+                  data: Array.from(
+                    { length: 30 },
+                    () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
+                  ),
                 },
               ],
             }}

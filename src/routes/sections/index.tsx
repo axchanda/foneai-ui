@@ -5,8 +5,12 @@ import { BotEdit } from 'src/pages/bots/edit';
 import { Payments } from 'src/pages/payments';
 import { BotsCreate } from 'src/pages/bots/create';
 import { DashboardLayout } from 'src/layouts/dashboard';
+import { AuthSplitLayout } from 'src/layouts/auth-split';
 
+import { JwtSignInView, JwtSignUpView } from 'src/sections/auth/jwt';
 import { UserEditView, UserListView, UserCreateView } from 'src/sections/user/view';
+
+import { AuthGuard, GuestGuard } from 'src/auth/guard';
 
 import Dashboard from '../../pages/dashboard';
 
@@ -16,9 +20,11 @@ export const Router = () => (
     <Route
       path="/dashboard"
       element={
-        <DashboardLayout>
-          <Dashboard />
-        </DashboardLayout>
+        <AuthGuard>
+          <DashboardLayout>
+            <Dashboard />
+          </DashboardLayout>
+        </AuthGuard>
       }
     />
     <Route
@@ -34,26 +40,32 @@ export const Router = () => (
         path=""
         index
         element={
-          <DashboardLayout>
-            <Bots />
-          </DashboardLayout>
+          <AuthGuard>
+            <DashboardLayout>
+              <Bots />
+            </DashboardLayout>
+          </AuthGuard>
         }
       />
 
       <Route
         path="create"
         element={
-          <DashboardLayout>
-            <BotsCreate />
-          </DashboardLayout>
+          <AuthGuard>
+            <DashboardLayout>
+              <BotsCreate />
+            </DashboardLayout>
+          </AuthGuard>
         }
       />
       <Route
         path=":id"
         element={
-          <DashboardLayout>
-            <BotEdit />
-          </DashboardLayout>
+          <AuthGuard>
+            <DashboardLayout>
+              <BotEdit />
+            </DashboardLayout>
+          </AuthGuard>
         }
       />
     </Route>
@@ -62,38 +74,77 @@ export const Router = () => (
         path=""
         index
         element={
-          <DashboardLayout>
-            <UserListView />
-          </DashboardLayout>
+          <AuthGuard>
+            <DashboardLayout>
+              <UserListView />
+            </DashboardLayout>
+          </AuthGuard>
         }
       />
 
       <Route
         path="new"
         element={
-          <DashboardLayout>
-            <UserCreateView />
-          </DashboardLayout>
+          <AuthGuard>
+            <DashboardLayout>
+              <UserCreateView />
+            </DashboardLayout>
+          </AuthGuard>
         }
       />
       <Route
         path=":id/edit"
         element={
-          <DashboardLayout>
-            <UserEditView />
-          </DashboardLayout>
+          <AuthGuard>
+            <DashboardLayout>
+              <UserEditView />
+            </DashboardLayout>
+          </AuthGuard>
         }
       />
     </Route>
-
     <Route path="payments">
       <Route
         path=""
         index
         element={
-          <DashboardLayout>
-            <Payments />
-          </DashboardLayout>
+          <AuthGuard>
+            <DashboardLayout>
+              <Payments />
+            </DashboardLayout>
+          </AuthGuard>
+        }
+      />
+    </Route>
+    <Route
+      path="login"
+      element={
+        <GuestGuard>
+          <AuthSplitLayout section={{ title: 'Hi, Welcome back' }}>
+            <JwtSignInView />
+          </AuthSplitLayout>
+        </GuestGuard>
+      }
+    />
+    <Route path="auth">
+      <Route
+        path="login"
+        element={
+          <GuestGuard>
+            <AuthSplitLayout section={{ title: 'Hi, Welcome back' }}>
+              <JwtSignInView />
+            </AuthSplitLayout>
+          </GuestGuard>
+        }
+      />
+      <Route
+        path="signup"
+        element={
+          <GuestGuard>
+            <AuthSplitLayout section={{ title: 'Hi, Welcome back' }}>
+              <JwtSignUpView />
+            </AuthSplitLayout>
+          </GuestGuard>
         }
       />
     </Route>

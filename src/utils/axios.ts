@@ -32,6 +32,8 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 
 // ----------------------------------------------------------------------
 
+const backendUrl = 'http://localhost:4000';
+
 export const endpoints = {
   chat: '/api/chat',
   kanban: '/api/kanban',
