@@ -12,7 +12,7 @@ type Props = {
   job?: IJobItem;
 };
 
-export function BotEdit({ job }: Props) {
+function BotEdit({ job }: Props) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -29,3 +29,5 @@ export function BotEdit({ job }: Props) {
     </DashboardContent>
   );
 }
+
+export default BotEdit;

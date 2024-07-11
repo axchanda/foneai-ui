@@ -33,8 +33,7 @@ import { JobFilters } from '../../sections/job/job-filters';
 import { JobFiltersResult } from '../../sections/job/job-filters-result';
 
 // ----------------------------------------------------------------------
-
-export function Bots() {
+function Bots() {
   const openFilters = useBoolean();
 
   const [sortBy, setSortBy] = useState('latest');
@@ -197,3 +196,5 @@ const applyFilter = ({ inputData, filters, sortBy }: ApplyFilterProps) => {
 
   return inputData;
 };
+
+export default Bots;

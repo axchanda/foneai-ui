@@ -1,5 +1,5 @@
+import { Outlet } from 'react-router';
 import { lazy, Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardLayout } from 'src/layouts/dashboard';
@@ -10,21 +10,14 @@ import { AuthGuard } from 'src/auth/guard';
 
 // ----------------------------------------------------------------------
 
-// Overview
-const IndexPage = lazy(() => import('src/pages/dashboard'));
-// Product
-// Order
-// Invoice
-// User
-// Blog
-// Job
-// Tour
-// File manager
-// App
-// Test render page by role
-// Blank page
-
-// ----------------------------------------------------------------------
+/** **************************************
+ * Jwt
+ *************************************** */
+const BotsPages = {
+  BotsPage: lazy(() => import('src/pages/bots/index')),
+  BotCreatePage: lazy(() => import('src/pages/bots/create')),
+  BotEditPage: lazy(() => import('src/pages/bots/edit')),
+};
 
 const layoutContent = (
   <DashboardLayout>
@@ -34,10 +27,14 @@ const layoutContent = (
   </DashboardLayout>
 );
 
-export const dashboardRoutes = [
+export const botsRoutes = [
   {
-    path: 'dashboard',
+    path: 'bots',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
-    children: [{ element: <IndexPage />, index: true }],
+    children: [
+      { element: <BotsPages.BotsPage />, index: true },
+      { path: 'create', element: <BotsPages.BotCreatePage /> },
+      { path: ':id', element: <BotsPages.BotEditPage /> },
+    ],
   },
 ];

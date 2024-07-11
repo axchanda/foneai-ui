@@ -6,7 +6,7 @@ import { JobNewEditForm } from '../../sections/job/job-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export function BotsCreate() {
+function BotsCreate() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -23,3 +23,5 @@ export function BotsCreate() {
     </DashboardContent>
   );
 }
+
+export default BotsCreate;

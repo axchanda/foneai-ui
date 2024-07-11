@@ -1,5 +1,5 @@
+import { Outlet } from 'react-router';
 import { lazy, Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardLayout } from 'src/layouts/dashboard';
@@ -10,21 +10,12 @@ import { AuthGuard } from 'src/auth/guard';
 
 // ----------------------------------------------------------------------
 
-// Overview
-const IndexPage = lazy(() => import('src/pages/dashboard'));
-// Product
-// Order
-// Invoice
-// User
-// Blog
-// Job
-// Tour
-// File manager
-// App
-// Test render page by role
-// Blank page
-
-// ----------------------------------------------------------------------
+/** **************************************
+ * Jwt
+ *************************************** */
+const PaymentsPages = {
+  Index: lazy(() => import('src/pages/payments/index')),
+};
 
 const layoutContent = (
   <DashboardLayout>
@@ -34,10 +25,10 @@ const layoutContent = (
   </DashboardLayout>
 );
 
-export const dashboardRoutes = [
+export const paymentsRoutes = [
   {
-    path: 'dashboard',
+    path: 'payments',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
-    children: [{ element: <IndexPage />, index: true }],
+    children: [{ element: <PaymentsPages.Index />, index: true }],
   },
 ];

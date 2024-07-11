@@ -66,7 +66,7 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-export function Payments() {
+function Payments() {
   const theme = useTheme();
 
   const router = useRouter();
@@ -493,3 +493,5 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
 
   return inputData;
 }
+
+export default Payments;
