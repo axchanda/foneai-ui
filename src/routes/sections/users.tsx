@@ -6,8 +6,6 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import { AuthGuard } from 'src/auth/guard';
-
 // ----------------------------------------------------------------------
 
 /** **************************************
@@ -30,7 +28,7 @@ const layoutContent = (
 export const usersRoutes = [
   {
     path: 'users',
-    element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
+    element: CONFIG.auth.skip ? <>{layoutContent}</> : <>{layoutContent}</>,
     children: [
       { element: <UsersPages.UserListPage />, index: true },
       { path: 'create', element: <UsersPages.UserCreatePage /> },

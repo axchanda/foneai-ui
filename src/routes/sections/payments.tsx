@@ -6,8 +6,6 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import { AuthGuard } from 'src/auth/guard';
-
 // ----------------------------------------------------------------------
 
 /** **************************************
@@ -28,7 +26,7 @@ const layoutContent = (
 export const paymentsRoutes = [
   {
     path: 'payments',
-    element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
+    element: CONFIG.auth.skip ? <>{layoutContent}</> : <>{layoutContent}</>,
     children: [{ element: <PaymentsPages.Index />, index: true }],
   },
 ];

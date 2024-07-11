@@ -6,8 +6,6 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import { AuthGuard } from 'src/auth/guard';
-
 // ----------------------------------------------------------------------
 
 // Overview
@@ -37,7 +35,7 @@ const layoutContent = (
 export const dashboardRoutes = [
   {
     path: 'dashboard',
-    element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
+    element: CONFIG.auth.skip ? <>{layoutContent}</> : <>{layoutContent}</>,
     children: [{ element: <IndexPage />, index: true }],
   },
 ];
