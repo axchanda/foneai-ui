@@ -13,7 +13,6 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import ListItemText from '@mui/material/ListItemText';
 
-import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -56,11 +55,7 @@ export function JobItem({ job, onView, onEdit, onDelete }: Props) {
           <ListItemText
             sx={{ mb: 1 }}
             primary={
-              <Link
-                component={RouterLink}
-                href={paths.dashboard.job.details(job.id)}
-                color="inherit"
-              >
+              <Link component={RouterLink} href={`/bots/${job.id}`} color="inherit">
                 {job.title}
               </Link>
             }

@@ -32,7 +32,7 @@ export const usersRoutes = [
     children: [
       { element: <UsersPages.UserListPage />, index: true },
       { path: 'create', element: <UsersPages.UserCreatePage /> },
-      { path: ':id', element: <UsersPages.UserEditPage /> },
+      { path: ':id/edit', element: <UsersPages.UserEditPage /> },
     ],
   },
 ];

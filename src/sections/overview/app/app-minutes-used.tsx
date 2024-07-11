@@ -51,9 +51,17 @@ export function AppMinutesUsed({ title, subheader, chart, ...other }: Props) {
     // },
     colors: chartColors,
     // stroke: { width: 0 },
-    xaxis: { categories: chart.categories },
-    tooltip: { y: { formatter: (value: number) => fNumber(value) } },
-    // plotOptions: { bar: { columnWidth: '40%' } },
+    xaxis: {
+      categories: chart.categories,
+
+      labels: {
+        formatter: (value) => (+value === 1 || +value % 5 === 0 ? value : ''),
+      },
+    },
+    tooltip: {
+      y: { formatter: (value: number) => fNumber(value) },
+      x: { formatter: (value) => fNumber(value) },
+    },
     ...chart.options,
   });
 

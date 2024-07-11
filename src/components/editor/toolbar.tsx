@@ -30,6 +30,7 @@ export function Toolbar({ editor, fullItem, fullScreen, onToggleFullScreen }: Ed
       sx={{
         p: 1.25,
         bgcolor: 'background.paper',
+        justifyContent: 'flex-end',
         borderTopRightRadius: 'inherit',
         borderTopLeftRadius: 'inherit',
         borderBottom: (theme) =>

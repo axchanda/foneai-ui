@@ -4,7 +4,7 @@ import { hasParams, removeParams, isExternalLink, removeLastSlash } from '../uti
 // ----------------------------------------------------------------------
 
 export function useActiveLink(itemPath: string, deep: boolean = true): boolean {
-  const pathname = removeLastSlash(usePathname());
+  let pathname = removeLastSlash(usePathname());
 
   const pathHasParams = hasParams(itemPath);
 
@@ -45,6 +45,8 @@ export function useActiveLink(itemPath: string, deep: boolean = true): boolean {
 
     return defaultActive || hasParamsActive;
   }
+
+  pathname = `/${pathname.split('/')[1]}`;
 
   /**
    * [1] Normal: active

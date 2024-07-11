@@ -9,10 +9,10 @@ import { SeoIllustration } from 'src/assets/illustrations';
 import { useMockedUser } from 'src/auth/hooks';
 
 import { AppWelcome } from '../app-welcome';
+import { MinutesUsed } from '../MinutesUsed';
 import { AppFeatured } from '../app-featured';
 import { AppMinutesUsed } from '../app-minutes-used';
 import { AppWidgetSummary } from '../app-widget-summary';
-import { BookingAvailable } from '../../booking/booking-available';
 
 // ----------------------------------------------------------------------
 
@@ -92,7 +92,7 @@ export function OverviewAppView() {
               ],
             }}
           /> */}
-          <BookingAvailable
+          {/* <BookingAvailable
             title="Minutes used"
             chart={{
               series: [
@@ -100,7 +100,8 @@ export function OverviewAppView() {
                 { label: 'Available', value: 66 },
               ],
             }}
-          />
+          /> */}
+          <MinutesUsed total={120} chart={{ series: 76 }} />
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>
@@ -110,34 +111,34 @@ export function OverviewAppView() {
             chart={{
               categories: [
                 '01',
-                '',
-                '',
-                '',
+                '02',
+                '03',
+                '04',
                 '05',
-                '',
-                '',
-                '',
-                '',
+                '06',
+                '07',
+                '08',
+                '09',
                 '10',
-                '',
-                '',
-                '',
-                '',
+                '11',
+                '12',
+                '13',
+                '14',
                 '15',
-                '',
-                '',
-                '',
-                '',
+                '16',
+                '17',
+                '18',
+                '19',
                 '20',
-                '',
-                '',
-                '',
-                '',
+                '21',
+                '22',
+                '23',
+                '24',
                 '25',
-                '',
-                '',
-                '',
-                '',
+                '26',
+                '27',
+                '28',
+                '29',
                 '30',
                 // '',
               ],
