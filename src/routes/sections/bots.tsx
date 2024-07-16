@@ -5,6 +5,7 @@ import { CONFIG } from 'src/config-global';
 import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
+import { AuthGuard } from 'src/auth/guard';
 
 // ----------------------------------------------------------------------
 
@@ -28,7 +29,7 @@ const layoutContent = (
 export const botsRoutes = [
   {
     path: 'bots',
-    element: CONFIG.auth.skip ? <>{layoutContent}</> : <>{layoutContent}</>,
+    element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
     children: [
       { element: <BotsPages.BotsPage />, index: true },
       { path: 'create', element: <BotsPages.BotCreatePage /> },

@@ -27,7 +27,7 @@ const TABS = [
     label: 'Notifications',
     icon: <Iconify icon="solar:bell-bing-bold" width={24} />,
   },
-  { value: 'social', label: 'Social links', icon: <Iconify icon="solar:share-bold" width={24} /> },
+  // { value: 'social', label: 'Social links', icon: <Iconify icon="solar:share-bold" width={24} /> },
   { value: 'security', label: 'Security', icon: <Iconify icon="ic:round-vpn-key" width={24} /> },
 ];
 
@@ -40,11 +40,11 @@ export function AccountView() {
     <DashboardContent>
       <CustomBreadcrumbs
         heading="Account"
-        links={[
-          { name: 'Dashboard', href: paths.dashboard.root },
-          { name: 'User', href: paths.dashboard.user.root },
-          { name: 'Account' },
-        ]}
+        // links={[
+        //   { name: 'Dashboard', href: paths.dashboard.root },
+        //   { name: 'User', href: paths.dashboard.user.root },
+        //   { name: 'Account' },
+        // ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 

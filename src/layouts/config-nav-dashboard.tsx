@@ -64,6 +64,16 @@ export const navData = [
         path: '/payments',
         icon: ICONS.invoice,
       },
+      {
+        title: 'Campaigns',
+        path: '/campaigns',
+        icon: ICONS.kanban,
+      },
+      {
+        title: "Account",
+        "path": "/user/account",
+        icon: ICONS.tour
+      }
     ],
   },
 ];

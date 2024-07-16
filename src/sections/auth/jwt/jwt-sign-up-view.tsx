@@ -30,6 +30,7 @@ export type SignUpSchemaType = zod.infer<typeof SignUpSchema>;
 export const SignUpSchema = zod.object({
   firstName: zod.string().min(1, { message: 'First name is required!' }),
   lastName: zod.string().min(1, { message: 'Last name is required!' }),
+  username: zod.string().min(1, { message: "Username is required!" }),
   email: zod
     .string()
     .min(1, { message: 'Email is required!' })
@@ -37,8 +38,12 @@ export const SignUpSchema = zod.object({
   password: zod
     .string()
     .min(1, { message: 'Password is required!' })
-    .min(6, { message: 'Password must be at least 6 characters!' }),
-});
+    .min(8, { message: 'Password must be at least 8 characters!' }),
+  confirmPassword: zod.string()
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ['confirmPassword']
+})
 
 // ----------------------------------------------------------------------
 
@@ -48,14 +53,19 @@ export function JwtSignUpView() {
   const router = useRouter();
 
   const password = useBoolean();
+  const confirmPassword = useBoolean()
 
   const [errorMsg, setErrorMsg] = useState('');
+  const [errorMessages, setErrorMessages] = useState<Record<string, string>>({});
+
 
   const defaultValues = {
     firstName: 'Hello',
     lastName: 'Friend',
+    username: "USERNAME1",
     email: 'hello@gmail.com',
-    password: '@demo1',
+    password: '@demo123',
+    confirmPassword: '@demo123'
   };
 
   const methods = useForm<SignUpSchemaType>({
@@ -75,13 +85,18 @@ export function JwtSignUpView() {
         password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,
+        username: data.username,
+        confirmPassword: data.confirmPassword
+
       });
       await checkUserSession?.();
 
       router.refresh();
     } catch (error) {
       console.error(error);
-      setErrorMsg(error instanceof Error ? error.message : error);
+      // setErrorMsg(error instanceof Error ? error.message : error);
+      setErrorMessages(error.errors as Record<string, string>);
+
     }
   });
 
@@ -108,24 +123,43 @@ export function JwtSignUpView() {
         <Field.Text name="lastName" label="Last name" InputLabelProps={{ shrink: true }} />
       </Stack>
 
+      <Field.Text name="username" label="Username" InputLabelProps={{ shrink: true }} />
       <Field.Text name="email" label="Email address" InputLabelProps={{ shrink: true }} />
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
 
-      <Field.Text
-        name="password"
-        label="Password"
-        placeholder="6+ characters"
-        type={password.value ? 'text' : 'password'}
-        InputLabelProps={{ shrink: true }}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={password.onToggle} edge="end">
-                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
+        <Field.Text
+          name="password"
+          label="Password"
+          placeholder="8+ characters"
+          type={password.value ? 'text' : 'password'}
+          InputLabelProps={{ shrink: true }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={password.onToggle} edge="end">
+                  <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+        <Field.Text
+          name="confirmPassword"
+          label="Confirm Password"
+          placeholder="8+ characters"
+          type={confirmPassword.value ? 'text' : 'password'}
+          InputLabelProps={{ shrink: true }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={confirmPassword.onToggle} edge="end">
+                  <Iconify icon={confirmPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </Stack>
 
       <LoadingButton
         fullWidth
@@ -172,6 +206,12 @@ export function JwtSignUpView() {
           {errorMsg}
         </Alert>
       )}
+      {Object.keys(errorMessages).length > 0 &&
+        Object.values(errorMessages).map((err) => (
+          <Alert key={err} severity="error" sx={{ mb: 3 }}>
+            {err}
+          </Alert>
+        ))}
 
       <Form methods={methods} onSubmit={onSubmit}>
         {renderForm}

@@ -6,7 +6,7 @@ import { STORAGE_KEY } from './constant';
 // ----------------------------------------------------------------------
 
 export type SignInParams = {
-  email: string;
+  username: string;
   password: string;
 };
 
@@ -15,24 +15,27 @@ export type SignUpParams = {
   password: string;
   firstName: string;
   lastName: string;
+  username: string
+  confirmPassword: string
 };
 
 /** **************************************
  * Sign in
  *************************************** */
-export const signInWithPassword = async ({ email, password }: SignInParams): Promise<void> => {
+export const signInWithPassword = async ({ username, password }: SignInParams): Promise<void> => {
   try {
-    const params = { email, password };
+    const params = { username, password };
 
     const res = await axios.post(endpoints.auth.signIn, params);
+    console.clear()
+    console.log(res.data)
+    const { token } = res.data;
 
-    const { accessToken } = res.data;
-
-    if (!accessToken) {
+    if (!token) {
       throw new Error('Access token not found in response');
     }
 
-    setSession(accessToken);
+    setSession(token);
   } catch (error) {
     console.error('Error during sign in:', error);
     throw error.errors;
@@ -47,12 +50,18 @@ export const signUp = async ({
   password,
   firstName,
   lastName,
+  username,
+  confirmPassword
 }: SignUpParams): Promise<void> => {
   const params = {
     email,
     password,
     firstName,
     lastName,
+    username,
+    role: 'PBX',
+    profileLanguage: 'en',
+    confirmPassword
   };
 
   try {
