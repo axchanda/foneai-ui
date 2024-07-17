@@ -59,8 +59,23 @@ export function AppMinutesUsed({ title, subheader, chart, ...other }: Props) {
       },
     },
     tooltip: {
-      y: { formatter: (value: number) => fNumber(value) },
-      x: { formatter: (value) => fNumber(value) },
+      enabled: true,
+      // shared: false,
+      // y: { formatter: (value: number) => fNumber(value) },
+      // x: { formatter: (value) => fNumber(value) },
+      // x: {
+      //   formatter: (value, { series, seriesIndex, dataPointIndex, w }) => {
+      //     const x = w.globals.labels[dataPointIndex];
+      //     return `${x}: ${value}`;
+      //   },
+      // },
+      custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+        const x = w.globals.labels[dataPointIndex];
+        const value = series[seriesIndex][dataPointIndex];
+
+        return `<div class="arrow_box custom-tooltip">${selectedSeries} ${x}: ${value}</div>`;
+      }
+
     },
     ...chart.options,
   });

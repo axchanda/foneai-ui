@@ -1,10 +1,8 @@
-import type { IOrderItem, IOrderTableFilters } from 'src/types/order';
+import type { IUserItem, IUserTableFilters } from 'src/types/user';
 
 import { useState, useCallback } from 'react';
 
-import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -12,19 +10,15 @@ import Tooltip from '@mui/material/Tooltip';
 import TableBody from '@mui/material/TableBody';
 import IconButton from '@mui/material/IconButton';
 
-import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
+import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 import { useSetState } from 'src/hooks/use-set-state';
 
-import { fIsAfter, fIsBetween } from 'src/utils/format-time';
-
-import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders, ORDER_STATUS_OPTIONS } from 'src/_mock';
+import { _userList, USER_STATUS_OPTIONS } from 'src/_mock';
 
-import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -41,64 +35,48 @@ import {
     TableSelectedAction,
     TablePaginationCustom,
 } from 'src/components/table';
-import { RouterLink } from 'src/routes/components';
 
-import { OrderTableRow } from '../../sections/order/order-table-row';
-import { OrderTableToolbar } from '../../sections/order/order-table-toolbar';
-import { OrderTableFiltersResult } from '../../sections/order/order-table-filters-result';
+import { UserTableRow } from '../../sections/user/user-table-row';
+import { UserTableFiltersResult } from '../../sections/user/user-table-filters-result';
+import { ICampaignFilters, ICampaignType } from 'src/types/campaign';
+import { _campaignList } from 'src/_mock/_campaign';
+import { CampaignTableRow } from 'src/sections/campaigns/campaign-table-row';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...ORDER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
-    { id: 'orderNumber', label: 'Order', width: 88 },
-    { id: 'name', label: 'Customer' },
-    { id: 'createdAt', label: 'Date', width: 140 },
-    {
-        id: 'totalQuantity',
-        label: 'Items',
-        width: 120,
-        align: 'center',
-    },
-    { id: 'totalAmount', label: 'Price', width: 140 },
-    { id: 'status', label: 'Status', width: 110 },
+    { id: 'id', label: 'Campaign ID', width: 200 },
+    { id: 'campaignName', label: 'Campaign Name', width: 180 },
+    { id: 'linkedBot', label: 'Linked Bot', width: 220 },
+    { id: 'description', label: 'Description', width: 180 },
+    // { id: 'status', label: 'Status', width: 100 },
     { id: '', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function Campaigns() {
-    const table = useTable({ defaultOrderBy: 'orderNumber' });
+export default function UserListView() {
+    const table = useTable();
 
     const router = useRouter();
 
     const confirm = useBoolean();
 
-    const [tableData, setTableData] = useState<IOrderItem[]>(_orders);
+    const [tableData, setTableData] = useState<ICampaignType[]>(_campaignList);
 
-    const filters = useSetState<IOrderTableFilters>({
-        name: '',
-        status: 'all',
-        startDate: null,
-        endDate: null,
-    });
-
-    const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
+    const filters = useSetState<ICampaignFilters>({ id: '', campaignName: '' });
 
     const dataFiltered = applyFilter({
         inputData: tableData,
         comparator: getComparator(table.order, table.orderBy),
         filters: filters.state,
-        dateError,
     });
 
     const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
     const canReset =
-        !!filters.state.name ||
-        filters.state.status !== 'all' ||
-        (!!filters.state.startDate && !!filters.state.endDate);
+        !!filters.state.id || filters.state.campaignName.length > 0
 
     const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
@@ -128,96 +106,44 @@ export default function Campaigns() {
         });
     }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
-    const handleViewRow = useCallback(
+    const handleEditRow = useCallback(
         (id: string) => {
-            router.push(paths.dashboard.order.details(id));
+            router.push(`/users/${id}/edit`);
         },
         [router]
     );
 
-    const handleFilterStatus = useCallback(
-        (event: React.SyntheticEvent, newValue: string) => {
-            table.onResetPage();
-            filters.setState({ status: newValue });
-        },
-        [filters, table]
-    );
 
     return (
         <>
             <DashboardContent>
                 <CustomBreadcrumbs
                     heading="Campaigns"
-                    // links={[
-                    //     { name: 'Dashboard', href: paths.dashboard.root },
-                    //     { name: 'Order', href: paths.dashboard.order.root },
-                    //     { name: 'List' },
-                    // ]}
-                    sx={{ mb: { xs: 3, md: 5 } }}
+
                     action={
                         <Button
                             component={RouterLink}
-                            href="/bots/create"
+                            href="/users/create"
                             variant="contained"
                             startIcon={<Iconify icon="mingcute:add-line" />}
                         >
-                            New Campaign
+                            New campaign
                         </Button>
                     }
+                    sx={{ mb: { xs: 3, md: 5 } }}
                 />
 
                 <Card>
-                    <Tabs
-                        value={filters.state.status}
-                        onChange={handleFilterStatus}
-                        sx={{
-                            px: 2.5,
-                            boxShadow: (theme) =>
-                                `inset 0 -2px 0 0 ${varAlpha(theme.vars.palette.grey['500Channel'], 0.08)}`,
-                        }}
-                    >
-                        {STATUS_OPTIONS.map((tab) => (
-                            <Tab
-                                key={tab.value}
-                                iconPosition="end"
-                                value={tab.value}
-                                label={tab.label}
-                                icon={
-                                    <Label
-                                        variant={
-                                            ((tab.value === 'all' || tab.value === filters.state.status) && 'filled') ||
-                                            'soft'
-                                        }
-                                        color={
-                                            (tab.value === 'completed' && 'success') ||
-                                            (tab.value === 'pending' && 'warning') ||
-                                            (tab.value === 'cancelled' && 'error') ||
-                                            'default'
-                                        }
-                                    >
-                                        {['completed', 'pending', 'cancelled', 'refunded'].includes(tab.value)
-                                            ? tableData.filter((user) => user.status === tab.value).length
-                                            : tableData.length}
-                                    </Label>
-                                }
-                            />
-                        ))}
-                    </Tabs>
 
-                    <OrderTableToolbar
-                        filters={filters}
-                        onResetPage={table.onResetPage}
-                        dateError={dateError}
-                    />
 
-                    {canReset && (
-                        <OrderTableFiltersResult
+                    {/* {canReset && (
+                        <UserTableFiltersResult
                             filters={filters}
                             totalResults={dataFiltered.length}
                             onResetPage={table.onResetPage}
                             sx={{ p: 2.5, pt: 0 }}
                         />
-                    )}
+                    )} */}
 
                     <Box sx={{ position: 'relative' }}>
                         <TableSelectedAction
@@ -239,7 +165,7 @@ export default function Campaigns() {
                             }
                         />
 
-                        <Scrollbar sx={{ minHeight: 444 }}>
+                        <Scrollbar>
                             <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                                 <TableHeadCustom
                                     order={table.order}
@@ -248,12 +174,12 @@ export default function Campaigns() {
                                     rowCount={dataFiltered.length}
                                     numSelected={table.selected.length}
                                     onSort={table.onSort}
-                                    onSelectAllRows={(checked) =>
-                                        table.onSelectAllRows(
-                                            checked,
-                                            dataFiltered.map((row) => row.id)
-                                        )
-                                    }
+                                // onSelectAllRows={(checked) =>
+                                //   table.onSelectAllRows(
+                                //     checked,
+                                //     dataFiltered.map((row) => row.id)
+                                //   )
+                                // }
                                 />
 
                                 <TableBody>
@@ -263,13 +189,13 @@ export default function Campaigns() {
                                             table.page * table.rowsPerPage + table.rowsPerPage
                                         )
                                         .map((row) => (
-                                            <OrderTableRow
+                                            <CampaignTableRow
                                                 key={row.id}
                                                 row={row}
                                                 selected={table.selected.includes(row.id)}
                                                 onSelectRow={() => table.onSelectRow(row.id)}
                                                 onDeleteRow={() => handleDeleteRow(row.id)}
-                                                onViewRow={() => handleViewRow(row.id)}
+                                                onEditRow={() => handleEditRow(row.id)}
                                             />
                                         ))}
 
@@ -286,11 +212,11 @@ export default function Campaigns() {
 
                     <TablePaginationCustom
                         page={table.page}
-                        dense={table.dense}
+                        // dense={table.dense}
                         count={dataFiltered.length}
                         rowsPerPage={table.rowsPerPage}
                         onPageChange={table.onChangePage}
-                        onChangeDense={table.onChangeDense}
+                        // onChangeDense={table.onChangeDense}
                         onRowsPerPageChange={table.onChangeRowsPerPage}
                     />
                 </Card>
@@ -325,14 +251,13 @@ export default function Campaigns() {
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-    dateError: boolean;
-    inputData: IOrderItem[];
-    filters: IOrderTableFilters;
+    inputData: ICampaignType[];
+    filters: ICampaignFilters;
     comparator: (a: any, b: any) => number;
 };
 
-function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterProps) {
-    const { status, name, startDate, endDate } = filters;
+function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
+    const { id, campaignName } = filters;
 
     const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -344,23 +269,18 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
 
     inputData = stabilizedThis.map((el) => el[0]);
 
-    if (name) {
+    if (id) {
         inputData = inputData.filter(
-            (order) =>
-                order.orderNumber.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-                order.customer.name.toLowerCase().indexOf(name.toLowerCase()) !== -1 ||
-                order.customer.email.toLowerCase().indexOf(name.toLowerCase()) !== -1
+            (campaign) => campaign.id.toLowerCase().indexOf(id.toLowerCase()) !== -1
         );
     }
 
-    if (status !== 'all') {
-        inputData = inputData.filter((order) => order.status === status);
-    }
+    // if (status !== 'all') {
+    //     inputData = inputData.filter((user) => user.status === status);
+    // }
 
-    if (!dateError) {
-        if (startDate && endDate) {
-            inputData = inputData.filter((order) => fIsBetween(order.createdAt, startDate, endDate));
-        }
+    if (campaignName.length) {
+        inputData = inputData.filter((campaign) => campaignName.includes(campaign.campaignName));
     }
 
     return inputData;

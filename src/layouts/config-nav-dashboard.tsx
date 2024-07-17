@@ -71,7 +71,7 @@ export const navData = [
       },
       {
         title: "Account",
-        "path": "/user/account",
+        "path": "/account",
         icon: ICONS.tour
       }
     ],

@@ -35,7 +35,8 @@ import {
 
 // ----------------------------------------------------------------------
 
-const { assetURL } = CONFIG.site;
+const assetURL = 'https://api-dev-minimal-v6.vercel.app'
+// const { assetURL } = CONFIG.site;
 
 export const _mock = {
   id: (index: number) => _id[index],

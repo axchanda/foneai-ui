@@ -5,6 +5,8 @@ import Card from '@mui/material/Card';
 import { useTheme } from '@mui/material/styles';
 
 import { Chart, useChart } from 'src/components/chart';
+import { Box, CardHeader } from '@mui/material';
+import { varAlpha } from 'src/theme/styles';
 
 // ----------------------------------------------------------------------
 
@@ -58,7 +60,10 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
   });
 
   return (
+
     <Card {...other}>
+      <CardHeader title={'Minutes Available'} subheader={''} sx={{ mb: 5 }} />
+
       <Chart
         type="radialBar"
         series={[chart.series]}
@@ -67,6 +72,47 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
         height={240}
         sx={{ mx: 'auto' }}
       />
+
+      <Box
+        sx={{
+          p: 5,
+          gap: 2,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <Box
+          sx={{ gap: 1, display: 'flex', alignItems: 'center', typography: 'subtitle2' }}
+        >
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              borderRadius: 0.75,
+              bgcolor: chartColors[1]
+            }}
+          />
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Used</Box>
+          {chart.series} minutes
+        </Box>
+        <Box
+          sx={{ gap: 1, display: 'flex', alignItems: 'center', typography: 'subtitle2' }}
+        >
+          <Box
+            sx={{
+              width: 16,
+              height: 16,
+              borderRadius: 0.75,
+              bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.16),
+              // ...(item.label === 'Used' && ),
+
+            }}
+          />
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Available</Box>
+          {total - chart.series} minutes
+        </Box>
+      </Box>
     </Card>
+
   );
 }

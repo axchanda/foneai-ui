@@ -23,11 +23,11 @@ const layoutContent = (
 
 export const userRoutes = [
     {
-        path: 'user',
+        path: 'account',
         element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
         children: [
-            { element: <Navigate to={'account'} replace />, index: true },
-            { path: 'account', element: <UserPages.AccountPage /> },
+            // { element: <Navigate to={'account'} replace />, index: true },
+            { index: true, element: <UserPages.AccountPage /> },
         ],
     },
 ];
