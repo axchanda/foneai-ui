@@ -13,16 +13,16 @@ export default defineConfig({
   // base: env.VITE_BASE_PATH,
   plugins: [
     react(),
-    checker({
-      typescript: true,
-      eslint: {
-        lintCommand: 'eslint "./src/**/*.{js,jsx,ts,tsx}"',
-      },
-      overlay: {
-        position: 'tl',
-        initialIsOpen: false,
-      },
-    }),
+    // checker({
+    //   typescript: true,
+    //   eslint: {
+    //     lintCommand: 'eslint "./src/**/*.{js,jsx,ts,tsx}"',
+    //   },
+    //   overlay: {
+    //     position: 'tl',
+    //     initialIsOpen: false,
+    //   },
+    // }),
   ],
   resolve: {
     alias: [

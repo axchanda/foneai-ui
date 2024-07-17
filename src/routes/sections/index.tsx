@@ -10,8 +10,8 @@ import { botsRoutes } from './bots';
 import { usersRoutes } from './users';
 import { paymentsRoutes } from './payments';
 import { dashboardRoutes } from './dashboard';
-import { campaignsRoutes } from './campaigns';
 import { userRoutes } from './user';
+import { campaignsRoutes } from './campaigns';
 
 export function Router() {
   return useRoutes([

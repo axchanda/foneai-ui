@@ -2,7 +2,7 @@ import type { NavSectionProps } from 'src/components/nav-section';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { styled, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 
 import { paths } from 'src/routes/paths';
 
@@ -21,30 +21,30 @@ import type { NotificationsDrawerProps } from '../components/notifications-drawe
 
 // ----------------------------------------------------------------------
 
-const StyledDivider = styled('span')(({ theme }) => ({
-  width: 1,
-  height: 10,
-  flexShrink: 0,
-  display: 'none',
-  position: 'relative',
-  alignItems: 'center',
-  flexDirection: 'column',
-  marginLeft: theme.spacing(2.5),
-  marginRight: theme.spacing(2.5),
-  backgroundColor: 'currentColor',
-  color: theme.vars.palette.divider,
-  '&::before, &::after': {
-    top: -5,
-    width: 3,
-    height: 3,
-    content: '""',
-    flexShrink: 0,
-    borderRadius: '50%',
-    position: 'absolute',
-    backgroundColor: 'currentColor',
-  },
-  '&::after': { bottom: -5, top: 'auto' },
-}));
+// const StyledDivider = styled('span')(({ theme }) => ({
+//   width: 1,
+//   height: 10,
+//   flexShrink: 0,
+//   display: 'none',
+//   position: 'relative',
+//   alignItems: 'center',
+//   flexDirection: 'column',
+//   marginLeft: theme.spacing(2.5),
+//   marginRight: theme.spacing(2.5),
+//   backgroundColor: 'currentColor',
+//   color: theme.vars.palette.divider,
+//   '&::before, &::after': {
+//     top: -5,
+//     width: 3,
+//     height: 3,
+//     content: '""',
+//     flexShrink: 0,
+//     borderRadius: '50%',
+//     position: 'absolute',
+//     backgroundColor: 'currentColor',
+//   },
+//   '&::after': { bottom: -5, top: 'auto' },
+// }));
 
 // ----------------------------------------------------------------------
 

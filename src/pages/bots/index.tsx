@@ -2,7 +2,6 @@ import type { IJobItem, IJobFilters } from 'src/types/job';
 
 import { useState, useCallback } from 'react';
 
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 
 import { RouterLink } from 'src/routes/components';
@@ -16,10 +15,6 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import {
   _jobs,
   _roles,
-  JOB_SORT_OPTIONS,
-  JOB_BENEFIT_OPTIONS,
-  JOB_EXPERIENCE_OPTIONS,
-  JOB_EMPLOYMENT_TYPE_OPTIONS,
 } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
@@ -27,10 +22,6 @@ import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { JobList } from '../../sections/job/job-list';
-import { JobSort } from '../../sections/job/job-sort';
-import { JobSearch } from '../../sections/job/job-search';
-import { JobFilters } from '../../sections/job/job-filters';
-import { JobFiltersResult } from '../../sections/job/job-filters-result';
 
 // ----------------------------------------------------------------------
 function Bots() {
@@ -81,36 +72,36 @@ function Bots() {
     [search]
   );
 
-  const renderFilters = (
-    <Stack
-      spacing={3}
-      justifyContent="space-between"
-      alignItems={{ xs: 'flex-end', sm: 'center' }}
-      direction={{ xs: 'column', sm: 'row' }}
-    >
-      <JobSearch search={search} onSearch={handleSearch} />
+  // const renderFilters = (
+  //   <Stack
+  //     spacing={3}
+  //     justifyContent="space-between"
+  //     alignItems={{ xs: 'flex-end', sm: 'center' }}
+  //     direction={{ xs: 'column', sm: 'row' }}
+  //   >
+  //     <JobSearch search={search} onSearch={handleSearch} />
 
-      <Stack direction="row" spacing={1} flexShrink={0}>
-        <JobFilters
-          filters={filters}
-          canReset={canReset}
-          open={openFilters.value}
-          onOpen={openFilters.onTrue}
-          onClose={openFilters.onFalse}
-          options={{
-            roles: _roles,
-            benefits: JOB_BENEFIT_OPTIONS.map((option) => option.label),
-            employmentTypes: JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label),
-            experiences: ['all', ...JOB_EXPERIENCE_OPTIONS.map((option) => option.label)],
-          }}
-        />
+  //     <Stack direction="row" spacing={1} flexShrink={0}>
+  //       <JobFilters
+  //         filters={filters}
+  //         canReset={canReset}
+  //         open={openFilters.value}
+  //         onOpen={openFilters.onTrue}
+  //         onClose={openFilters.onFalse}
+  //         options={{
+  //           roles: _roles,
+  //           benefits: JOB_BENEFIT_OPTIONS.map((option) => option.label),
+  //           employmentTypes: JOB_EMPLOYMENT_TYPE_OPTIONS.map((option) => option.label),
+  //           experiences: ['all', ...JOB_EXPERIENCE_OPTIONS.map((option) => option.label)],
+  //         }}
+  //       />
 
-        <JobSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} />
-      </Stack>
-    </Stack>
-  );
+  //       <JobSort sort={sortBy} onSort={handleSortBy} sortOptions={JOB_SORT_OPTIONS} />
+  //     </Stack>
+  //   </Stack>
+  // );
 
-  const renderResults = <JobFiltersResult filters={filters} totalResults={dataFiltered.length} />;
+  // const renderResults = <JobFiltersResult filters={filters} totalResults={dataFiltered.length} />;
 
   return (
     <DashboardContent>
