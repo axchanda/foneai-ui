@@ -23,6 +23,8 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { JobList } from '../../sections/job/job-list';
 
+
+
 // ----------------------------------------------------------------------
 function Bots() {
   const openFilters = useBoolean();

@@ -8,9 +8,11 @@ import type { EditorProps } from '../editor';
 
 type Props = EditorProps & {
   name: string;
+  showToolbar?: boolean
+  height?: number
 };
 
-export function RHFEditor({ name, helperText, ...other }: Props) {
+export function RHFEditor({ name, helperText, showToolbar = true, height = 400, ...other }: Props) {
   const {
     control,
     formState: { isSubmitSuccessful },
@@ -26,6 +28,8 @@ export function RHFEditor({ name, helperText, ...other }: Props) {
           error={!!error}
           helperText={error?.message ?? helperText}
           resetValue={isSubmitSuccessful}
+          // showToolbar={showToolbar}
+          // height={height}
           {...other}
         />
       )}

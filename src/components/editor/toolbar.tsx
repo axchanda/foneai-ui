@@ -31,8 +31,8 @@ export function Toolbar({ editor, fullItem, fullScreen, onToggleFullScreen }: Ed
         p: 1.25,
         bgcolor: 'background.paper',
         justifyContent: 'flex-end',
-        borderTopRightRadius: 'inherit',
-        borderTopLeftRadius: 'inherit',
+        borderBottomRightRadius: 'inherit',
+        borderBottomLeftRadius: 'inherit',
         borderBottom: (theme) =>
           `solid 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.2)}`,
       }}

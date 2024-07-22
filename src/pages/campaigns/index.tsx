@@ -46,8 +46,9 @@ import { CampaignTableRow } from 'src/sections/campaigns/campaign-table-row';
 
 
 const TABLE_HEAD = [
-    { id: 'id', label: 'Campaign ID', width: 200 },
+    // { id: 'checkbox', width: '' },
     { id: 'campaignName', label: 'Campaign Name', width: 180 },
+    { id: 'id', label: 'Campaign ID', width: 200 },
     { id: 'linkedBot', label: 'Linked Bot', width: 220 },
     { id: 'description', label: 'Description', width: 180 },
     // { id: 'status', label: 'Status', width: 100 },
@@ -174,12 +175,12 @@ export default function UserListView() {
                                     rowCount={dataFiltered.length}
                                     numSelected={table.selected.length}
                                     onSort={table.onSort}
-                                // onSelectAllRows={(checked) =>
-                                //   table.onSelectAllRows(
-                                //     checked,
-                                //     dataFiltered.map((row) => row.id)
-                                //   )
-                                // }
+                                    onSelectAllRows={(checked) =>
+                                        table.onSelectAllRows(
+                                            checked,
+                                            dataFiltered.map((row) => row.id)
+                                        )
+                                    }
                                 />
 
                                 <TableBody>

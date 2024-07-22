@@ -3,6 +3,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { UserNewEditForm } from '../../sections/user/user-new-edit-form';
+import { CampaignNewEditForm } from 'src/sections/campaigns/campaign-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -19,7 +20,7 @@ export default function CampaignCreate() {
                 sx={{ mb: { xs: 3, md: 5 } }}
             />
 
-            <UserNewEditForm />
+            <CampaignNewEditForm />
         </DashboardContent>
     );
 }

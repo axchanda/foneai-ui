@@ -7,6 +7,7 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 
 import { AuthGuard } from 'src/auth/guard';
+import { Helmet } from 'react-helmet-async';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +19,9 @@ const BotsPages = {
   BotCreatePage: lazy(() => import('src/pages/bots/create')),
   BotEditPage: lazy(() => import('src/pages/bots/edit')),
 };
+
+
+
 
 const layoutContent = (
   <DashboardLayout>
@@ -32,9 +36,27 @@ export const botsRoutes = [
     path: 'bots',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
     children: [
-      { element: <BotsPages.BotsPage />, index: true },
-      { path: 'create', element: <BotsPages.BotCreatePage /> },
-      { path: ':id', element: <BotsPages.BotEditPage /> },
+      {
+        element: <>
+          <Helmet>
+            <title> {`${CONFIG.site.name}`}</title>
+          </Helmet>
+          <BotsPages.BotsPage /></>, index: true
+      },
+      {
+        path: 'create', element: <>
+          <Helmet>
+            <title> {`${CONFIG.site.name}`}</title>
+          </Helmet>
+          <BotsPages.BotCreatePage /></>
+      },
+      {
+        path: ':id', element: <>
+          <Helmet>
+            <title> {`${CONFIG.site.name}`}</title>
+          </Helmet>
+          <BotsPages.BotEditPage /></>
+      },
     ],
   },
 ];

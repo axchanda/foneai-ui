@@ -7,6 +7,7 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 
 import { AuthGuard } from 'src/auth/guard';
+import { Helmet } from 'react-helmet-async';
 
 // ----------------------------------------------------------------------
 
@@ -29,6 +30,12 @@ export const invoicesRoutes = [
   {
     path: 'invoices',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
-    children: [{ element: <InvoicesPages.Index />, index: true }],
+    children: [{
+      element: <>
+        <Helmet>
+          <title> {`${CONFIG.site.name}`}</title>
+        </Helmet>
+        <InvoicesPages.Index /></>, index: true
+    }],
   },
 ];

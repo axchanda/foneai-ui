@@ -203,16 +203,7 @@ function Invoices() {
         <CustomBreadcrumbs
           heading="Invoices"
 
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.invoice.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New invoice
-            </Button>
-          }
+
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 

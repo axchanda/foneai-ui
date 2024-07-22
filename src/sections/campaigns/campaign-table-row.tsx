@@ -20,8 +20,8 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 
 import { UserQuickEditForm } from './campaign-quick-edit-form';
 import { ICampaignType } from 'src/types/campaign';
-import { Typography } from '@mui/material';
-
+import { Checkbox, Typography } from '@mui/material';
+import useClipboard from 'react-use-clipboard';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -38,27 +38,36 @@ export function CampaignTableRow({ row, selected, onEditRow, onSelectRow, onDele
     const popover = usePopover();
 
     const quickEdit = useBoolean();
+    const [isCopied, setCopied] = useClipboard(row.id, {
+        successDuration: 3000,
+    })
 
     return (
         <>
             <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
+                <TableCell padding="checkbox">
+                    <Checkbox id={row.id} checked={selected} onClick={onSelectRow} />
+                </TableCell>
 
 
+                <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.campaignName}</TableCell>
                 <TableCell>
                     <Stack spacing={2} direction="row" alignItems="center">
 
-                        <Stack sx={{ typography: 'body2', flex: '1 1 auto', alignItems: 'flex-start' }}>
-                            <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
-                                {row.id}
-                            </Link>
-                            {/* <Box component="span" sx={{ color: 'text.disabled' }}>
-                                {row.email}
-                            </Box> */}
-                        </Stack>
+                        <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
+                            {row.id}
+                        </Link>
+                        <IconButton onClick={() => {
+                            if (!isCopied) {
+                                setCopied()
+                            } else {
+                                return
+                            }
+                        }}>
+                            <Iconify color={isCopied ? 'green' : undefined} icon={isCopied ? 'lets-icons:check-fill' : 'solar:copy-linear'} />
+                        </IconButton>
                     </Stack>
                 </TableCell>
-
-                <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.campaignName}</TableCell>
 
                 <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.linkedBot}</TableCell>
 
@@ -84,7 +93,9 @@ export function CampaignTableRow({ row, selected, onEditRow, onSelectRow, onDele
                 </TableCell> */}
 
                 <TableCell>
-                    <Stack direction="row" alignItems="center">
+                    <Stack direction="row" justifyContent={
+                        'end'
+                    } alignItems="end">
 
 
                         <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
