@@ -95,7 +95,21 @@ input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
 
-.custom-tooltip {
-  padding-left: 10px;
-  padding-right: 10px !important;
+
+
+.arrow-box .top {
+  background-color: red !important;
+}
+
+
+.apexcharts-tooltip.apexcharts-active .arrow_box {
+  /* display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; */
+  text-align: center;
+}
+
+.apexcharts-tooltip.apexcharts-active .arrow_box hr {
+  border-color: rgba(225, 225, 225, 0.4);
 }

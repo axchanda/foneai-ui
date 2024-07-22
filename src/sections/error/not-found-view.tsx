@@ -6,38 +6,44 @@ import Typography from '@mui/material/Typography';
 
 import { RouterLink } from 'src/routes/components';
 
-import { SimpleLayout } from 'src/layouts/simple';
+import { CompactContent, SimpleLayout } from 'src/layouts/simple';
 import { PageNotFoundIllustration } from 'src/assets/illustrations';
 
 import { varBounce, MotionContainer } from 'src/components/animate';
+import { DashboardLayout } from 'src/layouts/dashboard';
 
 // ----------------------------------------------------------------------
 
 export function NotFoundView() {
   return (
-    <SimpleLayout content={{ compact: true }}>
-      <Container component={MotionContainer}>
-        <m.div variants={varBounce().in}>
-          <Typography variant="h3" sx={{ mb: 2 }}>
-            Sorry, page not found!
-          </Typography>
-        </m.div>
+    <DashboardLayout compact>
+      <CompactContent>
 
-        <m.div variants={varBounce().in}>
-          <Typography sx={{ color: 'text.secondary' }}>
-            Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be
-            sure to check your spelling.
-          </Typography>
-        </m.div>
+        <Container sx={{
+          border: '2px solid transparent'
+        }} component={MotionContainer}>
+          <m.div variants={varBounce().in}>
+            <Typography variant="h3" sx={{ mb: 2 }}>
+              Sorry, page not found!
+            </Typography>
+          </m.div>
 
-        <m.div variants={varBounce().in}>
-          <PageNotFoundIllustration sx={{ my: { xs: 5, sm: 10 } }} />
-        </m.div>
+          <m.div variants={varBounce().in}>
+            <Typography sx={{ color: 'text.secondary' }}>
+              Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped the URL? Be
+              sure to check your spelling.
+            </Typography>
+          </m.div>
 
-        <Button component={RouterLink} href="/" size="large" variant="contained">
-          Go to home
-        </Button>
-      </Container>
-    </SimpleLayout>
+          <m.div variants={varBounce().in}>
+            <PageNotFoundIllustration sx={{ my: { xs: 5, sm: 10 } }} />
+          </m.div>
+
+          <Button component={RouterLink} href="/" size="large" variant="contained">
+            Go to home
+          </Button>
+        </Container>
+      </CompactContent>
+    </DashboardLayout>
   );
 }

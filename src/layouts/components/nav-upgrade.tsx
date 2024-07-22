@@ -43,7 +43,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
               borderBottomLeftRadius: 2,
             }}
           >
-            Free
+            Starter
           </Label>
         </Box>
 
@@ -61,7 +61,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
             noWrap
             sx={{ color: 'var(--layout-nav-text-disabled-color)' }}
           >
-            {user?.email}
+            {user?.username}
           </Typography>
         </Stack>
 

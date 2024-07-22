@@ -108,7 +108,7 @@ export default function UserListView() {
 
     const handleEditRow = useCallback(
         (id: string) => {
-            router.push(`/users/${id}/edit`);
+            router.push(`/campaigns/${id}/edit`);
         },
         [router]
     );
@@ -123,7 +123,7 @@ export default function UserListView() {
                     action={
                         <Button
                             component={RouterLink}
-                            href="/users/create"
+                            href="/campaigns/create"
                             variant="contained"
                             startIcon={<Iconify icon="mingcute:add-line" />}
                         >

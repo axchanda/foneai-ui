@@ -15,6 +15,8 @@ import { AuthGuard } from 'src/auth/guard';
  *************************************** */
 const CampaignsPages = {
     CampaignsPage: lazy(() => import('src/pages/campaigns/index')),
+    CampaignCreate: lazy(() => import('src/pages/campaigns/create')),
+    CampaignEdit: lazy(() => import('src/pages/campaigns/edit'))
 };
 
 const layoutContent = (
@@ -31,7 +33,8 @@ export const campaignsRoutes = [
         element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
         children: [
             { element: <CampaignsPages.CampaignsPage />, index: true },
-
+            { path: 'create', element: <CampaignsPages.CampaignCreate /> },
+            { path: ':id/edit', element: <CampaignsPages.CampaignEdit /> }
         ],
     },
 ];

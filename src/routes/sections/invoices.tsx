@@ -13,8 +13,8 @@ import { AuthGuard } from 'src/auth/guard';
 /** **************************************
  * Jwt
  *************************************** */
-const PaymentsPages = {
-  Index: lazy(() => import('src/pages/payments/index')),
+const InvoicesPages = {
+  Index: lazy(() => import('src/pages/invoices/index')),
 };
 
 const layoutContent = (
@@ -25,10 +25,10 @@ const layoutContent = (
   </DashboardLayout>
 );
 
-export const paymentsRoutes = [
+export const invoicesRoutes = [
   {
-    path: 'payments',
+    path: 'invoices',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
-    children: [{ element: <PaymentsPages.Index />, index: true }],
+    children: [{ element: <InvoicesPages.Index />, index: true }],
   },
 ];

@@ -98,7 +98,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
           }}
           {...other}
         >
-          {logo}
+          <img src='/logo512.png' alt='fone-ai' />
         </Box>
       </NoSsr>
     );

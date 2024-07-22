@@ -66,7 +66,7 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-function Payments() {
+function Invoices() {
   const theme = useTheme();
 
   const router = useRouter();
@@ -201,12 +201,8 @@ function Payments() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Invoice', href: paths.dashboard.invoice.root },
-            { name: 'List' },
-          ]}
+          heading="Invoices"
+
           action={
             <Button
               component={RouterLink}
@@ -494,4 +490,4 @@ function applyFilter({ inputData, comparator, filters, dateError }: ApplyFilterP
   return inputData;
 }
 
-export default Payments;
+export default Invoices;

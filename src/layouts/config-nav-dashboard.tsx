@@ -60,8 +60,8 @@ export const navData = [
         icon: ICONS.user,
       },
       {
-        title: 'Payments',
-        path: '/payments',
+        title: 'Invoices',
+        path: '/invoices',
         icon: ICONS.invoice,
       },
       {

@@ -36,9 +36,10 @@ export type DashboardLayoutProps = {
   data?: {
     nav?: NavSectionProps['data'];
   };
+  compact?: boolean
 };
 
-export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
+export function DashboardLayout({ sx, children, data, compact = false }: DashboardLayoutProps) {
   const theme = useTheme();
 
   const mobileNavOpen = useBoolean();
@@ -70,8 +71,9 @@ export function DashboardLayout({ sx, children, data }: DashboardLayoutProps) {
         /** **************************************
          * Header
          *************************************** */
+
         headerSection={
-          <HeaderBase
+          compact ? null : <HeaderBase
             layoutQuery={layoutQuery}
             disableElevation={isNavVertical}
             onOpenNav={mobileNavOpen.onTrue}

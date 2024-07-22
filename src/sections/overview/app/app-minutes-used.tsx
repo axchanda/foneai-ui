@@ -73,7 +73,16 @@ export function AppMinutesUsed({ title, subheader, chart, ...other }: Props) {
         const x = w.globals.labels[dataPointIndex];
         const value = series[seriesIndex][dataPointIndex];
 
-        return `<div class="arrow_box custom-tooltip">${selectedSeries} ${x}: ${value}</div>`;
+        return `<div class="arrow_box custom-tooltip">
+          <div  className="top">
+            ${selectedSeries} - ${x}
+          </div>
+          <hr/>
+          <div className="bottom">
+            ${value}
+          </div>
+        </div>`;
+        // return `<div class="arrow_box">${selectedSeries} ${x}: ${value}</div>`;
       }
 
     },

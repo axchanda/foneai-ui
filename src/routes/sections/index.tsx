@@ -8,10 +8,11 @@ import { SplashScreen } from 'src/components/loading-screen';
 import { authRoutes } from './auth';
 import { botsRoutes } from './bots';
 import { usersRoutes } from './users';
-import { paymentsRoutes } from './payments';
+import { invoicesRoutes } from './invoices';
 import { dashboardRoutes } from './dashboard';
 import { userRoutes } from './user';
 import { campaignsRoutes } from './campaigns';
+import { mainRoutes } from './main';
 
 export function Router() {
   return useRoutes([
@@ -38,12 +39,14 @@ export function Router() {
     ...usersRoutes,
 
     // Payments
-    ...paymentsRoutes,
+    ...invoicesRoutes,
 
     // Campaigns
     ...campaignsRoutes,
 
     ...userRoutes,
+
+    ...mainRoutes,
 
     // No match
     { path: '*', element: <Navigate to="/404" replace /> },

@@ -27,6 +27,7 @@ export function useMockedUser() {
     about: 'Praesent turpis. Phasellus viverra nulla ut metus varius laoreet. Phasellus tempus.',
     role: 'admin',
     isPublic: true,
+    username: 'JAYDONF'
   };
 
   return { user };
