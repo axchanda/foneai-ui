@@ -75,7 +75,7 @@ export function AuthGuard({ children }: Props) {
     const isBackendAlive = await checkForBackendAvailability()
 
     if (!isBackendAlive) {
-      router.replace('/500')
+      router.replace('/error')
     }
 
     setIsChecking(false);
