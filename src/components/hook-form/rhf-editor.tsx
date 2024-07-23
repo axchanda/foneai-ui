@@ -28,8 +28,8 @@ export function RHFEditor({ name, helperText, showToolbar = true, height = 400, 
           error={!!error}
           helperText={error?.message ?? helperText}
           resetValue={isSubmitSuccessful}
-          // showToolbar={showToolbar}
-          // height={height}
+          showToolbar={showToolbar}
+          height={height}
           {...other}
         />
       )}

@@ -20,9 +20,14 @@ import { CodeHighlightBlock } from './components/code-highlight-block';
 
 import type { EditorProps } from './types';
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------
 
-export const Editor = forwardRef<HTMLDivElement, EditorProps>(
+interface Props extends EditorProps {
+  height?: number
+  showToolbar?: boolean
+}
+
+export const Editor = forwardRef<HTMLDivElement, Props>(
   (
     {
       sx,
@@ -35,6 +40,8 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(
       fullItem = false,
       value: content = '',
       placeholder = 'Write something awesome...',
+      height,
+      showToolbar,
       ...other
     },
     ref
@@ -120,7 +127,7 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(
             fullScreen={fullScreen}
             className={editorClasses.root}
             sx={sx}
-            style={{ minHeight: '400px' }}
+            style={{ minHeight: `${height}px` }}
           >
             <EditorContent
               ref={ref}
@@ -130,12 +137,15 @@ export const Editor = forwardRef<HTMLDivElement, EditorProps>(
               editor={editor}
               className={editorClasses.content.root}
             />
-            <Toolbar
-              editor={editor}
-              fullItem={fullItem}
-              fullScreen={fullScreen}
-              onToggleFullScreen={handleToggleFullScreen}
-            />
+            {showToolbar && (
+
+              <Toolbar
+                editor={editor}
+                fullItem={fullItem}
+                fullScreen={fullScreen}
+                onToggleFullScreen={handleToggleFullScreen}
+              />
+            )}
           </StyledRoot>
 
           {helperText && (

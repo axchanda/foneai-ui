@@ -8,6 +8,8 @@ import { CONFIG } from 'src/config-global';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
+import axios from 'axios';
+import { Navigate } from 'react-router';
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +27,18 @@ export function AuthGuard({ children }: Props) {
   const { authenticated, loading } = useAuthContext();
 
   const [isChecking, setIsChecking] = useState<boolean>(true);
+  // const [isBackendAlive, setIsBackendAlive] = useState<boolean>(false)
+
+  const checkForBackendAvailability = useCallback(async () => {
+    try {
+      await axios.get('http://localhost:4000/isAlive')
+      return true
+    } catch (error) {
+      return false
+    }
+  }, [])
+
+  // console.log({ isBackendAlive, isChecking })
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -58,17 +72,28 @@ export function AuthGuard({ children }: Props) {
       return;
     }
 
+    const isBackendAlive = await checkForBackendAvailability()
+
+    if (!isBackendAlive) {
+      router.replace('/500')
+    }
+
     setIsChecking(false);
   };
+
+
 
   useEffect(() => {
     checkPermissions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated, loading]);
 
+
   if (isChecking) {
     return <SplashScreen />;
   }
+
+
 
   return <>{children}</>;
 }

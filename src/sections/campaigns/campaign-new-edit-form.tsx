@@ -123,7 +123,7 @@ export function CampaignNewEditForm({ currentUser }: Props) {
                             gridTemplateColumns={{ xs: 'repeat(1, 1fr)' }}
                         >
                             <Field.Text name="campaignName" label="Campaign name" />
-                            <Field.Editor name='campaignDescription' placeholder='Campaign Description' />
+                            <Field.Editor height={200} name='campaignDescription' showToolbar={false} placeholder='Campaign Description' />
 
                             <Field.Autocomplete
                                 fullWidth
