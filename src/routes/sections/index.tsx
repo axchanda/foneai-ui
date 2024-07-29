@@ -1,5 +1,3 @@
-
-
 import { Suspense } from 'react';
 import { Navigate, useRoutes } from 'react-router-dom';
 
@@ -49,6 +47,6 @@ export function Router() {
     ...mainRoutes,
 
     // No match
-    { path: '*', element: <Navigate to="/not-found" replace /> },
+    { path: '*', element: <Navigate to="/page-not-found" replace /> },
   ]);
 }

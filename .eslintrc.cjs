@@ -26,6 +26,7 @@ module.exports = {
    */
   rules: {
     // general
+    'prefer-template': 'off',
     'no-alert': 0,
     camelcase: 0,
     'no-console': 0,
@@ -66,6 +67,6 @@ module.exports = {
     'perfectionist/sort-exports': 'off',
     'perfectionist/sort-named-imports': 'off',
     'perfectionist/sort-named-exports': 'off',
-    'perfectionist/sort-imports': 'off'
+    'perfectionist/sort-imports': 'off',
   },
 };

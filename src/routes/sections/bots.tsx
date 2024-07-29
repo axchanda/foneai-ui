@@ -20,9 +20,6 @@ const BotsPages = {
   BotEditPage: lazy(() => import('src/pages/bots/edit')),
 };
 
-
-
-
 const layoutContent = (
   <DashboardLayout>
     <Suspense fallback={<LoadingScreen />}>
@@ -37,25 +34,37 @@ export const botsRoutes = [
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
     children: [
       {
-        element: <>
-          <Helmet>
-            <title> {`${CONFIG.site.name}`}</title>
-          </Helmet>
-          <BotsPages.BotsPage /></>, index: true
+        element: (
+          <>
+            <Helmet>
+              <title> {`${CONFIG.site.name}`}</title>
+            </Helmet>
+            <BotsPages.BotsPage />
+          </>
+        ),
+        index: true,
       },
       {
-        path: 'create', element: <>
-          <Helmet>
-            <title> {`${CONFIG.site.name}`}</title>
-          </Helmet>
-          <BotsPages.BotCreatePage /></>
+        path: 'create',
+        element: (
+          <>
+            <Helmet>
+              <title> {`${CONFIG.site.name}`}</title>
+            </Helmet>
+            <BotsPages.BotCreatePage />
+          </>
+        ),
       },
       {
-        path: ':id', element: <>
-          <Helmet>
-            <title> {`${CONFIG.site.name}`}</title>
-          </Helmet>
-          <BotsPages.BotEditPage /></>
+        path: ':id',
+        element: (
+          <>
+            <Helmet>
+              <title> {`${CONFIG.site.name}`}</title>
+            </Helmet>
+            <BotsPages.BotEditPage />
+          </>
+        ),
       },
     ],
   },

@@ -59,4 +59,7 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+  bots: {
+    getBots: backendUrl + 'bots',
+  },
 };

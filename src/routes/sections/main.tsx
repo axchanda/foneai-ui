@@ -1,11 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import { MainLayout } from 'src/layouts/main';
-import { SimpleLayout } from 'src/layouts/simple';
-
 import { SplashScreen } from 'src/components/loading-screen';
-import { DashboardLayout } from 'src/layouts/dashboard';
 
 // ----------------------------------------------------------------------
 
@@ -115,7 +111,7 @@ export const mainRoutes = [
       //   ),
       // },
       { path: 'error', element: <Page500 /> },
-      { path: 'not-found', element: <><Page404 /></> },
+      { path: 'page-not-found', element: <Page404 /> },
       { path: '403', element: <Page403 /> },
     ],
   },
