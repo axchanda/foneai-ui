@@ -115,7 +115,7 @@ export const mainRoutes = [
       //   ),
       // },
       { path: 'error', element: <Page500 /> },
-      { path: '404', element: <><Page404 /></> },
+      { path: 'not-found', element: <><Page404 /></> },
       { path: '403', element: <Page403 /> },
     ],
   },

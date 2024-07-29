@@ -6,6 +6,7 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { UserNewEditForm } from '../../sections/user/user-new-edit-form';
 import { CampaignNewEditForm } from 'src/sections/campaigns/campaign-new-edit-form';
+import { Box, Stack } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -25,8 +26,10 @@ export default function CampaignEdit({ user: currentUser }: Props) {
                 // ]}
                 sx={{ mb: { xs: 3, md: 5 } }}
             />
+            <Box className='test' width={'100%'} maxWidth={'880px'} mx={'auto'}>
 
-            <CampaignNewEditForm currentUser={currentUser} />
+                <CampaignNewEditForm currentUser={currentUser} />
+            </Box>
         </DashboardContent>
     );
 }
