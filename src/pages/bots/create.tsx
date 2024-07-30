@@ -2,7 +2,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { JobNewEditForm } from '../../sections/job/job-new-edit-form';
+import { BotNewEditForm } from 'src/sections/bots/bot-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ function BotsCreate() {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <JobNewEditForm />
+      <BotNewEditForm />
     </DashboardContent>
   );
 }

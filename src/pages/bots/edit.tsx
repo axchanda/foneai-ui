@@ -4,7 +4,12 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { JobNewEditForm } from '../../sections/job/job-new-edit-form';
+import { useCallback, useEffect, useState } from 'react';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { useParams } from 'react-router';
+import API from 'src/utils/API';
+import type { IBotType } from 'src/types/bot';
+import { BotNewEditForm } from 'src/sections/bots/bot-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -13,6 +18,20 @@ type Props = {
 };
 
 function BotEdit({ job }: Props) {
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
+  const [bot, setBot] = useState<IBotType | null>(null);
+
+  const getBot = useCallback(async () => {
+    const { data } = await API.get<IBotType>(`/bots/${id}`);
+    setBot(data);
+    setLoading(false);
+  }, [id]);
+
+  useEffect(() => {
+    getBot();
+  }, [getBot]);
+
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -24,8 +43,7 @@ function BotEdit({ job }: Props) {
         // ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-
-      <JobNewEditForm currentJob={job} />
+      {loading ? <LoadingScreen /> : <BotNewEditForm currentBot={bot!} />}
     </DashboardContent>
   );
 }

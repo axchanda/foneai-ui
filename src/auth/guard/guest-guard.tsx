@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { useRouter, useSearchParams } from 'src/routes/hooks';
 
@@ -23,21 +23,16 @@ export function GuestGuard({ children }: Props) {
   const { loading, authenticated } = useAuthContext();
 
   const [isChecking, setIsChecking] = useState<boolean>(true);
-  const [isBackendAlive, setIsBackendAlive] = useState<boolean>(false);
 
   const returnTo = searchParams.get('returnTo') || CONFIG.auth.redirectPath;
 
-  useEffect(() => {
-    axios
-      .get('http://localhost:4000/isAlive')
-      .then((res) => {
-        setIsBackendAlive(true);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsBackendAlive(false);
-      });
-    // setIsChecking(false)
+  const checkForBackendAvailability = useCallback(async () => {
+    try {
+      await axios.get('http://localhost:4000/isAlive');
+      return true;
+    } catch (error) {
+      return false;
+    }
   }, []);
 
   const checkPermissions = async (): Promise<void> => {
@@ -48,6 +43,11 @@ export function GuestGuard({ children }: Props) {
     if (authenticated) {
       router.replace(returnTo);
       return;
+    }
+    const isBackendAlive = await checkForBackendAvailability();
+
+    if (!isBackendAlive) {
+      router.replace('/error');
     }
 
     setIsChecking(false);
@@ -60,10 +60,6 @@ export function GuestGuard({ children }: Props) {
 
   if (isChecking) {
     return <SplashScreen />;
-  }
-
-  if (!isBackendAlive) {
-    return <div>Server unavailable</div>;
   }
 
   return <>{children}</>;
