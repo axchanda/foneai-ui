@@ -24,32 +24,45 @@ import { fData } from 'src/utils/format-number';
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { Tooltip } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
-export const NewUserSchema = zod.object({
-  avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
-  name: zod.string().min(1, { message: 'Name is required!' }),
-  email: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
-  phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
-  country: schemaHelper.objectOrNull<string | null>({
-    message: { required_error: 'Country is required!' },
-  }),
-  address: zod.string().min(1, { message: 'Address is required!' }),
-  company: zod.string().min(1, { message: 'Company is required!' }),
-  state: zod.string().min(1, { message: 'State is required!' }),
-  city: zod.string().min(1, { message: 'City is required!' }),
-  role: zod.string().min(1, { message: 'Role is required!' }),
-  zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
-  // Not required
-  status: zod.string(),
-  isVerified: zod.boolean(),
-});
+export const NewUserSchema = zod
+  .object({
+    avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
+    name: zod.string().min(1, { message: 'Name is required!' }),
+    email: zod
+      .string()
+      .min(1, { message: 'Email is required!' })
+      .email({ message: 'Email must be a valid email address!' }),
+    phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
+    country: schemaHelper.objectOrNull<string | null>({
+      message: { required_error: 'Country is required!' },
+    }),
+    addressLine1: zod.string().min(1, { message: 'Address is required!' }),
+    addressLine2: zod.string(),
+    company: zod.string().min(1, { message: 'Company is required!' }),
+    state: zod.string().min(1, { message: 'State is required!' }),
+    city: zod.string().min(1, { message: 'City is required!' }),
+    role: zod.string().min(1, { message: 'Role is required!' }),
+    zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
+    // Not required
+    status: zod.string(),
+    isVerified: zod.boolean(),
+    password: zod
+      .string()
+      .min(1, { message: 'Password is required!' })
+      .min(8, { message: 'Password must be at least 8 characters!' }),
+    confirmPassword: zod.string(),
+    username: zod.string().min(1, { message: 'Username is required!' }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 // ----------------------------------------------------------------------
 
@@ -71,10 +84,11 @@ export function UserNewEditForm({ currentUser }: Props) {
       country: currentUser?.country || '',
       state: currentUser?.state || '',
       city: currentUser?.city || '',
-      address: currentUser?.address || '',
+      addressLine1: currentUser?.address || '',
       zipCode: currentUser?.zipCode || '',
       company: currentUser?.company || '',
       role: currentUser?.role || '',
+      username: currentUser?.username || '',
     }),
     [currentUser]
   );
@@ -183,29 +197,35 @@ export function UserNewEditForm({ currentUser }: Props) {
                 }}
               />
             )}
-
-            <Field.Switch
-              name="isVerified"
-              labelPlacement="start"
-              label={
-                <>
-                  <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                    Email verified
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                    Disabling this will automatically send the user a verification email
-                  </Typography>
-                </>
-              }
-              sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-            />
+            {/* {!currentUser && (
+              <Field.Switch
+                name="isVerified"
+                labelPlacement="start"
+                label={
+                  <>
+                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                      Email verified
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      Disabling this will automatically send the user a verification email
+                    </Typography>
+                  </>
+                }
+                sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
+              />
+            )} */}
 
             {currentUser && (
-              <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                <Button variant="soft" color="error">
-                  Delete user
-                </Button>
-              </Stack>
+              <Tooltip
+                placement="top"
+                title={values.status !== 'banned' ? 'Disable user to delete' : ''}
+              >
+                <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
+                  <Button disabled={values.status !== 'banned'} variant="soft" color="error">
+                    Delete user
+                  </Button>
+                </Stack>
+              </Tooltip>
             )}
           </Card>
         </Grid>
@@ -220,6 +240,7 @@ export function UserNewEditForm({ currentUser }: Props) {
             >
               <Field.Text name="name" label="Full name" />
               <Field.Text name="email" label="Email address" />
+              <Field.Text name="username" label="Username" />
               <Field.Phone name="phoneNumber" label="Phone number" />
 
               <Field.CountrySelect
@@ -231,8 +252,9 @@ export function UserNewEditForm({ currentUser }: Props) {
 
               <Field.Text name="state" label="State/region" />
               <Field.Text name="city" label="City" />
-              <Field.Text name="address" label="Address" />
               <Field.Text name="zipCode" label="Zip/code" />
+              <Field.Text name="addressLine1" label="Address Line 1" />
+              <Field.Text name="addressLine2" label="Address Line 2" />
               <Field.Text name="company" label="Company" />
               <Field.Text name="role" label="Role" />
             </Box>

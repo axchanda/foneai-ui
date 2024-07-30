@@ -126,6 +126,7 @@ export const _userPlans = [
 
 export const _userList = [...Array(20)].map((_, index) => ({
   id: _mock.id(index),
+  username: _mock.firstName(index).toUpperCase() + index,
   zipCode: '85807',
   state: 'Virginia',
   city: 'Rancho Cordova',

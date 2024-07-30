@@ -25,7 +25,7 @@ export default function CampaignEdit({ user: currentUser }: Props) {
         // ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-      <Box className="test" width="100%" maxWidth="600px" mx="auto">
+      <Box className="test" width="100%" maxWidth="720px" mx="auto">
         <CampaignNewEditForm currentUser={currentUser} />
       </Box>
     </DashboardContent>

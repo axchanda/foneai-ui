@@ -1,9 +1,24 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { tz } from 'moment-timezone';
 import { RHFAutocomplete } from './rhf-autocomplete';
 
 // Get the list of timezones
-const timezones = tz.names();
+const timezones = [
+  '-4:00 GMT',
+  '-3:30 GMT',
+  '-2:00 GMT',
+  '-2:30 GMT',
+  '-1:00 GMT',
+  '-1:30 GMT',
+  '0:00 GMT',
+  '0:30 GMT',
+  '1:00 GMT',
+  '1:30 GMT',
+  '2:00 GMT',
+  '2:30 GMT',
+  '3:00 GMT',
+  '3:30 GMT',
+  '4:00 GMT',
+];
 
 type TimezoneSelectProps = {
   name: string;

@@ -47,7 +47,7 @@ export function BotNewEditForm({ currentBot }: Props) {
       botName: currentBot?.name || '',
       promptInstructions: currentBot?.promptInstrucstions || '',
       language: currentBot?.language || 'English',
-      voice: currentBot?.voice?.voiceId || 'Joanna',
+      voice: currentBot?.voice?.voiceId || '',
       interruptable: currentBot?.interruptable || false,
       endpointing: currentBot?.endpointing || 0,
       timezone: currentBot?.timezone || '',
@@ -67,7 +67,12 @@ export function BotNewEditForm({ currentBot }: Props) {
     reset,
     handleSubmit,
     formState: { isSubmitting },
+    resetField,
+    setValue,
+    watch,
   } = methods;
+
+  const values = watch();
 
   useEffect(() => {
     if (currentBot) {
@@ -115,10 +120,33 @@ export function BotNewEditForm({ currentBot }: Props) {
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Prompt Instructions</Typography>
           <Field.Editor
-            height={200}
-            showToolbar={false}
+            // height={200}
+            // showToolbar={false}
             name="promptInstructions"
             placeholder="Enter detailed instructions..."
+          />
+        </Stack>
+        <Stack spacing={1}>
+          <Typography variant="subtitle2">Language</Typography>
+          <Field.RadioGroup
+            row
+            onChange={(e) => {
+              setValue('language', e.target.value as 'English' | 'Spanish');
+              resetField('voice');
+              // voiceRef.current?.focus();
+            }}
+            name="language"
+            options={[
+              {
+                label: 'English',
+                value: 'English',
+              },
+              {
+                label: 'Spanish',
+                value: 'Spanish',
+              },
+            ]}
+            sx={{ gap: 4 }}
           />
         </Stack>
       </Stack>
@@ -128,7 +156,7 @@ export function BotNewEditForm({ currentBot }: Props) {
   const renderProperties = (
     <Card>
       <CardHeader
-        title="Properties"
+        title="Speech settings"
         subheader="Additional functions and attributes..."
         sx={{ mb: 3 }}
       />
@@ -136,37 +164,26 @@ export function BotNewEditForm({ currentBot }: Props) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Stack spacing={1}>
-          <Typography variant="subtitle2">Language</Typography>
-          <Field.RadioGroup
-            row
-            name="language"
-            options={[
-              {
-                label: 'ENGLISH',
-                value: 'English',
-              },
-              {
-                label: 'SPANISH',
-                value: 'Spanish',
-              },
-            ]}
-            sx={{ gap: 4 }}
-          />
-        </Stack>
-
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Voice</Typography>
           <Field.Autocomplete
             name="voice"
             options={['Joanna', 'Mark', 'Joe']}
             placeholder="Select a voice"
+            defaultValue=""
           />
         </Stack>
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Interruptable</Typography>
-          <Field.Switch name="interruptable" label="Interruptable" />
+          <Field.Switch
+            name="interruptable"
+            label={
+              values.interruptable
+                ? 'The speech get interrupted'
+                : 'The speech does not get interrupted'
+            }
+          />
         </Stack>
 
         <Stack spacing={1.5}>
@@ -176,15 +193,24 @@ export function BotNewEditForm({ currentBot }: Props) {
             placeholder="Enter endpointing value"
             type="number"
             InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
+              endAdornment: (
+                <InputAdornment position="end">
                   <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>ms</Box>
                 </InputAdornment>
               ),
             }}
           />
         </Stack>
+      </Stack>
+    </Card>
+  );
+  const renderMisc = (
+    <Card>
+      <CardHeader title="Misc." subheader="Miscellaneous settings" sx={{ mb: 3 }} />
 
+      <Divider />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Timezone</Typography>
           <Field.TimezoneSelect name="timezone" placeholder="Select a timezone" />
@@ -199,7 +225,7 @@ export function BotNewEditForm({ currentBot }: Props) {
   );
 
   const renderActions = (
-    <Box display="flex" alignItems="center" flexWrap="wrap">
+    <Box display="flex" alignItems="center" justifyContent="end" flexWrap="wrap">
       {/* <FormControlLabel
         control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
         label="Publish"
@@ -224,7 +250,7 @@ export function BotNewEditForm({ currentBot }: Props) {
         {renderDetails}
 
         {renderProperties}
-
+        {renderMisc}
         {renderActions}
       </Stack>
     </Form>

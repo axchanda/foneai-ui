@@ -19,7 +19,7 @@ export default function CampaignCreate() {
         // ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-      <Box width="100%" maxWidth="600px" mx="auto">
+      <Box width="100%" maxWidth="720px" mx="auto">
         <CampaignNewEditForm />
       </Box>
     </DashboardContent>
