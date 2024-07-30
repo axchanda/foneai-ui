@@ -22,13 +22,18 @@ import type { IBotType } from 'src/types/bot';
 
 // ----------------------------------------------------------------------
 
+const voices = {
+  English: ['Joanna', 'Mark', 'Joe'],
+  Spanish: ['Manuel', 'Marco', 'Andrea'],
+};
+
 export type NewBotSchemaType = zod.infer<typeof NewBotSchema>;
 
 export const NewBotSchema = zod.object({
   botName: zod.string().min(1, { message: 'Bot name is required!' }),
   promptInstructions: zod.string(),
   language: zod.enum(['English', 'Spanish'], { required_error: 'Language is required!' }),
-  voice: zod.enum(['Joanna', 'Mark', 'Joe'], { required_error: 'Voice is required!' }),
+  voice: zod.string().min(1, { message: 'Voice is required!' }),
   interruptable: zod.boolean(),
   endpointing: zod.number().min(0, { message: 'Endpointing must be a positive number!' }),
   timezone: zod.string().min(1, { message: 'Timezone is required!' }),
@@ -168,7 +173,7 @@ export function BotNewEditForm({ currentBot }: Props) {
           <Typography variant="subtitle2">Voice</Typography>
           <Field.Autocomplete
             name="voice"
-            options={['Joanna', 'Mark', 'Joe']}
+            options={voices[values.language || 'English']}
             placeholder="Select a voice"
             defaultValue=""
           />

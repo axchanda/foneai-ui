@@ -39,7 +39,13 @@ export function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRo
 
   return (
     <>
-      <TableRow hover selected={selected} aria-checked={selected} tabIndex={-1}>
+      <TableRow
+        onDoubleClick={onEditRow}
+        hover
+        selected={selected}
+        aria-checked={selected}
+        tabIndex={-1}
+      >
         {/* <TableCell padding="checkbox">
           <Checkbox id={row.id} checked={selected} onClick={onSelectRow} />
         </TableCell> */}

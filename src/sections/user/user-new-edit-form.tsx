@@ -25,6 +25,8 @@ import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { Tooltip } from '@mui/material';
+import { ConfirmDialog } from 'src/components/custom-dialog';
+import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 
@@ -108,6 +110,8 @@ export function UserNewEditForm({ currentUser }: Props) {
   } = methods;
 
   const values = watch();
+
+  const confirm = useBoolean();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -221,7 +225,14 @@ export function UserNewEditForm({ currentUser }: Props) {
                 title={values.status !== 'banned' ? 'Disable user to delete' : ''}
               >
                 <Stack justifyContent="center" alignItems="center" sx={{ mt: 3 }}>
-                  <Button disabled={values.status !== 'banned'} variant="soft" color="error">
+                  <Button
+                    onClick={() => {
+                      confirm.onTrue();
+                    }}
+                    disabled={values.status !== 'banned'}
+                    variant="soft"
+                    color="error"
+                  >
                     Delete user
                   </Button>
                 </Stack>
@@ -261,12 +272,34 @@ export function UserNewEditForm({ currentUser }: Props) {
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {!currentUser ? 'Create user' : 'Save changes'}
+                {!currentUser ? 'Create user' : 'Update user'}
               </LoadingButton>
             </Stack>
           </Card>
         </Grid>
       </Grid>
+
+      <ConfirmDialog
+        open={confirm.value}
+        onClose={confirm.onFalse}
+        title="Delete"
+        content={
+          <>
+            Are you sure want to delete <strong> {currentUser?.username} </strong> items?
+          </>
+        }
+        action={
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              confirm.onFalse();
+            }}
+          >
+            Delete
+          </Button>
+        }
+      />
     </Form>
   );
 }
