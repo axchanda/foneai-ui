@@ -60,12 +60,9 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
     () => ({
       campaignName: currentCampaign?.campaignName || '',
       campaignDescription: currentCampaign?.description || '',
-      linkedBot: currentCampaign?.linkedBot
-        ? bots.find((bot) => bot.value === currentCampaign.linkedBot)?.label ||
-          currentCampaign.linkedBot
-        : '',
+      linkedBot: currentCampaign?.linkedBot || '',
     }),
-    [currentCampaign, bots]
+    [currentCampaign]
   );
 
   const methods = useForm<NewUserSchemaType>({
@@ -133,7 +130,7 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
                     console.log('newValue', newValue);
                     setValue('linkedBot', newValue.value);
                   }}
-                  key={defaultValues.linkedBot}
+                  value={bots.find((bot) => bot.value === defaultValues.linkedBot)?.label}
                 />
               </Box>
 
