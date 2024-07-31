@@ -34,7 +34,15 @@ export const ChangePassWordSchema = zod
   .refine((data) => data.newPassword === data.confirmNewPassword, {
     message: 'Passwords do not match!',
     path: ['confirmNewPassword'],
-  });
+  })
+  .refine(
+    (data) =>
+      data.newPassword.test(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
+    {
+      message:
+        'Password must be minimum 8+ and must contain one uppercase, one number, one special character.',
+    }
+  );
 
 // ----------------------------------------------------------------------
 
@@ -100,7 +108,7 @@ export function AccountChangePassword() {
           helperText={
             <Stack component="span" direction="row" alignItems="center">
               <Iconify icon="eva:info-fill" width={16} sx={{ mr: 0.5 }} /> Password must be minimum
-              6+
+              8+ and must contain one uppercase, one number, one special character.
             </Stack>
           }
         />

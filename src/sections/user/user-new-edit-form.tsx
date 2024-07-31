@@ -30,6 +30,11 @@ import { useBoolean } from 'src/hooks/use-boolean';
 
 // ----------------------------------------------------------------------
 
+const statusLabel: Record<string, string> = {
+  banned: 'Disabled',
+  active: 'Active',
+};
+
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
 export const NewUserSchema = zod
@@ -139,7 +144,7 @@ export function UserNewEditForm({ currentUser }: Props) {
                 }
                 sx={{ position: 'absolute', top: 24, right: 24 }}
               >
-                {values.status}
+                {statusLabel[values.status]}
               </Label>
             )}
 
@@ -186,7 +191,7 @@ export function UserNewEditForm({ currentUser }: Props) {
                 label={
                   <>
                     <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                      Banned
+                      {statusLabel[values.status]}
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'text.secondary' }}>
                       Apply disable account
@@ -251,7 +256,7 @@ export function UserNewEditForm({ currentUser }: Props) {
             >
               <Field.Text name="name" label="Full name" />
               <Field.Text name="email" label="Email address" />
-              <Field.Text name="username" label="Username" />
+              <Field.Text name="username" disabled={Boolean(currentUser)} label="Username" />
               <Field.Phone name="phoneNumber" label="Phone number" />
 
               <Field.CountrySelect

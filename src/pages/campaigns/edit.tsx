@@ -5,7 +5,11 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { CampaignNewEditForm } from 'src/sections/campaigns/campaign-new-edit-form';
-import { Box } from '@mui/material';
+import { useParams } from 'react-router';
+import { useCallback, useEffect, useState } from 'react';
+import API from 'src/utils/API';
+import type { ICampaignType } from 'src/types/campaign';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -14,6 +18,20 @@ type Props = {
 };
 
 export default function CampaignEdit({ user: currentUser }: Props) {
+  const [loaded, setLoaded] = useState(false);
+  const { id } = useParams();
+  const [campaign, setCampaign] = useState<ICampaignType | null>(null);
+
+  const getCampaigns = useCallback(async () => {
+    const { data } = await API.get<ICampaignType>('/campaigns/' + id);
+    setCampaign(data);
+    setLoaded(true);
+  }, [id]);
+
+  useEffect(() => {
+    getCampaigns();
+  }, [getCampaigns]);
+
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -25,9 +43,7 @@ export default function CampaignEdit({ user: currentUser }: Props) {
         // ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-      <Box className="test" width="100%" maxWidth="720px" mx="auto">
-        <CampaignNewEditForm currentUser={currentUser} />
-      </Box>
+      {loaded ? <CampaignNewEditForm currentCampaign={campaign || undefined} /> : <LoadingScreen />}
     </DashboardContent>
   );
 }

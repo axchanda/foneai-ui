@@ -1,12 +1,10 @@
 import { Helmet } from 'react-helmet-async';
 
-import { CONFIG } from 'src/config-global';
-
 import { JwtSignInView } from 'src/sections/auth/jwt';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Sign in` };
+const metadata = { title: `Fone AI` };
 
 export default function Page() {
   return (

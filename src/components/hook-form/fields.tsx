@@ -13,6 +13,7 @@ import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
 import { RHFUpload, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
 import { RHFDatePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
 import { TimezoneSelect } from './timezone-select';
+import TextareaWithMaximize from './textarea-with-maximize';
 
 // ----------------------------------------------------------------------
 
@@ -38,4 +39,5 @@ export const Field = {
   CountrySelect: RHFCountrySelect,
   MobileDateTimePicker: RHFMobileDateTimePicker,
   TimezoneSelect,
+  TextareaWithMaximize,
 };

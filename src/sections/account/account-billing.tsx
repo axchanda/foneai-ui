@@ -3,9 +3,9 @@ import type { IPaymentCard, IAddressItem } from 'src/types/common';
 
 import Grid from '@mui/material/Unstable_Grid2';
 
+import { Box } from '@mui/material';
 import { AccountBillingPlan } from './account-billing-plan';
 import { AccountBillingPayment } from './account-billing-payment';
-import { AccountBillingHistory } from './account-billing-history';
 import { AccountBillingAddress } from './account-billing-address';
 
 // ----------------------------------------------------------------------
@@ -24,17 +24,17 @@ type Props = {
 export function AccountBilling({ cards, plans, invoices, addressBook }: Props) {
   return (
     <Grid container spacing={5} disableEqualOverflow>
-      <Grid xs={12} md={8}>
+      <Box mx="auto" mt={2}>
         <AccountBillingPlan plans={plans} cardList={cards} addressBook={addressBook} />
 
         <AccountBillingPayment cards={cards} />
 
         <AccountBillingAddress addressBook={addressBook} />
-      </Grid>
+      </Box>
 
-      <Grid xs={12} md={4}>
+      {/* <Grid xs={12} md={4}>
         <AccountBillingHistory invoices={invoices} />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

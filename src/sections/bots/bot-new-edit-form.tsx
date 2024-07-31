@@ -124,13 +124,29 @@ export function BotNewEditForm({ currentBot }: Props) {
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Prompt Instructions</Typography>
-          <Field.Editor
+          <Field.TextareaWithMaximize
             // height={200}
             // showToolbar={false}
+            // rows={6}
             name="promptInstructions"
             placeholder="Enter detailed instructions..."
           />
         </Stack>
+      </Stack>
+    </Card>
+  );
+
+  const renderProperties = (
+    <Card>
+      <CardHeader
+        title="Speech settings"
+        subheader="Additional functions and attributes..."
+        sx={{ mb: 3 }}
+      />
+
+      <Divider />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1}>
           <Typography variant="subtitle2">Language</Typography>
           <Field.RadioGroup
@@ -154,21 +170,6 @@ export function BotNewEditForm({ currentBot }: Props) {
             sx={{ gap: 4 }}
           />
         </Stack>
-      </Stack>
-    </Card>
-  );
-
-  const renderProperties = (
-    <Card>
-      <CardHeader
-        title="Speech settings"
-        subheader="Additional functions and attributes..."
-        sx={{ mb: 3 }}
-      />
-
-      <Divider />
-
-      <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Voice</Typography>
           <Field.Autocomplete

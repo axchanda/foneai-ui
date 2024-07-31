@@ -3,7 +3,6 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { CampaignNewEditForm } from 'src/sections/campaigns/campaign-new-edit-form';
-import { Box } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -19,9 +18,7 @@ export default function CampaignCreate() {
         // ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-      <Box width="100%" maxWidth="720px" mx="auto">
-        <CampaignNewEditForm />
-      </Box>
+      <CampaignNewEditForm />
     </DashboardContent>
   );
 }

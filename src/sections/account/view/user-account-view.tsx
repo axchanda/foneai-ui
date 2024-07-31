@@ -1,8 +1,6 @@
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 
-import { paths } from 'src/routes/paths';
-
 import { useTabs } from 'src/hooks/use-tabs';
 
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -11,12 +9,12 @@ import { _userAbout, _userPlans, _userPayment, _userInvoices, _userAddressBook }
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AccountGeneral } from '../account-general';
 import { AccountBilling } from '../account-billing';
 import { AccountSocialLinks } from '../account-social-links';
 import { AccountNotifications } from '../account-notifications';
 import { AccountChangePassword } from '../account-change-password';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
@@ -35,11 +33,12 @@ const TABS = [
 // ----------------------------------------------------------------------
 
 export function AccountView() {
-  const [searchParams] = useSearchParams()
-  const tab = searchParams.get('tab')
-  const selectedTab = TABS.find(t => t.value.toLowerCase() === tab?.toLowerCase())?.value || 'general'
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get('tab');
+  const selectedTab =
+    TABS.find((t) => t.value.toLowerCase() === tab?.toLowerCase())?.value || 'general';
   const tabs = useTabs(selectedTab);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <DashboardContent>
       <CustomBreadcrumbs
@@ -53,11 +52,17 @@ export function AccountView() {
       />
 
       <Tabs value={tabs.value} onChange={tabs.onChange} sx={{ mb: { xs: 3, md: 5 } }}>
-        {TABS.map((tab) => (
-          <Tab onClick={() => {
-            // const url = searchParams.set('tab', tab.value)
-            navigate(`/account?tab=${tab.value}`)
-          }} key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
+        {TABS.map((t) => (
+          <Tab
+            onClick={() => {
+              // const url = searchParams.set('tab', tab.value)
+              navigate(`/account?tab=${t.value}`);
+            }}
+            key={t.value}
+            label={t.label}
+            icon={t.icon}
+            value={t.value}
+          />
         ))}
       </Tabs>
 

@@ -6,7 +6,6 @@ import { isValidPhoneNumber } from 'react-phone-number-input/input';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -55,6 +54,7 @@ export function AccountGeneral() {
     zipCode: user?.zipCode || '',
     about: user?.about || '',
     isPublic: user?.isPublic || false,
+    username: user?.username,
   };
 
   const methods = useForm<UpdateUserSchemaType>({
@@ -110,16 +110,16 @@ export function AccountGeneral() {
               }
             />
 
-            <Field.Switch
+            {/* <Field.Switch
               name="isPublic"
               labelPlacement="start"
               label="Public profile"
               sx={{ mt: 5 }}
-            />
+            /> */}
 
-            <Button variant="soft" color="error" sx={{ mt: 3 }}>
+            {/* <Button variant="soft" color="error" sx={{ mt: 3 }}>
               Delete user
-            </Button>
+            </Button> */}
           </Card>
         </Grid>
 
@@ -133,8 +133,10 @@ export function AccountGeneral() {
             >
               <Field.Text name="displayName" label="Name" />
               <Field.Text name="email" label="Email address" />
+              <Field.Text disabled name="username" label="Username" />
               <Field.Phone name="phoneNumber" label="Phone number" />
-              <Field.Text name="address" label="Address" />
+              <Field.Text name="address" label="Address Line 1" />
+              <Field.Text name="address2" label="Address Line 2" />
 
               <Field.CountrySelect name="country" label="Country" placeholder="Choose a country" />
 
@@ -144,7 +146,7 @@ export function AccountGeneral() {
             </Box>
 
             <Stack spacing={3} alignItems="flex-end" sx={{ mt: 3 }}>
-              <Field.Text name="about" multiline rows={4} label="About" />
+              {/* <Field.Text name="about" multiline rows={4} label="About" /> */}
 
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 Save changes

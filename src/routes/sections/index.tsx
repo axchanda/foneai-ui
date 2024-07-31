@@ -11,6 +11,7 @@ import { dashboardRoutes } from './dashboard';
 import { userRoutes } from './user';
 import { campaignsRoutes } from './campaigns';
 import { mainRoutes } from './main';
+import { setupRoutes } from './setup';
 
 export function Router() {
   return useRoutes([
@@ -45,6 +46,8 @@ export function Router() {
     ...userRoutes,
 
     ...mainRoutes,
+
+    ...setupRoutes,
 
     // No match
     { path: '*', element: <Navigate to="/page-not-found" replace /> },
