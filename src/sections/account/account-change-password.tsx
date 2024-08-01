@@ -35,14 +35,14 @@ export const ChangePassWordSchema = zod
     message: 'Passwords do not match!',
     path: ['confirmNewPassword'],
   })
-  // .refine(
-  //   (data) =>
-  //     data.newPassword.test(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/),
-  //   {
-  //     message:
-  //       'Password must be minimum 8+ and must contain one uppercase, one number, one special character.',
-  //   }
-  // );
+  .refine(
+    (data) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data.newPassword),
+    {
+      message:
+        'Password must be minimum 8+ and must contain one uppercase, one number, one special character.',
+    }
+  );
 
 // ----------------------------------------------------------------------
 
