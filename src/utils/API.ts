@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:4000',
+  // baseURL: 'http://localhost:4000',
+  baseURL: 'https://bbxaulogg4cfrdzpheaislkkfe0wafen.lambda-url.us-east-2.on.aws'
 });
 
 API.interceptors.request.use(
