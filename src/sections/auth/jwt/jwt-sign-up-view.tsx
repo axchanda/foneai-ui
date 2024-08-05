@@ -27,23 +27,25 @@ import { useAuthContext } from 'src/auth/hooks';
 
 export type SignUpSchemaType = zod.infer<typeof SignUpSchema>;
 
-export const SignUpSchema = zod.object({
-  firstName: zod.string().min(1, { message: 'First name is required!' }),
-  lastName: zod.string().min(1, { message: 'Last name is required!' }),
-  username: zod.string().min(1, { message: "Username is required!" }),
-  email: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
-  password: zod
-    .string()
-    .min(1, { message: 'Password is required!' })
-    .min(8, { message: 'Password must be at least 8 characters!' }),
-  confirmPassword: zod.string()
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ['confirmPassword']
-})
+export const SignUpSchema = zod
+  .object({
+    firstName: zod.string().min(1, { message: 'First name is required!' }),
+    lastName: zod.string().min(1, { message: 'Last name is required!' }),
+    username: zod.string().min(1, { message: 'Username is required!' }),
+    email: zod
+      .string()
+      .min(1, { message: 'Email is required!' })
+      .email({ message: 'Email must be a valid email address!' }),
+    password: zod
+      .string()
+      .min(1, { message: 'Password is required!' })
+      .min(4, { message: 'Password must be at least 8 characters!' }),
+    confirmPassword: zod.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 // ----------------------------------------------------------------------
 
@@ -53,19 +55,18 @@ export function JwtSignUpView() {
   const router = useRouter();
 
   const password = useBoolean();
-  const confirmPassword = useBoolean()
+  const confirmPassword = useBoolean();
 
   const [errorMsg, setErrorMsg] = useState('');
   const [errorMessages, setErrorMessages] = useState<Record<string, string>>({});
 
-
   const defaultValues = {
     firstName: 'Hello',
     lastName: 'Friend',
-    username: "USERNAME1",
+    username: 'USERNAME1',
     email: 'hello@gmail.com',
     password: '@demo123',
-    confirmPassword: '@demo123'
+    confirmPassword: '@demo123',
   };
 
   const methods = useForm<SignUpSchemaType>({
@@ -86,8 +87,7 @@ export function JwtSignUpView() {
         firstName: data.firstName,
         lastName: data.lastName,
         username: data.username,
-        confirmPassword: data.confirmPassword
-
+        confirmPassword: data.confirmPassword,
       });
       await checkUserSession?.();
 
@@ -96,7 +96,6 @@ export function JwtSignUpView() {
       console.error(error);
       // setErrorMsg(error instanceof Error ? error.message : error);
       setErrorMessages(error.errors as Record<string, string>);
-
     }
   });
 
@@ -126,7 +125,6 @@ export function JwtSignUpView() {
       <Field.Text name="username" label="Username" InputLabelProps={{ shrink: true }} />
       <Field.Text name="email" label="Email address" InputLabelProps={{ shrink: true }} />
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-
         <Field.Text
           name="password"
           label="Password"
@@ -153,7 +151,9 @@ export function JwtSignUpView() {
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton onClick={confirmPassword.onToggle} edge="end">
-                  <Iconify icon={confirmPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                  <Iconify
+                    icon={confirmPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                  />
                 </IconButton>
               </InputAdornment>
             ),

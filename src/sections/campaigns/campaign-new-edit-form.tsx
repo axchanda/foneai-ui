@@ -23,10 +23,9 @@ export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
 export const NewUserSchema = zod.object({
   campaignName: zod.string().min(1),
-  campaignDescription: zod
-    .string()
-    .min(8, { message: 'Description must be at least 8 characters' })
-    .max(100, { message: 'Description must be at most 100 characters' }),
+  campaignDescription: zod.string(),
+  // .min(8, { message: 'Description must be at least 8 characters' })
+  // .max(100, { message: 'Description must be at most 100 characters' }),
   linkedBot: zod.string(),
 });
 
