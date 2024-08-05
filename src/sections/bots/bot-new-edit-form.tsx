@@ -19,6 +19,8 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import API from 'src/utils/API';
 import type { IBotType } from 'src/types/bot';
+import { Button } from '@mui/material';
+import { deleteBot } from 'src/utils/api/bots';
 
 // ----------------------------------------------------------------------
 
@@ -50,7 +52,7 @@ export function BotNewEditForm({ currentBot }: Props) {
   const defaultValues = useMemo(
     () => ({
       botName: currentBot?.name || '',
-      promptInstructions: currentBot?.promptInstrucstions || '',
+      promptInstructions: currentBot?.promptInstructions || '',
       language: currentBot?.language || 'English',
       voice: currentBot?.voice?.voiceId || '',
       interruptable: currentBot?.interruptable || false,
@@ -231,13 +233,26 @@ export function BotNewEditForm({ currentBot }: Props) {
   );
 
   const renderActions = (
-    <Box display="flex" alignItems="center" justifyContent="end" flexWrap="wrap">
+    <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap">
       {/* <FormControlLabel
         control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
         label="Publish"
         sx={{ flexGrow: 1, pl: 3 }}
       /> */}
-
+      {currentBot && (
+        <Button
+          onClick={async () => {
+            await deleteBot(currentBot._id, () => {
+              router.push('/bots');
+            });
+          }}
+          variant="contained"
+          size="large"
+          color="error"
+        >
+          Delete bot
+        </Button>
+      )}
       <LoadingButton
         type="submit"
         variant="contained"
@@ -245,7 +260,7 @@ export function BotNewEditForm({ currentBot }: Props) {
         loading={isSubmitting}
         sx={{ ml: 2 }}
       >
-        {!currentBot ? 'Create Bot' : 'Save Changes'}
+        {!currentBot ? 'Create Bot' : 'Update Bot'}
       </LoadingButton>
     </Box>
   );

@@ -13,10 +13,11 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 import { BotList } from 'src/sections/bots/bots-list';
 import API from 'src/utils/API';
 import type { IBotType } from 'src/types/bot';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 function Bots() {
   const [notFound, setNotfound] = useState(false);
-
+  const [loaded, setLoaded] = useState(false);
   const [bots, setBots] = useState<IBotType[]>([]);
 
   const getBots = useCallback(async () => {
@@ -25,6 +26,7 @@ function Bots() {
       count: number;
     }>('/bots');
     setBots(data.bots);
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -47,10 +49,14 @@ function Bots() {
         }
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-
-      {notFound && <EmptyContent filled sx={{ py: 10 }} />}
-
-      <BotList bots={bots} />
+      {loaded ? (
+        <>
+          {notFound && <EmptyContent filled sx={{ py: 10 }} />}
+          <BotList bots={bots} setBots={setBots} />
+        </>
+      ) : (
+        <LoadingScreen />
+      )}
     </DashboardContent>
   );
 }

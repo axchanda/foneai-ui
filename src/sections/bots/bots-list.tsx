@@ -1,3 +1,4 @@
+import type { Dispatch, SetStateAction } from 'react';
 import { useCallback } from 'react';
 
 import Box from '@mui/material/Box';
@@ -6,15 +7,17 @@ import Pagination, { paginationClasses } from '@mui/material/Pagination';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 import type { IBotType } from 'src/types/bot';
+import { deleteBot } from 'src/utils/api/bots';
 import { BotItem } from './bot-item';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   bots: IBotType[];
+  setBots: Dispatch<SetStateAction<IBotType[]>>;
 };
 
-export function BotList({ bots }: Props) {
+export function BotList({ bots, setBots }: Props) {
   const router = useRouter();
 
   const handleView = useCallback(
@@ -31,9 +34,14 @@ export function BotList({ bots }: Props) {
     [router]
   );
 
-  const handleDelete = useCallback((id: string) => {
-    console.info('DELETE', id);
-  }, []);
+  const handleDelete = useCallback(
+    (id: string) => {
+      deleteBot(id, () => {
+        setBots((prevBots) => prevBots.filter((bot) => bot._id !== id));
+      });
+    },
+    [setBots]
+  );
 
   return (
     <>

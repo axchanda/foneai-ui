@@ -76,7 +76,10 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
     handleSubmit,
     formState: { isSubmitting },
     setValue,
+    watch,
   } = methods;
+
+  const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -130,7 +133,7 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
                     console.log('newValue', newValue);
                     setValue('linkedBot', newValue.value);
                   }}
-                  value={bots.find((bot) => bot.value === defaultValues.linkedBot)?.label}
+                  value={bots.find((bot) => bot.value === values.linkedBot)?.label}
                 />
               </Box>
 

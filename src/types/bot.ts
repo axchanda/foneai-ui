@@ -6,7 +6,7 @@ export type IBotType = {
   endpointing: number;
   daylightSavings: boolean;
   interruptable: boolean;
-  promptInstrucstions: string;
+  promptInstructions: string;
   timezone: string;
   createdAt: string;
   updatedAt: string;

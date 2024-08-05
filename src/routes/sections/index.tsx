@@ -12,6 +12,7 @@ import { userRoutes } from './user';
 import { campaignsRoutes } from './campaigns';
 import { mainRoutes } from './main';
 import { setupRoutes } from './setup';
+import { webhooksRoutes } from './webhooks';
 
 export function Router() {
   return useRoutes([
@@ -49,6 +50,7 @@ export function Router() {
 
     ...setupRoutes,
 
+    ...webhooksRoutes,
     // No match
     { path: '*', element: <Navigate to="/page-not-found" replace /> },
   ]);

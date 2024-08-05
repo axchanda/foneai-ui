@@ -26,6 +26,7 @@ module.exports = {
    */
   rules: {
     // general
+    'arrow-body-style': 'off',
     'prefer-template': 'off',
     'no-alert': 0,
     camelcase: 0,

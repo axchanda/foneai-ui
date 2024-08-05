@@ -38,6 +38,7 @@ import { CampaignTableRow } from 'src/sections/campaigns/campaign-table-row';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
 import type { IBotType } from 'src/types/bot';
+import { deleteCampaign } from 'src/utils/api/campaigns';
 
 // ----------------------------------------------------------------------
 
@@ -81,14 +82,12 @@ export default function UserListView() {
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter((row) => row._id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
+    async (id: string) => {
+      await deleteCampaign(id, () => {
+        const deleteRow = tableData.filter((row) => row._id !== id);
+        setTableData(deleteRow);
+        table.onUpdatePageDeleteRow(dataInPage.length);
+      });
     },
     [dataInPage.length, table, tableData]
   );
