@@ -21,6 +21,8 @@ import API from 'src/utils/API';
 import type { IBotType } from 'src/types/bot';
 import { Button } from '@mui/material';
 import { deleteBot } from 'src/utils/api/bots';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { ConfirmDialog } from 'src/components/custom-dialog';
 
 // ----------------------------------------------------------------------
 
@@ -44,20 +46,22 @@ export const NewBotSchema = zod.object({
 
 type Props = {
   currentBot?: IBotType;
+  isUsed: boolean;
 };
 
-export function BotNewEditForm({ currentBot }: Props) {
+export function BotNewEditForm({ currentBot, isUsed }: Props) {
   const router = useRouter();
+  const alertDialog = useBoolean();
 
   const defaultValues = useMemo(
     () => ({
       botName: currentBot?.name || '',
       promptInstructions: currentBot?.promptInstructions || '',
       language: currentBot?.language || 'English',
-      voice: currentBot?.voice?.voiceId || '',
+      voice: currentBot?.voice?.voiceId || 'Joanna',
       interruptable: currentBot?.interruptable || false,
-      endpointing: currentBot?.endpointing || 0,
-      timezone: currentBot?.timezone || '',
+      endpointing: currentBot?.endpointing || 10,
+      timezone: currentBot?.timezone || 'GMT-05:00',
       daylightSavings: currentBot?.daylightSavings || false,
     }),
     [currentBot]
@@ -149,7 +153,7 @@ export function BotNewEditForm({ currentBot }: Props) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        <Stack spacing={1}>
+        {/* <Stack spacing={1}>
           <Typography variant="subtitle2">Language</Typography>
           <Field.RadioGroup
             row
@@ -171,7 +175,7 @@ export function BotNewEditForm({ currentBot }: Props) {
             ]}
             sx={{ gap: 4 }}
           />
-        </Stack>
+        </Stack> */}
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Voice</Typography>
           <Field.Autocomplete
@@ -242,9 +246,13 @@ export function BotNewEditForm({ currentBot }: Props) {
       {currentBot && (
         <Button
           onClick={async () => {
-            await deleteBot(currentBot._id, () => {
-              router.push('/bots');
-            });
+            if (isUsed) {
+              alertDialog.setValue(true);
+            } else {
+              await deleteBot(currentBot._id, () => {
+                router.push('/bots');
+              });
+            }
           }}
           variant="contained"
           size="large"
@@ -266,14 +274,25 @@ export function BotNewEditForm({ currentBot }: Props) {
   );
 
   return (
-    <Form methods={methods} onSubmit={onSubmit}>
-      <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 880 } }}>
-        {renderDetails}
+    <>
+      <Form methods={methods} onSubmit={onSubmit}>
+        <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 880 } }}>
+          {renderDetails}
 
-        {renderProperties}
-        {renderMisc}
-        {renderActions}
-      </Stack>
-    </Form>
+          {renderProperties}
+          {renderMisc}
+          {renderActions}
+        </Stack>
+      </Form>
+      <ConfirmDialog
+        title="Unable to delete bot"
+        content="This bot is currently being used in a campaign. Please remove it from the campaign before deleting."
+        open={alertDialog.value}
+        action={<></>}
+        onClose={() => {
+          alertDialog.setValue(false);
+        }}
+      />
+    </>
   );
 }

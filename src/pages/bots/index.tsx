@@ -14,24 +14,38 @@ import { BotList } from 'src/sections/bots/bots-list';
 import API from 'src/utils/API';
 import type { IBotType } from 'src/types/bot';
 import { LoadingScreen } from 'src/components/loading-screen';
+import type { ICampaignType } from 'src/types/campaign';
 
 function Bots() {
   const [notFound, setNotfound] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [bots, setBots] = useState<IBotType[]>([]);
+  const [usedBots, setUsedBots] = useState<string[]>([]);
 
-  const getBots = useCallback(async () => {
-    const { data } = await API.get<{
+  const getData = useCallback(async () => {
+    const botsPromise = API.get<{
       bots: IBotType[];
       count: number;
     }>('/bots');
+    const campaignsPromise = API.get<{
+      campaigns: ICampaignType[];
+      count: number;
+    }>('/campaigns');
+    const [
+      { data },
+      {
+        data: { campaigns },
+      },
+    ] = await Promise.all([botsPromise, campaignsPromise]);
     setBots(data.bots);
+    const used = campaigns.map((campaign) => campaign.linkedBot);
+    setUsedBots(used);
     setLoaded(true);
   }, []);
 
   useEffect(() => {
-    getBots();
-  }, [getBots]);
+    getData();
+  }, [getData]);
 
   return (
     <DashboardContent>
@@ -52,7 +66,7 @@ function Bots() {
       {loaded ? (
         <>
           {notFound && <EmptyContent filled sx={{ py: 10 }} />}
-          <BotList bots={bots} setBots={setBots} />
+          <BotList bots={bots} setBots={setBots} usedBots={usedBots} />
         </>
       ) : (
         <LoadingScreen />

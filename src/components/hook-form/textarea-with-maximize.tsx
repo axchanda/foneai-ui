@@ -11,6 +11,7 @@ import { ToolbarItem } from '../editor/components/toolbar-item';
 
 type Props = TextFieldProps & {
   name: string;
+  showToolbar?: boolean;
 };
 
 type StyledRootProps = StackProps & {
@@ -216,7 +217,13 @@ const StyledRoot = styled(Stack, {
   },
 }));
 
-const TextareaWithMaximize: React.FC<Props> = ({ name, helperText, type, ...other }) => {
+const TextareaWithMaximize: React.FC<Props> = ({
+  name,
+  helperText,
+  type,
+  showToolbar = true,
+  ...other
+}) => {
   const maximize = useBoolean();
   const { control } = useFormContext();
 
@@ -273,7 +280,9 @@ const TextareaWithMaximize: React.FC<Props> = ({ name, helperText, type, ...othe
             />
           )}
         />
-        <Toolbar fullScreen={maximize.value} onToggleFullScreen={maximize.onToggle} />
+        {showToolbar && (
+          <Toolbar fullScreen={maximize.value} onToggleFullScreen={maximize.onToggle} />
+        )}
       </StyledRoot>
       <div />
     </Portal>

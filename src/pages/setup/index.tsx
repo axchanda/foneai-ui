@@ -15,9 +15,12 @@ import {
   RadioGroup,
   TextField,
   Typography,
+  IconButton,
 } from '@mui/material';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import useClipboard from 'react-use-clipboard';
+import { _mock } from 'src/_mock';
 import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -99,6 +102,8 @@ const SetupPage: React.FC = () => {
 
 const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const openConfirmationDialog = useBoolean();
+  const [apiKeyName, setApiKeyName] = React.useState('');
+  const [expiration, setExpiration] = React.useState('never');
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
@@ -118,6 +123,8 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
                 name="comment"
                 label="Comment"
                 placeholder="MY_KEY"
+                value={apiKeyName}
+                onChange={(e) => setApiKeyName(e.target.value)}
               />
             </li>
             {/* <Divider sx={{ margin: '15px 0' }} /> */}
@@ -128,8 +135,10 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
               <FormControl>
                 <RadioGroup
                   aria-labelledby="demo-radio-buttons-group-label"
-                  defaultValue="never"
+                  // defaultValue="never"
                   name="radio-buttons-group"
+                  value={expiration}
+                  onChange={(e) => setExpiration(e.target.value)}
                 >
                   <FormControlLabel value="never" control={<Radio />} label="Never" />
                   <FormControlLabel value="duration" control={<Radio />} label="Duration" />
@@ -147,7 +156,7 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
             variant="contained"
             color="primary"
             onClick={() => {
-              // onClose();
+              onClose();
               openConfirmationDialog.onTrue();
             }}
           >
@@ -162,6 +171,8 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
           openConfirmationDialog.onFalse();
           onClose();
         }}
+        apiKeyName={apiKeyName}
+        expiration={expiration}
       />
     </>
   );
@@ -171,49 +182,60 @@ const SetupConfirmationDialog = ({
   open,
   onClose,
   onConfirm,
+  apiKeyName,
+  expiration,
 }: {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  apiKeyName: string;
+  expiration: string;
 }) => {
+  const [isCopied, setCopied] = useClipboard(_mock.id(4), {
+    successDuration: 3000,
+  });
+
   return (
     <Dialog fullWidth maxWidth="xs" open={open} sx={{ zIndex: 1000 }} onClose={onClose}>
-      <DialogTitle sx={{ pb: 2 }}>Create New API Key</DialogTitle>
+      <DialogTitle sx={{ pb: 2 }}>Your New API Key</DialogTitle>
       <DialogContent sx={{ typography: 'body2' }}>
-        <ol>
-          <li>
-            <Typography fontWeight="600">Enter name</Typography>
+        <>
+          <>
             <Typography variant="subtitle2" mt={2} mb={1} color="#919EAB">
-              Friendly name (comment)
+              Friendly name:
             </Typography>
-            <TextField
-              fullWidth
-              inputProps={{
-                autoComplete: 'off',
-              }}
-              name="comment"
-              label="Comment"
-              placeholder="MY_KEY"
-            />
-          </li>
+            <Typography variant="subtitle2" mb={1}>
+              {apiKeyName}
+            </Typography>
+          </>
           {/* <Divider sx={{ margin: '15px 0' }} /> */}
-          <li>
-            <Typography mb={2} mt={4} fontWeight="600">
-              Set expiration
+          <>
+            <Typography variant="subtitle2" mt={2} mb={1} color="#919EAB">
+              Secret:
             </Typography>
-            <FormControl>
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="never"
-                name="radio-buttons-group"
+            <Box px={2} py={4} borderRadius="8px" position="relative" bgcolor="black">
+              <Typography>{_mock.id(4)}</Typography>
+              <IconButton
+                sx={{
+                  position: 'absolute',
+                  top: '5px',
+                  right: '5px',
+                  // color: isCopied ? 'green' : undefined,
+                }}
+                onClick={() => {
+                  if (!isCopied) {
+                    setCopied();
+                  }
+                }}
               >
-                <FormControlLabel value="never" control={<Radio />} label="Never" />
-                <FormControlLabel value="duration" control={<Radio />} label="Duration" />
-                <FormControlLabel value="date" control={<Radio />} label="Date" />
-              </RadioGroup>
-            </FormControl>
-          </li>
-        </ol>
+                <Iconify
+                  color={isCopied ? 'green' : undefined}
+                  icon={isCopied ? 'lets-icons:check-fill' : 'solar:copy-outline'}
+                />
+              </IconButton>
+            </Box>
+          </>
+        </>
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" color="error" onClick={onClose}>

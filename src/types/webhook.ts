@@ -9,4 +9,5 @@ export type IWebhookItem = {
     key: string;
     value: string;
   }[];
+  requestsPerMinute: number;
 };

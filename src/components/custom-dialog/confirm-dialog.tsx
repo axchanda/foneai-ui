@@ -14,6 +14,7 @@ export function ConfirmDialog({
   action,
   open,
   onClose,
+  closeText = 'Cancel',
   ...other
 }: ConfirmDialogProps) {
   return (
@@ -26,7 +27,7 @@ export function ConfirmDialog({
         {action}
 
         <Button variant="outlined" color="inherit" onClick={onClose}>
-          Cancel
+          {closeText}
         </Button>
       </DialogActions>
     </Dialog>
