@@ -46,7 +46,7 @@ export const NewBotSchema = zod.object({
 
 type Props = {
   currentBot?: IBotType;
-  isUsed: boolean;
+  isUsed?: boolean;
 };
 
 export function BotNewEditForm({ currentBot, isUsed }: Props) {
