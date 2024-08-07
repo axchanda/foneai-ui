@@ -83,20 +83,21 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
         <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
           {[
             {
-              label: bot.language.toLowerCase(),
-              icon: <Iconify width={16} icon="cil:speech" sx={{ flexShrink: 0 }} />,
+              // label: the first character of the bot's language is capitalized, the rest are lowercase
+              label: bot.language.charAt(0).toUpperCase() + bot.language.slice(1).toLowerCase(),
+              icon: <Iconify width={16} icon="ion:language" sx={{ flexShrink: 0 }} />,
             },
             {
               label: bot.timezone,
-              icon: <Iconify width={16} icon="solar:clock-circle-bold" sx={{ flexShrink: 0 }} />,
+              icon: <Iconify width={16} icon="mingcute:clock-line" sx={{ flexShrink: 0 }} />,
             },
             {
               label: bot.interruptable ? 'Interruptable' : 'Non-interruptable',
-              icon: <Iconify width={16} icon="solar:wad-of-money-bold" sx={{ flexShrink: 0 }} />,
+              icon: <Iconify width={16} icon="icon-park-outline:link-interrupt" sx={{ flexShrink: 0 }} />,
             },
             {
-              label: 'Joanna',
-              icon: <Iconify width={16} icon="solar:user-rounded-bold" sx={{ flexShrink: 0 }} />,
+              label: bot.voice.voiceId,
+              icon: <Iconify width={16} icon="iconoir:voice-circle" sx={{ flexShrink: 0 }} />,
             },
           ].map((item) => (
             <Stack

@@ -52,7 +52,7 @@ type Props = {
 export function BotNewEditForm({ currentBot, isUsed }: Props) {
   const router = useRouter();
   const alertDialog = useBoolean();
-
+console.log('currentBot', currentBot);
   const defaultValues = useMemo(
     () => ({
       botName: currentBot?.name || '',
@@ -61,7 +61,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
       voice: currentBot?.voice?.voiceId || 'Joanna',
       interruptable: currentBot?.interruptable || false,
       endpointing: currentBot?.endpointing || 10,
-      timezone: currentBot?.timezone || 'GMT-05:00',
+      timezone: currentBot?.timezone || 'UTC-05:00',
       daylightSavings: currentBot?.daylightSavings || false,
     }),
     [currentBot]

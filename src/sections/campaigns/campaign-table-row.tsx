@@ -41,7 +41,7 @@ export function CampaignTableRow({
   const popover = usePopover();
 
   const quickEdit = useBoolean();
-  const [isCopied, setCopied] = useClipboard(row._id, {
+  const [isCopied, setCopied] = useClipboard(row.campaignId, {
     successDuration: 3000,
   });
 
