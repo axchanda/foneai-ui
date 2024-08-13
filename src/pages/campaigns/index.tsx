@@ -54,7 +54,7 @@ const TABLE_HEAD = [
 
 // ----------------------------------------------------------------------
 
-export default function UserListView() {
+export default function CampaignListView() {
   const [loaded, setLoaded] = useState(false);
   const [campaigns, setCampaigns] = useState<ICampaignType[]>([]);
   const [bots, setBots] = useState<IBotType[]>([]);
@@ -249,7 +249,7 @@ export default function UserListView() {
         title="Delete"
         content={
           <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
+            Are you sure want to delete the campaign <strong> {table.selected.length} </strong> ?
           </>
         }
         action={
@@ -277,9 +277,9 @@ type ApplyFilterProps = {
   comparator: (a: any, b: any) => number;
 };
 
-function applyFilter({ inputData, comparator, filters }: ApplyFilterProps) {
+function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) {
   const { id, campaignName } = filters;
-
+  console.log(inputData);
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {

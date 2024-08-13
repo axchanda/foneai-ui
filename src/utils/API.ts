@@ -1,8 +1,8 @@
 import axios from 'axios';
+import { CONFIG } from 'src/config-global';
 
 const API = axios.create({
-  // baseURL: 'http://localhost:4000',
-  baseURL: 'https://bbxaulogg4cfrdzpheaislkkfe0wafen.lambda-url.us-east-2.on.aws'
+  baseURL: CONFIG.backendURL
 });
 
 API.interceptors.request.use(

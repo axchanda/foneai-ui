@@ -101,7 +101,7 @@ export function OverviewAppView() {
               ],
             }}
           /> */}
-          <MinutesUsed total={120} chart={{ series: 76 }} />
+          <MinutesUsed total={120} chart={{ series: 46 }} />
         </Grid>
 
         <Grid xs={12} md={6} lg={8}>

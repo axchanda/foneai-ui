@@ -47,7 +47,7 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
       bots: IBotType[];
       count: number;
     }>('/bots');
-    const botOptions = data.bots.map((bot) => ({ label: bot.name, value: bot._id }));
+    const botOptions = data.bots.map((bot) => ({ label: bot.botName, value: bot._id }));
     setBots(botOptions);
     setLoaded(true);
   }, []);

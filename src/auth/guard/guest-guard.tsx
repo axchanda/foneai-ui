@@ -28,8 +28,7 @@ export function GuestGuard({ children }: Props) {
 
   const checkForBackendAvailability = useCallback(async () => {
     try {
-      // await axios.get('http://localhost:4000/isAlive');
-      await axios.get('https://bbxaulogg4cfrdzpheaislkkfe0wafen.lambda-url.us-east-2.on.aws/isAlive');
+      await axios.get(`${CONFIG.backendURL}/isAlive`);
       return true;
     } catch (error) {
       return false;

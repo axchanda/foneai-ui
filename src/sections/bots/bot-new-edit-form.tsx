@@ -1,9 +1,8 @@
 /* eslint-disable spaced-comment */
-import { z as zod } from 'zod';
-import { useMemo, useEffect } from 'react';
+import { z, z as zod } from 'zod';
+import { useMemo, useEffect, useState, useCallback } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -14,7 +13,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
-
+import { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import API from 'src/utils/API';
@@ -23,24 +22,26 @@ import { Button } from '@mui/material';
 import { deleteBot } from 'src/utils/api/bots';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { Grid } from '@mui/material';
 
 // ----------------------------------------------------------------------
-
-const voices = {
-  English: ['Joanna', 'Mark', 'Joe'],
-  Spanish: ['Manuel', 'Marco', 'Andrea'],
-};
+const voiceIDs = ['Joanna', 'Joey', 'Justin', 'Raveena'];
 
 export type NewBotSchemaType = zod.infer<typeof NewBotSchema>;
 
+
 export const NewBotSchema = zod.object({
   botName: zod.string().min(1, { message: 'Bot name is required!' }),
-  promptInstructions: zod.string(),
-  language: zod.enum(['English', 'Spanish'], { required_error: 'Language is required!' }),
-  voice: zod.string().min(1, { message: 'Voice is required!' }),
-  interruptable: zod.boolean(),
-  endpointing: zod.number().min(0, { message: 'Endpointing must be a positive number!' }),
-  timezone: zod.string().min(1, { message: 'Timezone is required!' }),
+  botIntroduction: zod.string().min(1, { message: 'Bot Introduction is required!' }),
+  botInstructions: zod.string(),
+  botVoiceId: zod.string().min(1, { message: 'Voice ID is required!' }),
+  botIsInterruptable: zod.boolean(),
+  botKnowledgeBase: zod.string(),
+  endpointing: zod.number()
+    .min(0, { message: 'Endpointing must be a positive number!' })
+    .max(3000, { message: 'Endpointing must be less than 3000!' })
+    .refine((value) => value % 1 === 0, { message: 'Endpointing must be an integer!' }),
+  botTimezone: zod.string().min(1, { message: 'Bot Timezone is required!' }),
   daylightSavings: zod.boolean(),
 });
 
@@ -52,21 +53,21 @@ type Props = {
 export function BotNewEditForm({ currentBot, isUsed }: Props) {
   const router = useRouter();
   const alertDialog = useBoolean();
-console.log('currentBot', currentBot);
   const defaultValues = useMemo(
     () => ({
-      botName: currentBot?.name || '',
-      promptInstructions: currentBot?.promptInstructions || '',
-      language: currentBot?.language || 'English',
-      voice: currentBot?.voice?.voiceId || 'Joanna',
-      interruptable: currentBot?.interruptable || false,
-      endpointing: currentBot?.endpointing || 10,
-      timezone: currentBot?.timezone || 'UTC-05:00',
+      botName: currentBot?.botName || '',
+      botIntroduction: currentBot?.botIntroduction || '',
+      botInstructions: currentBot?.botInstructions || '',
+      botLanguage: currentBot?.botLanguage || 'en',
+      botVoiceId: currentBot?.botVoiceId || 'Joanna',
+      botIsInterruptable: currentBot?.botIsInterruptable || false,
+      endpointing: currentBot?.endpointing || 20,
+      botKnowledgeBase: currentBot?.botKnowledgeBase || '',
+      botTimezone: currentBot?.botTimezone || 'UTC-05:00',
       daylightSavings: currentBot?.daylightSavings || false,
     }),
     [currentBot]
   );
-
   const methods = useForm<NewBotSchemaType>({
     mode: 'all',
     resolver: zodResolver(NewBotSchema),
@@ -85,6 +86,19 @@ console.log('currentBot', currentBot);
 
   const values = watch();
 
+  const [loaded, setLoaded] = useState(false);
+  const [kbs, setKbs] = useState<{label: string, value: string}[]>([]);
+
+  const getKbs = useCallback(async () => {
+    const { data } = await API.get<{
+      knowledgeBases: IKnowledgeBaseItem[];
+      count: number;
+    }>('/knowledgeBases');
+    const kbOptions = data.knowledgeBases.map((kb) => ({ key: kb._id, label: kb.knowledgeBaseName, value: kb._id }));
+    setKbs(kbOptions);
+    setLoaded(true);
+  }, []);
+
   useEffect(() => {
     if (currentBot) {
       //@ts-ignore
@@ -92,25 +106,33 @@ console.log('currentBot', currentBot);
     }
   }, [currentBot, defaultValues, reset]);
 
+  useEffect(() => {
+    getKbs();
+  }, [getKbs]);
+
+  // values.botLanguage = values.botLanguage || 'en';
+
   const onSubmit = handleSubmit(async (data) => {
+    console.log(data);
     try {
+      console.log(data);
       const url = currentBot ? `/bots/${currentBot._id}` : '/bots/create';
       const method = currentBot ? API.put : API.post;
       await method(url, {
-        name: data.botName,
-        promptInstructions: data.promptInstructions,
-        language: data.language,
-        voiceProvider: '',
-        voiceId: data.voice,
-        interruptable: data.interruptable,
+        botName: data.botName,
+        botIntroduction: data.botIntroduction,
+        botInstructions: data.botInstructions,
+        botLanguage: 'en',
+        botVoiceId: data.botVoiceId,
+        botKnowledgeBase: data.botKnowledgeBase,
+        botIsInterruptable: data.botIsInterruptable,
         endpointing: data.endpointing,
-        timezone: data.timezone,
-        daylightSavings: data.daylightSavings,
+        botTimezone: data.botTimezone,
+        daylightSavings: data.daylightSavings
       });
       reset();
       toast.success(currentBot ? 'Update success!' : 'Create success!');
       router.push('/bots');
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
@@ -118,7 +140,7 @@ console.log('currentBot', currentBot);
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" subheader="Bot name, prompt instructions..." sx={{ mb: 3 }} />
+      <CardHeader title="Details" subheader="Bot name, introduction and prompt instructions" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -129,12 +151,19 @@ console.log('currentBot', currentBot);
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Prompt Instructions</Typography>
+          <Typography variant="subtitle2">
+            Introduction Line
+          </Typography>
+          <Field.Text name="botIntroduction" placeholder="Hi, I'm an AI assistant that would like to ..." />
+        </Stack>
+
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle2">Bot Instructions</Typography>
           <Field.TextareaWithMaximize
             // height={200}
             // showToolbar={false}
             // rows={6}
-            name="promptInstructions"
+            name="botInstructions"
             placeholder="Enter detailed instructions..."
           />
         </Stack>
@@ -146,7 +175,7 @@ console.log('currentBot', currentBot);
     <Card>
       <CardHeader
         title="Speech settings"
-        subheader="Additional functions and attributes..."
+        subheader="Speech functions and attributes"
         sx={{ mb: 3 }}
       />
 
@@ -157,43 +186,65 @@ console.log('currentBot', currentBot);
           <Typography variant="subtitle2">Language</Typography>
           <Field.RadioGroup
             row
+
             onChange={(e) => {
-              setValue('language', e.target.value as 'English' | 'Spanish');
-              resetField('voice');
+              setValue('botLanguage', e.target.value as 'en' | 'es');
+              resetField('botVoice.provider');
+              resetField('botVoice.voiceId');
               // voiceRef.current?.focus();
             }}
             name="language"
             options={[
               {
                 label: 'English',
-                value: 'English',
-              },
-              {
-                label: 'Spanish',
-                value: 'Spanish',
-              },
+                value: 'en',
+              }
             ]}
             sx={{ gap: 4 }}
           />
         </Stack> */}
-        <Stack spacing={1.5}>
+        <Stack spacing={1.5} >
           <Typography variant="subtitle2">Voice</Typography>
-          <Field.Autocomplete
-            name="voice"
-            options={voices[values.language || 'English']}
-            placeholder="Select a voice"
-            defaultValue=""
-          />
+          <Stack spacing={1.5} direction={'row'}
+            sx={{ gap: 4, width: '100%' }}
+          >
+
+            <Grid container spacing={1.5}>
+              {/* <Grid item xs={12} sm={4}>
+                <Field.Autocomplete
+                  name="voiceProvider"
+                  label='Provider'
+                  options={
+                    voiceProviders[values.botLanguage || 'en']
+                  }
+                  placeholder="Select a voice provider"
+                  defaultValue="AWS"
+                  fullWidth
+                />
+              </Grid> */}
+              <Grid item xs={12} sm={8}>
+                <Field.Autocomplete
+                  name="botVoiceId"
+                  // label='Voice ID'
+                  options={voiceIDs}
+                  
+                  placeholder="Select a voice ID"
+                  defaultValue=""
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
+          </Stack>
         </Stack>
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Interruptable</Typography>
           <Field.Switch
-            name="interruptable"
+            name="botIsInterruptable"
             label={
-              values.interruptable
-                ? 'The speech get interrupted'
-                : 'The speech does not get interrupted'
+              values.botIsInterruptable
+                ? 'The bot stops speaking when the user interrupts the bot' 
+                : 'The bot continues to speak even when the user interrupts the bot'
             }
           />
         </Stack>
@@ -204,6 +255,12 @@ console.log('currentBot', currentBot);
             name="endpointing"
             placeholder="Enter endpointing value"
             type="number"
+            sx={{
+              width: {
+                xs: '100%',
+                sm: 200,
+              },
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -216,6 +273,39 @@ console.log('currentBot', currentBot);
       </Stack>
     </Card>
   );
+
+  const renderKnowledgeBase = (
+    <Card>
+      <CardHeader
+        title="Knowledge Base"
+        subheader="Knowledge base settings"
+        sx={{ mb: 3 }}
+      />
+
+      <Divider />
+
+      <Stack spacing={3} sx={{ p: 3 }}>
+        
+        {/* when the switch is active then a select should be present with 'x', 'y', 'z' as options */}
+        <Stack spacing={1.5}>
+          <Field.Autocomplete
+            name="botKnowledgeBase"
+            autoHighlight
+            options={kbs.map((option) => option)}
+            getOptionLabel={(option) => option.label || ''}
+            renderOption={(props, option) => (
+              <li {...props} key={option.value}>
+                {option.label}
+              </li>
+            )}
+          />
+        </Stack>
+
+      </Stack>
+    </Card>
+  );
+
+
   const renderMisc = (
     <Card>
       <CardHeader title="Misc." subheader="Miscellaneous settings" sx={{ mb: 3 }} />
@@ -225,7 +315,8 @@ console.log('currentBot', currentBot);
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Timezone</Typography>
-          <Field.TimezoneSelect name="timezone" placeholder="Select a timezone" />
+          <Field.TimezoneSelect name="botTimezone"
+           placeholder="Select a timezone" />
         </Stack>
 
         <Stack spacing={1.5}>
@@ -236,8 +327,21 @@ console.log('currentBot', currentBot);
     </Card>
   );
 
-  const renderActions = (
-    <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap">
+  // const renderActions = ();
+
+  return (
+    <>
+      <Form methods={methods} onSubmit={onSubmit}>
+        <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 880 } }}>
+          {renderDetails}
+
+          {renderProperties}
+          
+          {renderKnowledgeBase}
+
+          {renderMisc}
+
+          <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap">
       {/* <FormControlLabel
         control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
         label="Publish"
@@ -268,25 +372,15 @@ console.log('currentBot', currentBot);
         loading={isSubmitting}
         sx={{ ml: 2 }}
       >
-        {!currentBot ? 'Create Bot' : 'Update Bot'}
+        {/* {!currentBot ? 'Create Bot' : 'Update Bot'} */}
+        Ji
       </LoadingButton>
     </Box>
-  );
-
-  return (
-    <>
-      <Form methods={methods} onSubmit={onSubmit}>
-        <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 880 } }}>
-          {renderDetails}
-
-          {renderProperties}
-          {renderMisc}
-          {renderActions}
         </Stack>
       </Form>
       <ConfirmDialog
         title="Unable to delete bot"
-        content="This bot is currently being used in a campaign. Please remove it from the campaign before deleting."
+        content="This bot is currently being used in some campaign(s). Please remove it from the linked campaign(s) before deleting."
         open={alertDialog.value}
         action={<></>}
         onClose={() => {

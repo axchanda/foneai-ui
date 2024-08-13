@@ -32,9 +32,8 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 
 // ----------------------------------------------------------------------
 
-// const backendUrl = 'http://localhost:4000';
 
-const backendUrl = 'https://bbxaulogg4cfrdzpheaislkkfe0wafen.lambda-url.us-east-2.on.aws';
+const backendUrl = CONFIG.backendURL;
 
 export const endpoints = {
   chat: '/api/chat',

@@ -1,13 +1,18 @@
 export type IWebhookItem = {
   _id: string;
-  name: string;
-  description: string;
-  restMethod: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  timeout: number;
-  URL: string;
-  headers: {
+  webhookName: string;
+  webhookDescription?: string;
+  webhookMethod: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  webhookTimeout?: number;
+  webhookURI: string;
+  headers?: {
     key: string;
     value: string;
   }[];
-  requestsPerMinute: number;
+  webhookRequestsPerMinute?: number;
+};
+
+export type IWebhookFilters = {
+  id: string;
+  webhookName: string;
 };

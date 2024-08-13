@@ -63,10 +63,10 @@ export function CampaignTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.campaignName}</TableCell>
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Link color="inherit" onClick={onEditRow} sx={{ cursor: 'pointer' }}>
+            <Typography>
               {row.campaignId}
-            </Link>
-            <IconButton
+            </Typography>
+            <IconButton sx={{ cursor: 'pointer' }}
               onClick={() => {
                 if (!isCopied) {
                   setCopied();

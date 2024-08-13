@@ -1,5 +1,3 @@
-import type { IUserItem } from 'src/types/user';
-
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
@@ -13,34 +11,29 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  user?: IUserItem;
-};
+// type Props = {
+//   user?: IUserItem;
+// };
 
-export default function CampaignEdit({ user: currentUser }: Props) {
+export default function CampaignEdit() {
   const [loaded, setLoaded] = useState(false);
   const { id } = useParams();
   const [campaign, setCampaign] = useState<ICampaignType | null>(null);
 
-  const getCampaigns = useCallback(async () => {
+  const getCampaignById = useCallback(async () => {
     const { data } = await API.get<ICampaignType>('/campaigns/' + id);
     setCampaign(data);
     setLoaded(true);
   }, [id]);
 
   useEffect(() => {
-    getCampaigns();
-  }, [getCampaigns]);
+    getCampaignById();
+  }, [getCampaignById]);
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
         heading="Edit Campaign"
-        // links={[
-        //   { name: 'Dashboard', href: paths.dashboard.root },
-        //   { name: 'User', href: paths.dashboard.user.root },
-        //   { name: currentUser?.name },
-        // ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
       {loaded ? <CampaignNewEditForm currentCampaign={campaign || undefined} /> : <LoadingScreen />}

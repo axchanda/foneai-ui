@@ -227,7 +227,7 @@ const TextareaWithMaximize: React.FC<Props> = ({
   const maximize = useBoolean();
   const { control } = useFormContext();
 
-  const [numberOfRows, setNumberOfRows] = React.useState(7);
+  const [numberOfRows, setNumberOfRows] = React.useState(10);
 
   useEffect(() => {
     const handleResize = () => {
@@ -236,7 +236,7 @@ const TextareaWithMaximize: React.FC<Props> = ({
         const rowHeight = 24;
         setNumberOfRows(Math.floor(availableHeight / rowHeight));
       } else {
-        setNumberOfRows(7);
+        setNumberOfRows(10);
       }
     };
 

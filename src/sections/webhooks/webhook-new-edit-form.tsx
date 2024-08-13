@@ -17,26 +17,27 @@ import { Button, MenuItem, Typography } from '@mui/material';
 import type { IWebhookItem } from 'src/types/webhook';
 import API from 'src/utils/API';
 
-// ----------------------------------------------------------------------
-
-const voices = {
-  English: ['Joanna', 'Mark', 'Joe'],
-  Spanish: ['Manuel', 'Marco', 'Andrea'],
-};
-
 export type NewWebhookSchemaType = zod.infer<typeof NewWebhookSchema>;
 
 export const NewWebhookSchema = zod.object({
-  name: zod.string().min(1, { message: 'Webhook name is required!' }),
-  url: zod.string().min(1, { message: 'url is required!' }),
-  description: zod.string(),
-  restMethod: zod.enum(['GET', 'POST', 'PUT', 'DELETE'], {
-    required_error: 'Rest method is required!',
+  webhookName: zod.string().min(1, { message: 'Webhook Name is required!' }),
+  webhookURI: zod.string().min(1, { message: 'Webhook URI is required!' }),
+  webhookDescription: zod.string(),
+  webhookMethod: zod.enum(['GET', 'POST', 'PUT', 'DELETE'], {
+    required_error: 'Webhook method is required!',
   }),
-  timeout: zod.number().min(1, { message: 'timeout is required!' }),
-  requestsPerMinute: zod
+  webhookTimeout: zod.number()
+    .min(1, { message: 'timeout is required!' })
+    .refine((value) => Number.isInteger(value), {
+      message: 'Timeout must be a whole number!',
+    }),
+  webhookRequestsPerMinute: zod
     .number()
-    .min(1, { message: 'Requests per minute must be a positive number!' }),
+    .min(1, { message: 'Requests per minute must be a positive number!' })
+    .refine((value) => Number.isInteger(value), {
+      message: 'Requests per minute must be a whole number!',
+    }),
+  // TODO: HEADERS 
 });
 
 type Props = {
@@ -57,12 +58,12 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      name: currentWebhook?.name || '',
-      url: currentWebhook?.URL || '',
-      description: currentWebhook?.description || '',
-      restMethod: currentWebhook?.restMethod || 'GET',
-      timeout: currentWebhook?.timeout || 0,
-      requestsPerMinute: currentWebhook?.requestsPerMinute || 0,
+      webhookName: currentWebhook?.webhookName || '',
+      webhookURI: currentWebhook?.webhookURI || '',
+      webhookDescription: currentWebhook?.webhookDescription || '',
+      webhookMethod: currentWebhook?.webhookMethod || 'GET',
+      webhookTimeout: currentWebhook?.webhookTimeout || 60,
+      webhookRequestsPerMinute: currentWebhook?.webhookRequestsPerMinute || 10,
     }),
     [currentWebhook]
   );
@@ -92,18 +93,17 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
       const url = currentWebhook ? `/webhooks/${currentWebhook._id}` : '/webhooks/create';
       const method = currentWebhook ? API.put : API.post;
       await method(url, {
-        name: data.name,
-        URL: data.url,
-        description: data.description,
-        restMethod: data.restMethod,
-        timeout: data.timeout,
-        requestsPerMinute: data.requestsPerMinute,
-        headers,
+        webhookName: data.webhookName,
+        webhookURI: data.webhookURI,
+        webhookDescription: data.webhookDescription,
+        webhookMethod: data.webhookMethod,
+        webhookTimeout: data.webhookTimeout,
+        webhookRequestsPerMinute: data.webhookRequestsPerMinute,
+        // headers,
       });
       reset();
-      toast.success(currentWebhook ? 'Update success!' : 'Create success!');
+      toast.success(currentWebhook ? 'Update Webhook success!' : 'Create Webhook success!');
       router.push('/webhooks');
-      console.info('DATA', data);
     } catch (error) {
       console.error(error);
     }
@@ -114,47 +114,45 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Webhook Name</Typography>
-          <Field.Text label="Name" name="name" />
+          <Field.Text label="Name" name="webhookName" />
         </Stack>
 
-        <Box display="grid" gridTemplateColumns="150px 1fr" gap={2}>
-          <Stack
-            sx={{
-              alignSelf: 'start',
-            }}
-            spacing={1.5}
+          <Stack sx={{ px: 1 }}
           >
             <Typography variant="subtitle2">Method</Typography>
 
-            <Field.Select name="restMethod">
-              <MenuItem value="GET">GET</MenuItem>
-              <MenuItem value="POST">POST</MenuItem>
-              <MenuItem value="PUT">PUT</MenuItem>
-              <MenuItem value="DELETE">DELETE</MenuItem>
-            </Field.Select>
+            <Field.RadioGroup name="webhookMethod"
+              sx={{ flexDirection: 'row' }} // Add this to make it horizontal
+              options={[
+                { label: 'GET', value: 'GET' },
+                { label: 'POST', value: 'POST' },
+                { label: 'PUT', value: 'PUT' },
+                { label: 'DELETE', value: 'DELETE' }
+              ]}
+            >
+            </Field.RadioGroup>
           </Stack>
           <Stack spacing={1.5}>
-            <Typography variant="subtitle2">Webhook URL</Typography>
+            <Typography variant="subtitle2">Webhook URI</Typography>
 
-            <Field.Text label="URL" name="url" />
+            <Field.Text label="Webhook URI" name="webhookURI" />
           </Stack>
-        </Box>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Webhook Description</Typography>
 
-          <Field.Text fullWidth label="description" multiline rows={4} name="description" />
+          <Field.Text fullWidth label="description" multiline rows={4} name="webhookDescription" />
         </Stack>
         <Stack spacing={4} direction="row">
           <Stack flex={1} spacing={1.5}>
             <Typography variant="subtitle2">Webhook Timeout</Typography>
-            <Field.Text type="number" label="Timeout" name="timeout" />
+            <Field.Text type="number" label="Timeout" name="webhookTimeout" />
           </Stack>
           <Stack flex={1} spacing={1.5}>
             <Typography variant="subtitle2">Requests Per Minute</Typography>
-            <Field.Text type="number" label="RPS" name="requestsPerMinute" />
+            <Field.Text type="number" label="RPS" name="webhookRequestsPerMinute" />
           </Stack>
         </Stack>
-        <Stack spacing={1.5}>
+        {/* <Stack spacing={1.5}>
           <Typography variant="subtitle2">Headers</Typography>
           <Stack gap={2.5}>
             <Stack gap={4} direction="row">
@@ -184,50 +182,34 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
                   }
                 }}
               />
-              {/* <IconButton disabled={Boolean(key) || Boolean(value)}>
+              <IconButton disabled={Boolean(key) || Boolean(value)}>
                 <Iconify icon="gg:add" />
-              </IconButton> */}
+              </IconButton> 
             </Stack>
             {headers.map((header, index) => (
               <Stack gap={4} direction="row" key={index}>
                 <Field.Text name="" value={header.key} disabled label="Key" />
                 <Field.Text name="" label="Value" value={header.value} disabled />
-                {/* <div style={{ minWidth: '36px', width: '36px', height: '1px' }} /> */}
               </Stack>
             ))}
           </Stack>
-        </Stack>
+        </Stack> */}
       </Stack>
     </Card>
   );
 
   const renderActions = (
     <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap">
-      {/* <FormControlLabel
-        control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
-        label="Publish"
-        sx={{ flexGrow: 1, pl: 3 }}
-      /> */}
-      {currentWebhook && (
-        <Button
-          // onClick={async () => {
-          //   await deleteBot(currentBot._id, () => {
-          //     router.push('/bots');
-          //   });
-          // }}
-          variant="contained"
-          size="large"
-          color="error"
-        >
-          Delete bot
-        </Button>
-      )}
       <LoadingButton
         type="submit"
         variant="contained"
         size="large"
         loading={isSubmitting}
-        sx={{ ml: 2 }}
+        sx={{ 
+          mr: 2,
+          // make the button to appear on the right side
+          marginLeft: 'auto',
+        }}
       >
         {!currentWebhook ? 'Create Webhook' : 'Update Webhook'}
       </LoadingButton>

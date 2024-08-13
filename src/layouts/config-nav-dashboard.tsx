@@ -4,23 +4,26 @@ import { CONFIG } from 'src/config-global';
 
 import { SvgColor } from 'src/components/svg-color';
 
+
+import { Iconify } from 'src/components/iconify';
+
 // ----------------------------------------------------------------------
 
 const icon = (name: string) => (
-  <SvgColor src={`${CONFIG.site.basePath}/assets/icons/navbar/${name}.svg`} />
+  <Iconify width={16} icon={name} color={'primary'} sx={{ flexShrink: 0 }} />
 );
 
 const ICONS = {
-  job: icon('ic-job'),
-  blog: icon('ic-blog'),
-  chat: icon('ic-chat'),
-  mail: icon('ic-mail'),
-  user: icon('ic-user'),
-  file: icon('ic-file'),
-  lock: icon('ic-lock'),
-  tour: icon('ic-tour'),
-  order: icon('ic-order'),
-  label: icon('ic-label'),
+  dashboard: icon('ic-dashboard'),
+  bots: icon('file-icons:robots'),
+  users: icon('heroicons:users-solid'),
+  campaigns: icon('ic:round-campaign'),
+  invoices: icon('hugeicons:invoice'),
+  account: icon('material-symbols:account-circle'),
+  knowledgeBase: icon('simple-icons:knowledgebase'),
+  webhooks: icon('ph:webhooks-logo'),
+  functions: icon('pajamas:quick-actions'),
+  setup: icon('mdi:spanner'),
   blank: icon('ic-blank'),
   kanban: icon('ic-kanban'),
   folder: icon('ic-folder'),
@@ -35,45 +38,65 @@ const ICONS = {
   menuItem: icon('ic-menu-item'),
   ecommerce: icon('ic-ecommerce'),
   analytics: icon('ic-analytics'),
-  dashboard: icon('ic-dashboard'),
   parameter: icon('ic-parameter'),
 };
 
 // ----------------------------------------------------------------------
 
 export const navData = [
-  /**
-   * Overview
-   */
   {
-    subheader: '',
+    subheader: 'Dashboard',
     items: [
-      { title: 'Dashboard', path: paths.dashboard.root, icon: ICONS.dashboard },
+      {
+        title: 'Dashboard',
+        path: '/dashboard',
+        icon: ICONS.dashboard,
+      },
+    ]
+  },
+  {
+    subheader: 'Voice bot',
+    items: [
       {
         title: 'Bots',
         path: '/bots',
-        icon: ICONS.course,
-      },
-      {
-        title: 'Users',
-        path: '/users',
-        icon: ICONS.user,
-      },
-      {
-        title: 'Invoices',
-        path: '/invoices',
-        icon: ICONS.invoice,
+        icon: ICONS.bots,
       },
       {
         title: 'Campaigns',
         path: '/campaigns',
-        icon: ICONS.kanban,
+        icon: ICONS.campaigns,
       },
       {
-        title: "Account",
-        "path": "/account",
-        icon: ICONS.tour
+        title: "Knowledge Bases",
+        "path": "/knowledge-bases",
+        icon: ICONS.knowledgeBase
+      },
+      {
+        title: 'Webhooks',
+        path: '/webhooks',
+        icon: ICONS.webhooks,
+      },
+      {
+        title: 'Functions',
+        path: '/functions',
+        icon: ICONS.functions,
       }
-    ],
+    ]
   },
+  {
+    subheader: 'Management',
+    items: [
+      {
+        title: 'Users',
+        path: '/users',
+        icon: ICONS.users,
+      },
+      {
+        title: 'Setup',
+        path: '/setup',
+        icon: ICONS.setup,
+      }
+    ]
+  }
 ];

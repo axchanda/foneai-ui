@@ -80,7 +80,7 @@ export function BotList({ bots, setBots, usedBots }: Props) {
       )}
       <ConfirmDialog
         title="Unable to delete bot"
-        content="This bot is currently being used in a campaign. Please remove it from the campaign before deleting."
+        content="This bot is currently being used in some campaign(s). Please remove it from the linked campaign(s) before deleting."
         open={alertDialog.value}
         action={<></>}
         onClose={() => {

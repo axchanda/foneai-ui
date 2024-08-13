@@ -13,6 +13,7 @@ import { campaignsRoutes } from './campaigns';
 import { mainRoutes } from './main';
 import { setupRoutes } from './setup';
 import { webhooksRoutes } from './webhooks';
+import { knowledgeBasesRoutes } from './knowledge-base';
 
 export function Router() {
   return useRoutes([
@@ -51,6 +52,8 @@ export function Router() {
     ...setupRoutes,
 
     ...webhooksRoutes,
+
+    ...knowledgeBasesRoutes,
     // No match
     { path: '*', element: <Navigate to="/page-not-found" replace /> },
   ]);

@@ -12,6 +12,7 @@ import DialogContent from '@mui/material/DialogContent';
 
 import { Upload } from 'src/components/upload';
 import { Iconify } from 'src/components/iconify';
+import { UploadSinglePDF } from 'src/components/upload/upload-single-pdf';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +26,7 @@ type Props = DialogProps & {
   onChangeFolderName?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export function FileManagerNewFolderDialog({
+export function FileManagerDialog({
   open,
   onClose,
   onCreate,
@@ -79,8 +80,7 @@ export function FileManagerNewFolderDialog({
           />
         )}
 
-{/* <Upload multiple value={files} onDrop={handleDrop} onRemove={handleRemoveFile} /> */}
-        <Upload multiple value={files} onDrop={handleDrop} onRemove={handleRemoveFile} />
+        <UploadSinglePDF multiple value={files} onDrop={handleDrop} onRemove={handleRemoveFile} />
       </DialogContent>
 
       <DialogActions>

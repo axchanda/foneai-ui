@@ -23,7 +23,7 @@ type Props = CardProps & {
 export function MinutesUsed({ total, chart, ...other }: Props) {
   const theme = useTheme();
 
-  const chartColors = chart.colors ?? [theme.palette.secondary.main, theme.palette.secondary.light];
+  const chartColors = chart.colors ?? [theme.palette.primary.main, theme.palette.primary.light];
 
   const chartOptions = useChart({
     chart: { sparkline: { enabled: true } },

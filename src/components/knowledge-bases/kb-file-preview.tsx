@@ -6,14 +6,14 @@ import { fData } from 'src/utils/format-number';
 
 import { varAlpha } from 'src/theme/styles';
 
-import { Iconify } from '../../iconify';
-import { fileData, FileThumbnail } from '../../file-thumbnail';
+import { Iconify } from '../iconify';
+import { fileData, FileThumbnail } from '../file-thumbnail';
 
-import type { MultiFilePreviewProps } from '../types';
+import type { KbFilePreviewProps } from './types';
 
 // ----------------------------------------------------------------------
 
-export function MultiFilePreview({
+export function KbFilePreview({
   sx,
   onEdit,
   onRemove,
@@ -21,8 +21,8 @@ export function MultiFilePreview({
   thumbnail,
   slotProps,
   firstNode,
-  files = [],
-}: MultiFilePreviewProps) {
+  fileNames = [],
+}: KbFilePreviewProps) {
   const renderFirstNode = firstNode && (
     <Box
       component="li"
@@ -64,34 +64,11 @@ export function MultiFilePreview({
     >
       {renderFirstNode}
 
-      {files.map((file) => {
-        const { name, size } = fileData(file);
-
-        if (thumbnail) {
-          return (
-            <Box component="li" key={name} sx={{ display: 'inline-flex' }}>
-              <FileThumbnail
-                tooltip
-                imageView
-                file={file}
-                onRemove={() => onRemove?.(file)}
-                sx={{
-                  width: 80,
-                  height: 80,
-                  border: (theme) =>
-                    `solid 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.16)}`,
-                }}
-                slotProps={{ icon: { width: 36, height: 36 } }}
-                {...slotProps?.thumbnail}
-              />
-            </Box>
-          );
-        }
-
+      {fileNames.map((fileName) => {
         return (
           <Box
             component="li"
-            key={name}
+            key={fileName}
             sx={{
               py: 1,
               pr: 1,
@@ -104,19 +81,10 @@ export function MultiFilePreview({
                 `solid 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.16)}`,
             }}
           >
-            <FileThumbnail file={file} {...slotProps?.thumbnail} />
+            <FileThumbnail file={fileName} {...slotProps?.thumbnail} />
 
-            <ListItemText
-              primary={name}
-              secondary={fData(size)}
-              secondaryTypographyProps={{ component: 'span', typography: 'caption' }}
-            />
+            <ListItemText primary={fileName} />
 
-            {onRemove && (
-              <IconButton size="small" onClick={() => onRemove(file)}>
-                <Iconify icon="clarity:edit-line"  width={26} />
-              </IconButton>
-            )}
             {onEdit && (
               <IconButton size="small" onClick={() => onEdit()}>
                 <Iconify icon="clarity:edit-line"  width={26} />

@@ -33,29 +33,27 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-// change all the campaign to webhook
-import type { IWebhookFilters, IWebhookItem } from 'src/types/webhook';
-import { WebhookTableRow } from 'src/sections/webhooks/webhook-table-row';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { deleteWebhook } from 'src/utils/api/webhooks';
+import { IKnowledgeBaseFilters, IKnowledgeBaseItem } from 'src/types/knowledge-base';
+import { deleteKnowledgeBase } from 'src/utils/api/knowledge-bases';
+import { KnowledgeBaseTableRow } from 'src/sections/knowledge-bases/knowledge-base-table-row';
+
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   // { id: 'checkbox', width: '' },
-  { id: 'webhookName', label: 'Webhook Name', width: 160 },
-  { id: 'webhookDescription', label: 'Description', width: 220 },
-  { id: 'webhookMethod', label: 'Method', width: 30 },
-  { id: 'webhookURI', label: 'URI', width: 250 },
+  { id: 'knowledgeBaseName', label: 'Knowledge Base Name', width: 200 },
+  { id: 'knowledgeBaseDescription', label: 'Description', width: 260 },
   { id: '', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function WebhookListView() {
+export default function KnowledgeBasesListView() {
   const [loaded, setLoaded] = useState(false);
-  const [webhooks, setWebhooks] = useState<IWebhookItem[]>([]);
+  const [knowledgeBases, setKnowledgeBases] = useState<IKnowledgeBaseItem[]>([]);
 
   const table = useTable();
 
@@ -63,9 +61,9 @@ export default function WebhookListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<IWebhookItem[]>([]);
+  const [tableData, setTableData] = useState<IKnowledgeBaseItem[]>([]);
 
-  const filters = useSetState<IWebhookFilters>({ id: '', webhookName: '' });
+  const filters = useSetState<IKnowledgeBaseFilters>({ id: '', knowledgeBaseName: '' });
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -75,13 +73,13 @@ export default function WebhookListView() {
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
-  const canReset = !!filters.state.id || filters.state.webhookName.length > 0;
+  const canReset = !!filters.state.id || filters.state.knowledgeBaseName.length > 0;
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleDeleteRow = useCallback(
     async (id: string) => {
-      await deleteWebhook(id, () => {
+      await deleteKnowledgeBase(id, () => {
         const deleteRow = tableData.filter((row) => row._id !== id);
         setTableData(deleteRow);
         table.onUpdatePageDeleteRow(dataInPage.length);
@@ -105,42 +103,42 @@ export default function WebhookListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(`/webhooks/${id}`);
+      router.push(`/knowledge-bases/${id}`);
     },
     [router]
   );
 
-  const getWebhooks = useCallback(async () => {
-    const webhookPromise =  API.get<{
-      webhooks: IWebhookItem[];
+  const getKnowledgeBases = useCallback(async () => {
+    const knowledgeBasesPromise =  API.get<{
+      knowledgeBases: IKnowledgeBaseItem[];
       count: number;
-    }>('/webhooks');
+    }>('/knowledgeBases');
 
-    const [{ data }] = await Promise.all([webhookPromise]);
+    const [{ data }] = await Promise.all([knowledgeBasesPromise]);
     
-    setWebhooks(data.webhooks);
-    setTableData(data.webhooks);
+    setKnowledgeBases(data.knowledgeBases);
+    setTableData(data.knowledgeBases);
     setLoaded(true);
   
   }, []);
 
   useEffect(() => {
-    getWebhooks();
-  }, [getWebhooks]);
+    getKnowledgeBases();
+  }, [getKnowledgeBases]);
 
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Webhooks"
+          heading="Knowledge Bases"
           action={
             <Button
               component={RouterLink}
-              href="/webhooks/create"
+              href="/knowledge-bases/create"
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New webhook
+              New Knowledge Base
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -200,7 +198,7 @@ export default function WebhookListView() {
                         table.page * table.rowsPerPage + table.rowsPerPage
                       )
                       .map((row) => (
-                        <WebhookTableRow
+                        <KnowledgeBaseTableRow
                           key={row._id}
                           row={row}
                           selected={table.selected.includes(row._id)}
@@ -242,7 +240,7 @@ export default function WebhookListView() {
         title="Delete"
         content={
           <>
-            Are you sure want to delete the webhook <strong> {table.selected.length} </strong> ?
+            Are you sure want to delete the knowledge Base <strong> {table.selected.length} </strong> ?
           </>
         }
         action={
@@ -265,14 +263,14 @@ export default function WebhookListView() {
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: IWebhookItem[];
-  filters: IWebhookFilters;
+  inputData: IKnowledgeBaseItem[];
+  filters: IKnowledgeBaseFilters;
   comparator: (a: any, b: any) => number;
 };
 
 function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) {
-  const { id, webhookName } = filters;
-  console.log(inputData);
+  const { id, knowledgeBaseName } = filters;
+  
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -285,7 +283,7 @@ function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) 
 
   if (id) {
     inputData = inputData.filter(
-      (webhook) => webhook._id.toLowerCase().indexOf(id.toLowerCase()) !== -1
+      (knowledgeBase) => knowledgeBase._id.toLowerCase().indexOf(id.toLowerCase()) !== -1
     );
   }
 
@@ -293,8 +291,8 @@ function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) 
   //     inputData = inputData.filter((user) => user.status === status);
   // }
 
-  if (webhookName.length) {
-    inputData = inputData.filter((webhook) => webhookName.includes(webhook.webhookName));
+  if (knowledgeBaseName.length) {
+    inputData = inputData.filter((knowledgeBase) => knowledgeBaseName.includes(knowledgeBase.knowledgeBaseName));
   }
 
   return inputData;

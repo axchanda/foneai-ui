@@ -1,17 +1,16 @@
 export type IBotType = {
   _id: string;
   username: string;
-  name: string;
-  language: 'ENGLISH' | 'SPANISH';
+  botName: string;
+  botIntroduction: string;
+  botLanguage: 'en' | 'es';
   endpointing: number;
   daylightSavings: boolean;
-  interruptable: boolean;
-  promptInstructions: string;
-  timezone: string;
+  botIsInterruptable: boolean;
+  botInstructions: string;
+  botTimezone: string;
+  botKnowledgeBase: string;
   createdAt: string;
   updatedAt: string;
-  voice: {
-    provider: string;
-    voiceId: string;
-  };
+  botVoiceId: string;
 };

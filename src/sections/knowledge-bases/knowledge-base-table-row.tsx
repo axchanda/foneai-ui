@@ -3,18 +3,18 @@ import React from 'react';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
-import type { IWebhookItem } from 'src/types/webhook';
+import type { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 
 type Props = {
-  row: IWebhookItem;
+  row: IKnowledgeBaseItem;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
 };
 
-export function WebhookTableRow({
+export function KnowledgeBaseTableRow({
   row,
   selected,
   onEditRow,
@@ -37,23 +37,8 @@ export function WebhookTableRow({
         <TableCell padding="checkbox">
           <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
         </TableCell>
-        <TableCell>{row.webhookName}</TableCell>
-        <TableCell>{row.webhookDescription}</TableCell>
-        <TableCell>
-          <Chip 
-            sx={{
-              backgroundColor: 'primary.light',
-            }}
-            size='small'
-            label={row.webhookMethod}
-          />
-          {/* {row.webhookMethod} */}
-        </TableCell>
-        <TableCell>{row.webhookURI}</TableCell>
-        {/* <TableCell>{row.timeout}</TableCell>
-        <TableCell>
-          <Label color="primary">{row.restMethod}</Label>
-        </TableCell> */}
+        <TableCell>{row.knowledgeBaseName}</TableCell>
+        <TableCell>{row.knowledgeBaseDescription}</TableCell>
         <TableCell align="right">
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -93,7 +78,7 @@ export function WebhookTableRow({
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Delete campaign"
-        content={`Are you sure want to delete the webhook: ${row.webhookName}?`}
+        content={`Are you sure want to delete the knowledgeBase: ${row.knowledgeBaseName}?`}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete

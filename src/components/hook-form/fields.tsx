@@ -10,7 +10,7 @@ import { RHFCountrySelect } from './rhf-country-select';
 import { RHFSwitch, RHFMultiSwitch } from './rhf-switch';
 import { RHFSelect, RHFMultiSelect } from './rhf-select';
 import { RHFCheckbox, RHFMultiCheckbox } from './rhf-checkbox';
-import { RHFUpload, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
+import { RHFUpload, RHFUploadPDF, RHFUploadBox, RHFUploadAvatar } from './rhf-upload';
 import { RHFDatePicker, RHFMobileDateTimePicker } from './rhf-date-picker';
 import { TimezoneSelect } from './timezone-select';
 import TextareaWithMaximize from './textarea-with-maximize';
@@ -22,6 +22,7 @@ export const Field = {
   Editor: RHFEditor,
   Select: RHFSelect,
   Upload: RHFUpload,
+  UploadPDF: RHFUploadPDF,
   Switch: RHFSwitch,
   Slider: RHFSlider,
   Rating: RHFRating,

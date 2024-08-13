@@ -34,7 +34,7 @@ type Props = {
 export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
   const popover = usePopover();
   const confirm = useBoolean();
-
+  console.log(bot);
   return (
     <>
       <Card onDoubleClick={onEdit}>
@@ -54,7 +54,7 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
             sx={{ mb: 1 }}
             primary={
               <Link component={RouterLink} href={`/bots/${bot._id}`} color="inherit">
-                {bot.name}
+                {bot.botName}
               </Link>
             }
             secondary={`Update date: ${fDate(bot.updatedAt)}`}
@@ -84,19 +84,20 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
           {[
             {
               // label: the first character of the bot's language is capitalized, the rest are lowercase
-              label: bot.language.charAt(0).toUpperCase() + bot.language.slice(1).toLowerCase(),
+              // label: bot.botLanguage.charAt(0).toUpperCase() + bot.botLanguage.slice(1).toLowerCase(a,
+              label: 'English',
               icon: <Iconify width={16} icon="ion:language" sx={{ flexShrink: 0 }} />,
             },
             {
-              label: bot.timezone,
+              label: bot.botTimezone,
               icon: <Iconify width={16} icon="mingcute:clock-line" sx={{ flexShrink: 0 }} />,
             },
             {
-              label: bot.interruptable ? 'Interruptable' : 'Non-interruptable',
+              label: bot.botIsInterruptable ? 'Interruptable' : 'Non-interruptable',
               icon: <Iconify width={16} icon="icon-park-outline:link-interrupt" sx={{ flexShrink: 0 }} />,
             },
             {
-              label: bot.voice.voiceId,
+              label: bot.botVoiceId,
               icon: <Iconify width={16} icon="iconoir:voice-circle" sx={{ flexShrink: 0 }} />,
             },
           ].map((item) => (
@@ -163,7 +164,7 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
         title="Delete"
         content={
           <>
-            Are you sure want to delete <strong> {bot.name} </strong>?
+            Are you sure want to delete <strong> {bot.botName} </strong>?
           </>
         }
         action={

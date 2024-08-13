@@ -1,8 +1,8 @@
 import type { DropzoneOptions } from 'react-dropzone';
 import type { Theme, SxProps } from '@mui/material/styles';
-
-import type { FileThumbnailProps } from '../file-thumbnail';
+import type { StackProps } from '@mui/material/Stack';
 import React from 'react';
+import { FileThumbnailProps } from '../file-thumbnail';
 
 // ----------------------------------------------------------------------
 
@@ -14,21 +14,7 @@ export type SingleFilePreviewProps = {
   file: File | string;
 };
 
-export type MultiFilePreviewProps = {
-  files: FilesUploadType;
-  sx?: SxProps<Theme>;
-  lastNode?: React.ReactNode;
-  firstNode?: React.ReactNode;
-  onEdit?: UploadProps['onEdit'];
-  onRemove?: UploadProps['onRemove'];
-  thumbnail: UploadProps['thumbnail'];
-  slotProps?: {
-    thumbnail?: Omit<FileThumbnailProps, 'file'>;
-  };
-};
-
-
-export type MultiFileNamesPreviewProps = {
+export type KbFilePreviewProps = {
   fileNames: string[];
   sx?: SxProps<Theme>;
   lastNode?: React.ReactNode;
