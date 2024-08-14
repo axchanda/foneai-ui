@@ -14,6 +14,7 @@ import { mainRoutes } from './main';
 import { setupRoutes } from './setup';
 import { webhooksRoutes } from './webhooks';
 import { knowledgeBasesRoutes } from './knowledge-base';
+import { functionsRoutes } from './functions';
 
 export function Router() {
   return useRoutes([
@@ -54,6 +55,8 @@ export function Router() {
     ...webhooksRoutes,
 
     ...knowledgeBasesRoutes,
+
+    ...functionsRoutes,
     // No match
     { path: '*', element: <Navigate to="/page-not-found" replace /> },
   ]);

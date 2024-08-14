@@ -25,9 +25,17 @@ type RHFCheckboxProps = Omit<FormControlLabelProps, 'control'> & {
     checkbox?: CheckboxProps;
     formHelperText?: FormHelperTextProps;
   };
+  checkboxSize?: 'small' | 'medium' | 'large';
 };
 
-export function RHFCheckbox({ name, helperText, label, slotProps, ...other }: RHFCheckboxProps) {
+export function RHFCheckbox({
+  name,
+  helperText,
+  label,
+  slotProps,
+  checkboxSize,
+  ...other
+}: RHFCheckboxProps) {
   const { control } = useFormContext();
 
   const ariaLabel = `Checkbox ${name}`;
@@ -48,6 +56,7 @@ export function RHFCheckbox({ name, helperText, label, slotProps, ...other }: RH
                   ...(!label && { 'aria-label': ariaLabel }),
                   ...slotProps?.checkbox?.inputProps,
                 }}
+                size={checkboxSize}
               />
             }
             label={label}

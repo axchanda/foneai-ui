@@ -1,5 +1,5 @@
 /* eslint-disable spaced-comment */
-import { z, z as zod } from 'zod';
+import { z as zod } from 'zod';
 import { useMemo, useEffect, useState, useCallback } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -13,22 +13,20 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
-import { IKnowledgeBaseItem } from 'src/types/knowledge-base';
+import type { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import API from 'src/utils/API';
 import type { IBotType } from 'src/types/bot';
-import { Button } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { deleteBot } from 'src/utils/api/bots';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { Grid } from '@mui/material';
 
 // ----------------------------------------------------------------------
 const voiceIDs = ['Joanna', 'Joey', 'Justin', 'Raveena'];
 
 export type NewBotSchemaType = zod.infer<typeof NewBotSchema>;
-
 
 export const NewBotSchema = zod.object({
   botName: zod.string().min(1, { message: 'Bot name is required!' }),
@@ -37,7 +35,8 @@ export const NewBotSchema = zod.object({
   botVoiceId: zod.string().min(1, { message: 'Voice ID is required!' }),
   botIsInterruptable: zod.boolean(),
   botKnowledgeBase: zod.string(),
-  endpointing: zod.number()
+  endpointing: zod
+    .number()
     .min(0, { message: 'Endpointing must be a positive number!' })
     .max(3000, { message: 'Endpointing must be less than 3000!' })
     .refine((value) => value % 1 === 0, { message: 'Endpointing must be an integer!' }),
@@ -87,14 +86,18 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
   const values = watch();
 
   const [loaded, setLoaded] = useState(false);
-  const [kbs, setKbs] = useState<{label: string, value: string}[]>([]);
+  const [kbs, setKbs] = useState<{ label: string; value: string }[]>([]);
 
   const getKbs = useCallback(async () => {
     const { data } = await API.get<{
       knowledgeBases: IKnowledgeBaseItem[];
       count: number;
     }>('/knowledgeBases');
-    const kbOptions = data.knowledgeBases.map((kb) => ({ key: kb._id, label: kb.knowledgeBaseName, value: kb._id }));
+    const kbOptions = data.knowledgeBases.map((kb) => ({
+      key: kb._id,
+      label: kb.knowledgeBaseName,
+      value: kb._id,
+    }));
     setKbs(kbOptions);
     setLoaded(true);
   }, []);
@@ -128,7 +131,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
         botIsInterruptable: data.botIsInterruptable,
         endpointing: data.endpointing,
         botTimezone: data.botTimezone,
-        daylightSavings: data.daylightSavings
+        daylightSavings: data.daylightSavings,
       });
       reset();
       toast.success(currentBot ? 'Update success!' : 'Create success!');
@@ -140,7 +143,11 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" subheader="Bot name, introduction and prompt instructions" sx={{ mb: 3 }} />
+      <CardHeader
+        title="Details"
+        subheader="Bot name, introduction and prompt instructions"
+        sx={{ mb: 3 }}
+      />
 
       <Divider />
 
@@ -151,10 +158,11 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">
-            Introduction Line
-          </Typography>
-          <Field.Text name="botIntroduction" placeholder="Hi, I'm an AI assistant that would like to ..." />
+          <Typography variant="subtitle2">Introduction Line</Typography>
+          <Field.Text
+            name="botIntroduction"
+            placeholder="Hi, I'm an AI assistant that would like to ..."
+          />
         </Stack>
 
         <Stack spacing={1.5}>
@@ -203,12 +211,9 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
             sx={{ gap: 4 }}
           />
         </Stack> */}
-        <Stack spacing={1.5} >
+        <Stack spacing={1.5}>
           <Typography variant="subtitle2">Voice</Typography>
-          <Stack spacing={1.5} direction={'row'}
-            sx={{ gap: 4, width: '100%' }}
-          >
-
+          <Stack spacing={1.5} direction="row" sx={{ gap: 4, width: '100%' }}>
             <Grid container spacing={1.5}>
               {/* <Grid item xs={12} sm={4}>
                 <Field.Autocomplete
@@ -227,7 +232,6 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
                   name="botVoiceId"
                   // label='Voice ID'
                   options={voiceIDs}
-                  
                   placeholder="Select a voice ID"
                   defaultValue=""
                   fullWidth
@@ -243,7 +247,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
             name="botIsInterruptable"
             label={
               values.botIsInterruptable
-                ? 'The bot stops speaking when the user interrupts the bot' 
+                ? 'The bot stops speaking when the user interrupts the bot'
                 : 'The bot continues to speak even when the user interrupts the bot'
             }
           />
@@ -276,16 +280,11 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
 
   const renderKnowledgeBase = (
     <Card>
-      <CardHeader
-        title="Knowledge Base"
-        subheader="Knowledge base settings"
-        sx={{ mb: 3 }}
-      />
+      <CardHeader title="Knowledge Base" subheader="Knowledge base settings" sx={{ mb: 3 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        
         {/* when the switch is active then a select should be present with 'x', 'y', 'z' as options */}
         <Stack spacing={1.5}>
           <Field.Autocomplete
@@ -300,11 +299,9 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
             )}
           />
         </Stack>
-
       </Stack>
     </Card>
   );
-
 
   const renderMisc = (
     <Card>
@@ -315,8 +312,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Timezone</Typography>
-          <Field.TimezoneSelect name="botTimezone"
-           placeholder="Select a timezone" />
+          <Field.TimezoneSelect name="botTimezone" placeholder="Select a timezone" />
         </Stack>
 
         <Stack spacing={1.5}>
@@ -336,46 +332,51 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
           {renderDetails}
 
           {renderProperties}
-          
+
           {renderKnowledgeBase}
 
           {renderMisc}
 
-          <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap">
-      {/* <FormControlLabel
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent={currentBot ? 'space-between' : 'end'}
+            flexWrap="wrap"
+          >
+            {/* <FormControlLabel
         control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
         label="Publish"
         sx={{ flexGrow: 1, pl: 3 }}
       /> */}
-      {currentBot && (
-        <Button
-          onClick={async () => {
-            if (isUsed) {
-              alertDialog.setValue(true);
-            } else {
-              await deleteBot(currentBot._id, () => {
-                router.push('/bots');
-              });
-            }
-          }}
-          variant="contained"
-          size="large"
-          color="error"
-        >
-          Delete bot
-        </Button>
-      )}
-      <LoadingButton
-        type="submit"
-        variant="contained"
-        size="large"
-        loading={isSubmitting}
-        sx={{ ml: 2 }}
-      >
-        {/* {!currentBot ? 'Create Bot' : 'Update Bot'} */}
-        Ji
-      </LoadingButton>
-    </Box>
+            {currentBot && (
+              <Button
+                onClick={async () => {
+                  if (isUsed) {
+                    alertDialog.setValue(true);
+                  } else {
+                    await deleteBot(currentBot._id, () => {
+                      router.push('/bots');
+                    });
+                  }
+                }}
+                variant="contained"
+                size="large"
+                color="error"
+              >
+                Delete bot
+              </Button>
+            )}
+            <LoadingButton
+              type="submit"
+              variant="contained"
+              size="large"
+              loading={isSubmitting}
+              sx={{ ml: 2 }}
+            >
+              {/* {!currentBot ? 'Create Bot' : 'Update Bot'} */}
+              Ji
+            </LoadingButton>
+          </Box>
         </Stack>
       </Form>
       <ConfirmDialog
