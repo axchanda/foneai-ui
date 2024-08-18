@@ -3,7 +3,6 @@ import { z as zod } from 'zod';
 import { useMemo, useEffect, useState, useCallback, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { varAlpha } from 'src/theme/styles';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
@@ -13,36 +12,39 @@ import { useRouter } from 'src/routes/hooks';
 
 import { toast } from 'src/components/snackbar';
 import { Field, Form } from 'src/components/hook-form';
-import { Button, CardHeader, Divider, MenuItem, Typography } from '@mui/material';
-import type { IKnowledgeBaseItem, IKnowledgeBaseFilters } from 'src/types/knowledge-base';
+import { Button, CardHeader, Divider, Typography } from '@mui/material';
+import type { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import API from 'src/utils/API';
-import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { UploadSinglePDF } from 'src/components/upload/upload-single-pdf';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { knowledgeBasesRoutes } from 'src/routes/sections/knowledge-base';
-import { cu } from '@fullcalendar/core/internal-common';
 import { useDropzone } from 'react-dropzone';
-import { MultiFilePreview, RejectionFiles, SingleFilePreview } from 'src/components/upload';
+import { RejectionFiles } from 'src/components/upload';
 import { UploadPlaceholder } from 'src/components/upload/components/placeholder';
 import { KbFilePreview } from 'src/components/knowledge-bases/kb-file-preview';
-import { set } from 'nprogress';
+import axios from 'axios';
 
 export type NewKbSchemaType = zod.infer<typeof NewKbSchema>;
 
 export const NewKbSchema = zod.object({
   knowledgeBaseName: zod.string().min(1, { message: 'KnowledgeBase Name is required!' }),
   knowledgeBaseDescription: zod.string(),
-  knowledgeBaseQaPairs: zod.array(zod.object({
-    question: zod.string(),
-    answer: zod.string(),
-  })),
-  knowledgeBaseFiles: zod.array(zod.object({
-    fileName: zod.string(),
-    fileURL: zod.string(),
-
-  }))
+  knowledgeBaseQaPairs: zod.array(
+    zod.object({
+      question: zod.string(),
+      answer: zod.string(),
+    })
+  ),
+  knowledgeBaseFiles: zod.array(
+    zod.object({
+      fileName: zod.string(),
+      fileURL: zod.string(),
+    })
+  ),
 });
+
+// await axios.put(presignedUrl, file, {
+//   headers: { 'Content-Type': file.type },
+// });
 
 type Props = {
   currentKb?: IKnowledgeBaseItem;
@@ -51,7 +53,7 @@ type Props = {
 export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
   const router = useRouter();
 
-  console.log(currentKb?.knowledgeBaseFiles)
+  const [isNewFileUploaded, setIsNewFileUploaded] = useState(false);
 
   const confirm = useBoolean();
   const defaultValues = useMemo(
@@ -84,19 +86,62 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     }
   }, [currentKb, defaultValues, reset]);
 
+  const uploadFile = async (file: File) => {
+    try {
+      const {
+        data: { url, key },
+      } = await API.post<{
+        url: string;
+        key: string;
+      }>('/getUploadLink', {
+        fileName: file.name,
+      });
+      await axios.put(url, file, {
+        headers: { 'Content-Type': 'application/pdf', withCredentials: true },
+      });
+
+      const fileURL = `https://knowledge-base-files-test.s3.amazonaws.com/${key}`;
+      toast.success('File uploaded successfully');
+      return fileURL;
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to upload file');
+      throw new Error('Failed to upload file');
+    }
+  };
+
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const url = currentKb ? `/webhooks/${currentKb._id}` : '/webhooks/create';
+      let fileURL = '';
+      let fileName = '';
+      let fileToArchive: string | undefined;
+      if (isNewFileUploaded) {
+        fileURL = await uploadFile(files[0]);
+        fileName = files[0].name;
+        fileToArchive = (currentKb?.knowledgeBaseFiles || [{ fileName: undefined }])[0].fileURL;
+      } else {
+        fileURL = currentKb!.knowledgeBaseFiles![0].fileURL!;
+        fileName = currentKb!.knowledgeBaseFiles![0].fileName!;
+      }
+      const url = currentKb ? `/knowledgeBases/${currentKb._id}` : '/knowledgeBases/create';
       const method = currentKb ? API.put : API.post;
       await method(url, {
         knowledgeBaseName: data.knowledgeBaseName,
         knowledgeBaseDescription: data.knowledgeBaseDescription,
         knowledgeBaseQaPairs: data.knowledgeBaseQaPairs,
-        knowledgeBaseFiles: data.knowledgeBaseFiles,
+        knowledgeBaseFiles: [
+          {
+            fileName,
+            fileURL,
+          },
+        ],
+        fileToArchive,
       });
       reset();
-      toast.success(currentKb ? 'Update Webhook success!' : 'Create Webhook success!');
-      router.push('/webhooks');
+      toast.success(
+        currentKb ? 'Update knowledge base success!' : 'Create knowledge base success!'
+      );
+      router.push('/knowledge-bases');
     } catch (error) {
       console.error(error);
     }
@@ -110,14 +155,14 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     (acceptedFiles: File[]) => {
       // setFiles([...files, ...acceptedFiles]);
       setFiles(acceptedFiles);
+      setIsNewFileUploaded(true);
       showDropBox.onFalse();
     },
-    [files]
+    [showDropBox]
   );
 
   const handleEdit = () => {
-
-    if(inputRef.current) {
+    if (inputRef.current) {
       inputRef.current.click();
     }
   };
@@ -143,7 +188,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     console.log('DELETE FILE');
     setFiles([]);
     confirm.onFalse();
-  }
+  };
 
   const renderDetails = (
     <Card>
@@ -162,10 +207,10 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       </Stack>
     </Card>
   );
- 
+
   const { getRootProps, getInputProps, isDragActive, isDragReject, fileRejections } = useDropzone({
     accept: {
-      'application/pdf': ['.pdf']
+      'application/pdf': ['.pdf'],
     },
     validator: (file) => {
       // file name character limit should be less than 255
@@ -182,12 +227,12 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
           message: 'File should be less than 2MB',
         };
       }
-      return null
+      return null;
     },
     onDrop: handleDrop,
     maxFiles: 1,
   });
-  
+
   const renderFiles = (
     <Card>
       <CardHeader title="Files" subheader="Knowledge Base name and description" sx={{ mb: 3 }} />
@@ -197,37 +242,40 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Knowledge Base Files</Typography>
           <>
-            <input {...getInputProps()}
-                ref={inputRef}
-                accept="application/pdf"
-                style={{ display: 'none' }}
-              />
-            { fileNames.length <= 0 && (<>
-              <Box {...getRootProps()}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: 300,
-                  border: '1px dashed',
-                  borderColor: isDragActive ? 'primary.main' : 'grey.500',
-                  borderRadius: 1,
-                  cursor: 'pointer',
-                  backgroundColor: isDragReject ? 'error.light' : 'transparent',
-                }}
-              >
-                <UploadPlaceholder />
-              </Box>
-              <RejectionFiles files={fileRejections} /> </>) }
+            <input
+              {...getInputProps()}
+              ref={inputRef}
+              accept="application/pdf"
+              style={{ display: 'none' }}
+            />
+            {fileNames.length <= 0 && (
+              <>
+                <Box
+                  {...getRootProps()}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 300,
+                    border: '1px dashed',
+                    borderColor: isDragActive ? 'primary.main' : 'grey.500',
+                    borderRadius: 1,
+                    cursor: 'pointer',
+                    backgroundColor: isDragReject ? 'error.light' : 'transparent',
+                  }}
+                >
+                  <UploadPlaceholder />
+                </Box>
+                <RejectionFiles files={fileRejections} />{' '}
+              </>
+            )}
           </>
           <KbFilePreview fileNames={fileNames} thumbnail={false} onEdit={handleEdit} />
-          { fileNames.length > 0 && (
-            <RejectionFiles files={fileRejections} /> ) }
+          {fileNames.length > 0 && <RejectionFiles files={fileRejections} />}
         </Stack>
       </Stack>
-    </Card>    
-  )
-
+    </Card>
+  );
 
   const renderActions = (
     <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap">
@@ -236,7 +284,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         variant="contained"
         size="large"
         loading={isSubmitting}
-        sx={{ 
+        sx={{
           mr: 2,
           // make the button to appear on the right side
           marginLeft: 'auto',
@@ -258,9 +306,9 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         open={confirm.value}
         onClose={confirm.onFalse}
         title="Confirm to delete File"
-        content={`Are you sure want to delete the file? This action cannot be undone!`}
+        content="Are you sure want to delete the file? This action cannot be undone!"
         action={
-          <Button variant="contained" color="error" onClick={handleDeleteFile} >
+          <Button variant="contained" color="error" onClick={handleDeleteFile}>
             Delete
           </Button>
         }

@@ -385,7 +385,7 @@ const ParametersCard: React.FC<{
                             parameterName: e.target.value,
                           }));
                         }}
-                        placeholder="Function name"
+                        placeholder="Parameter name"
                         error={parameterErrors.parameterName}
                       />
                     </TableCell>
