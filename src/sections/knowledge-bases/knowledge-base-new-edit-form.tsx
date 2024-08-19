@@ -93,7 +93,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       } = await API.post<{
         url: string;
         key: string;
-      }>('/getUploadLink', {
+      }>('/knowledgeBases/getUploadLink', {
         fileName: file.name,
       });
       await axios.put(url, file, {

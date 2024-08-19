@@ -738,10 +738,7 @@ const ParameterTableRow: React.FC<{
                 onClick={() => {
                   editing.setValue(false);
                   setParameter({
-                    parameterDescription: '',
-                    parameterIsRequired: false,
-                    parameterName: '',
-                    parameterType: 'string',
+                    ...param,
                   });
                   setParameterErrors({
                     parameterDescription: false,
