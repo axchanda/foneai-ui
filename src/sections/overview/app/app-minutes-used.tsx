@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import type { CardProps } from '@mui/material/Card';
 import type { ChartOptions } from 'src/components/chart';
 
@@ -6,8 +7,6 @@ import { useState, useCallback } from 'react';
 import Card from '@mui/material/Card';
 import { useTheme } from '@mui/material/styles';
 import CardHeader from '@mui/material/CardHeader';
-
-import { fNumber } from 'src/utils/format-number';
 
 import { Chart, useChart, ChartSelect } from 'src/components/chart';
 
@@ -69,7 +68,7 @@ export function AppMinutesUsed({ title, subheader, chart, ...other }: Props) {
       //     return `${x}: ${value}`;
       //   },
       // },
-      custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+      custom({ series, seriesIndex, dataPointIndex, w }) {
         const x = w.globals.labels[dataPointIndex];
         const value = series[seriesIndex][dataPointIndex];
 
@@ -83,8 +82,7 @@ export function AppMinutesUsed({ title, subheader, chart, ...other }: Props) {
           </div>
         </div>`;
         // return `<div class="arrow_box">${selectedSeries} ${x}: ${value}</div>`;
-      }
-
+      },
     },
     ...chart.options,
   });
@@ -96,7 +94,12 @@ export function AppMinutesUsed({ title, subheader, chart, ...other }: Props) {
   // const currentSeries = chart.series.find((i) => i.name === selectedSeries);
 
   return (
-    <Card {...other}>
+    <Card
+      sx={{
+        height: '100%',
+      }}
+      {...other}
+    >
       <CardHeader
         title={title}
         subheader={subheader}

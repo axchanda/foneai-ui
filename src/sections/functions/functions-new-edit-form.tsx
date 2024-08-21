@@ -38,6 +38,7 @@ import type { IFunctionAction, IFunctionItem, IFunctionParameterType } from 'src
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import type { IWebhookItem } from 'src/types/webhook';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { Scrollbar } from 'src/components/scrollbar';
 
 // ----------------------------------------------------------------------
 
@@ -339,130 +340,159 @@ const ParametersCard: React.FC<{
       <Box p={4}>
         {Boolean(parameters.length) || shouldShowParameterForm.value ? (
           <Card>
-            <Table>
-              <TableHeadCustom
-                order={table.order}
-                orderBy={table.orderBy}
-                headLabel={TABLE_HEAD}
-                numSelected={table.selected.length}
-              />
-              <TableBody>
-                {shouldShowParameterForm.value && (
-                  <TableRow>
-                    <TableCell
-                      sx={{
-                        verticalAlign: 'top',
-                      }}
-                    >
-                      <Checkbox
-                        value={parameter.parameterIsRequired}
-                        onChange={(e) => {
-                          //@ts-ignore
-                          console.log(e.target.checked);
-                          setParameter((prev) => ({
-                            ...prev,
-                            //@ts-ignore
-                            parameterIsRequired: e.target.checked,
-                          }));
+            <Scrollbar>
+              <Table>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={TABLE_HEAD}
+                  numSelected={table.selected.length}
+                />
+                <TableBody>
+                  {shouldShowParameterForm.value && (
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          verticalAlign: 'top',
                         }}
-                        name="required"
-                        // label="controlled"
-                        size="large"
-                        inputProps={{ 'aria-label': 'controlled' }}
-                      />
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        verticalAlign: 'top',
-                      }}
-                    >
-                      <Field.Text
-                        name="name"
-                        value={parameter.parameterName}
-                        onChange={(e) => {
-                          setParameter((prev) => ({
-                            ...prev,
-                            parameterName: e.target.value,
-                          }));
-                        }}
-                        placeholder="Parameter name"
-                        error={parameterErrors.parameterName}
-                      />
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        verticalAlign: 'top',
-                      }}
-                    >
-                      <Field.Select
-                        value={parameter.parameterType}
-                        onChange={(e) => {
-                          setParameter((prev) => ({
-                            ...prev,
-                            parameterType: e.target.value,
-                          }));
-                        }}
-                        name="type"
-                        error={parameterErrors.parameterType}
                       >
-                        <MenuItem value="string">String</MenuItem>
-                        <MenuItem value="number">Number</MenuItem>
-                        <MenuItem value="boolean">Boolean</MenuItem>
-                      </Field.Select>
-                    </TableCell>
-                    <TableCell>
-                      <Field.Text
-                        value={parameter.parameterDescription}
-                        onChange={(e) => {
-                          setParameter((prev) => ({
-                            ...prev,
-                            parameterDescription: e.target.value,
-                          }));
+                        <Checkbox
+                          value={parameter.parameterIsRequired}
+                          onChange={(e) => {
+                            //@ts-ignore
+                            console.log(e.target.checked);
+                            setParameter((prev) => ({
+                              ...prev,
+                              //@ts-ignore
+                              parameterIsRequired: e.target.checked,
+                            }));
+                          }}
+                          name="required"
+                          // label="controlled"
+                          size="large"
+                          inputProps={{ 'aria-label': 'controlled' }}
+                        />
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          verticalAlign: 'top',
                         }}
-                        name="description"
-                        placeholder="Parameter description"
-                        error={parameterErrors.parameterDescription}
-                        multiline
-                        rows={4}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Stack gap={2}>
-                        <Button
-                          variant="contained"
-                          onClick={() => {
-                            let isError = false;
-                            if (
-                              !parameter.parameterName ||
-                              parameter.parameterName.trim().length < 1
-                            ) {
-                              setParameterErrors((prev) => ({
-                                ...prev,
-                                parameterName: true,
-                              }));
-                              isError = true;
-                            }
-                            if (
-                              !parameter.parameterDescription ||
-                              parameter.parameterDescription.trim().length < 1
-                            ) {
-                              setParameterErrors((prev) => ({
-                                ...prev,
-                                parameterDescription: true,
-                              }));
-                              isError = true;
-                            }
-                            if (!parameter.parameterType) {
-                              setParameterErrors((prev) => ({
-                                ...prev,
-                                parameterType: true,
-                              }));
-                              isError = true;
-                            }
+                      >
+                        <Field.Text
+                          name="name"
+                          value={parameter.parameterName}
+                          onChange={(e) => {
+                            setParameter((prev) => ({
+                              ...prev,
+                              parameterName: e.target.value,
+                            }));
+                          }}
+                          placeholder="Parameter name"
+                          error={parameterErrors.parameterName}
+                        />
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          verticalAlign: 'top',
+                        }}
+                      >
+                        <Field.Select
+                          value={parameter.parameterType}
+                          onChange={(e) => {
+                            setParameter((prev) => ({
+                              ...prev,
+                              parameterType: e.target.value,
+                            }));
+                          }}
+                          name="type"
+                          error={parameterErrors.parameterType}
+                        >
+                          <MenuItem value="string">String</MenuItem>
+                          <MenuItem value="number">Number</MenuItem>
+                          <MenuItem value="boolean">Boolean</MenuItem>
+                        </Field.Select>
+                      </TableCell>
+                      <TableCell>
+                        <Field.Text
+                          value={parameter.parameterDescription}
+                          onChange={(e) => {
+                            setParameter((prev) => ({
+                              ...prev,
+                              parameterDescription: e.target.value,
+                            }));
+                          }}
+                          name="description"
+                          placeholder="Parameter description"
+                          error={parameterErrors.parameterDescription}
+                          multiline
+                          rows={4}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Stack gap={2}>
+                          <Button
+                            variant="contained"
+                            onClick={() => {
+                              let isError = false;
+                              if (
+                                !parameter.parameterName ||
+                                parameter.parameterName.trim().length < 1
+                              ) {
+                                setParameterErrors((prev) => ({
+                                  ...prev,
+                                  parameterName: true,
+                                }));
+                                isError = true;
+                              }
+                              if (
+                                !parameter.parameterDescription ||
+                                parameter.parameterDescription.trim().length < 1
+                              ) {
+                                setParameterErrors((prev) => ({
+                                  ...prev,
+                                  parameterDescription: true,
+                                }));
+                                isError = true;
+                              }
+                              if (!parameter.parameterType) {
+                                setParameterErrors((prev) => ({
+                                  ...prev,
+                                  parameterType: true,
+                                }));
+                                isError = true;
+                              }
 
-                            if (!isError) {
-                              console.log({ parameter });
-                              setParameters((prev) => [...prev, parameter]);
+                              if (!isError) {
+                                console.log({ parameter });
+                                setParameters((prev) => [...prev, parameter]);
+                                setParameter({
+                                  parameterDescription: '',
+                                  parameterIsRequired: false,
+                                  parameterName: '',
+                                  parameterType: 'string',
+                                });
+                                setParameterErrors({
+                                  parameterDescription: false,
+                                  parameterIsRequired: false,
+                                  parameterName: false,
+                                  parameterType: false,
+                                });
+                                shouldShowParameterForm.setValue(false);
+                              }
+                            }}
+                            size="large"
+                            color="primary"
+                            startIcon={<Iconify icon="ic:round-check" />}
+                          >
+                            Submit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            startIcon={<Iconify icon="ic:round-close" />}
+                            size="large"
+                            onClick={() => {
+                              shouldShowParameterForm.setValue(false);
                               setParameter({
                                 parameterDescription: '',
                                 parameterIsRequired: false,
@@ -475,92 +505,65 @@ const ParametersCard: React.FC<{
                                 parameterName: false,
                                 parameterType: false,
                               });
-                              shouldShowParameterForm.setValue(false);
-                            }
-                          }}
-                          size="large"
-                          color="primary"
-                          startIcon={<Iconify icon="ic:round-check" />}
-                        >
-                          Submit
-                        </Button>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          startIcon={<Iconify icon="ic:round-close" />}
-                          size="large"
-                          onClick={() => {
-                            shouldShowParameterForm.setValue(false);
-                            setParameter({
-                              parameterDescription: '',
-                              parameterIsRequired: false,
-                              parameterName: '',
-                              parameterType: 'string',
-                            });
-                            setParameterErrors({
-                              parameterDescription: false,
-                              parameterIsRequired: false,
-                              parameterName: false,
-                              parameterType: false,
-                            });
-                          }}
-                        >
-                          Cancel
-                        </Button>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {parameters.map((param, index) => {
-                  console.log(param);
-                  return (
-                    <ParameterTableRow
-                      param={param}
-                      key={index}
-                      changeIsRequired={(val) => {
-                        setParameters((prev) => {
-                          const newParams = [...prev];
-                          newParams[index].parameterIsRequired = val;
-                          return newParams;
-                        });
-                      }}
-                      changeName={(val) => {
-                        setParameters((prev) => {
-                          const newParams = [...prev];
-                          newParams[index].parameterName = val;
-                          return newParams;
-                        });
-                      }}
-                      changeType={(val) => {
-                        setParameters((prev) => {
-                          const newParams = [...prev];
-                          newParams[index].parameterType = val;
-                          return newParams;
-                        });
-                      }}
-                      changeDescription={(val) => {
-                        setParameters((prev) => {
-                          const newParams = [...prev];
-                          newParams[index].parameterDescription = val;
-                          return newParams;
-                        });
-                      }}
-                      removeParameter={() => {
-                        setParameters((prev) => prev.filter((_, i) => i !== index));
-                      }}
-                      updateParameter={(params: IFunctionParameterType) => {
-                        console.log(params);
-                        setParameters((prev) => {
-                          const newParams = [...prev];
-                          newParams[index] = params;
-                          return newParams;
-                        });
-                      }}
-                    />
-                  );
-                })}
-              </TableBody>
-            </Table>
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {parameters.map((param, index) => {
+                    console.log(param);
+                    return (
+                      <ParameterTableRow
+                        param={param}
+                        key={index}
+                        changeIsRequired={(val) => {
+                          setParameters((prev) => {
+                            const newParams = [...prev];
+                            newParams[index].parameterIsRequired = val;
+                            return newParams;
+                          });
+                        }}
+                        changeName={(val) => {
+                          setParameters((prev) => {
+                            const newParams = [...prev];
+                            newParams[index].parameterName = val;
+                            return newParams;
+                          });
+                        }}
+                        changeType={(val) => {
+                          setParameters((prev) => {
+                            const newParams = [...prev];
+                            newParams[index].parameterType = val;
+                            return newParams;
+                          });
+                        }}
+                        changeDescription={(val) => {
+                          setParameters((prev) => {
+                            const newParams = [...prev];
+                            newParams[index].parameterDescription = val;
+                            return newParams;
+                          });
+                        }}
+                        removeParameter={() => {
+                          setParameters((prev) => prev.filter((_, i) => i !== index));
+                        }}
+                        updateParameter={(params: IFunctionParameterType) => {
+                          console.log(params);
+                          setParameters((prev) => {
+                            const newParams = [...prev];
+                            newParams[index] = params;
+                            return newParams;
+                          });
+                        }}
+                      />
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Scrollbar>
           </Card>
         ) : (
           <Stack>

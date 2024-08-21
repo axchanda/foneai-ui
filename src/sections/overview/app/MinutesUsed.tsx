@@ -4,9 +4,10 @@ import type { ChartOptions } from 'src/components/chart';
 import Card from '@mui/material/Card';
 import { useTheme } from '@mui/material/styles';
 
-import { Chart, useChart } from 'src/components/chart';
+import { Chart, ChartSelect, useChart } from 'src/components/chart';
 import { Box, CardHeader } from '@mui/material';
 import { varAlpha } from 'src/theme/styles';
+import { useCallback, useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -15,13 +16,15 @@ type Props = CardProps & {
 
   chart: {
     colors?: string[];
-    series: number;
+    series: Record<string, number>;
     options?: ChartOptions;
   };
 };
 
 export function MinutesUsed({ total, chart, ...other }: Props) {
   const theme = useTheme();
+
+  const [selectedSeries, setSelectedSeries] = useState('jul');
 
   const chartColors = chart.colors ?? [theme.palette.primary.main, theme.palette.primary.light];
 
@@ -48,7 +51,7 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
           name: { offsetY: 8 },
           value: { offsetY: -36 },
           total: {
-            label: `Used ${chart.series} mins / ${total} mins`,
+            label: `Used ${chart.series[selectedSeries]} mins / ${total} mins`,
             color: theme.vars.palette.text.disabled,
             fontSize: theme.typography.caption.fontSize as string,
             fontWeight: theme.typography.caption.fontWeight,
@@ -59,14 +62,28 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
     ...chart.options,
   });
 
-  return (
+  const handleChangeSeries = useCallback((newValue: string) => {
+    setSelectedSeries(newValue);
+  }, []);
 
+  return (
     <Card {...other}>
-      <CardHeader title={'Minutes Available'} subheader={''} sx={{ mb: 5 }} />
+      <CardHeader
+        action={
+          <ChartSelect
+            options={Object.keys(chart.series)}
+            value={selectedSeries}
+            onChange={handleChangeSeries}
+          />
+        }
+        title="Minutes Available"
+        subheader=""
+        sx={{ mb: 5 }}
+      />
 
       <Chart
         type="radialBar"
-        series={[chart.series]}
+        series={[chart.series[selectedSeries]]}
         options={chartOptions}
         width={240}
         height={240}
@@ -81,23 +98,19 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
           flexDirection: 'column',
         }}
       >
-        <Box
-          sx={{ gap: 1, display: 'flex', alignItems: 'center', typography: 'subtitle2' }}
-        >
+        <Box sx={{ gap: 1, display: 'flex', alignItems: 'center', typography: 'subtitle2' }}>
           <Box
             sx={{
               width: 16,
               height: 16,
               borderRadius: 0.75,
-              bgcolor: chartColors[1]
+              bgcolor: chartColors[1],
             }}
           />
           <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Used</Box>
-          {chart.series} minutes
+          {chart.series[selectedSeries]} minutes
         </Box>
-        <Box
-          sx={{ gap: 1, display: 'flex', alignItems: 'center', typography: 'subtitle2' }}
-        >
+        <Box sx={{ gap: 1, display: 'flex', alignItems: 'center', typography: 'subtitle2' }}>
           <Box
             sx={{
               width: 16,
@@ -105,14 +118,12 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
               borderRadius: 0.75,
               bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.16),
               // ...(item.label === 'Used' && ),
-
             }}
           />
           <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Available</Box>
-          {total - chart.series} minutes
+          {total - chart.series[selectedSeries]} minutes
         </Box>
       </Box>
     </Card>
-
   );
 }

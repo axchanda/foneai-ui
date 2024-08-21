@@ -76,7 +76,8 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
+    setError,
   } = methods;
 
   useEffect(() => {
@@ -115,6 +116,9 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       let fileURL = '';
       let fileName = '';
       let fileToArchive: string | undefined;
+      if (!currentKb && files.length <= 0) {
+        setError('knowledgeBaseFiles', { message: 'File is required' });
+      }
       if (isNewFileUploaded) {
         fileURL = await uploadFile(files[0]);
         fileName = files[0].name;
@@ -124,6 +128,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         fileName = currentKb!.knowledgeBaseFiles![0].fileName!;
       }
       const url = currentKb ? `/knowledgeBases/${currentKb._id}` : '/knowledgeBases/create';
+
       const method = currentKb ? API.put : API.post;
       await method(url, {
         knowledgeBaseName: data.knowledgeBaseName,
@@ -258,7 +263,12 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
                     justifyContent: 'center',
                     height: 300,
                     border: '1px dashed',
-                    borderColor: isDragActive ? 'primary.main' : 'grey.500',
+                    // borderColor: isDragActive ? 'primary.main' : 'grey.500',
+                    borderColor: errors.knowledgeBaseFiles
+                      ? 'error.dark'
+                      : isDragActive
+                        ? 'primary.main'
+                        : 'grey.500',
                     borderRadius: 1,
                     cursor: 'pointer',
                     backgroundColor: isDragReject ? 'error.light' : 'transparent',
@@ -266,6 +276,9 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
                 >
                   <UploadPlaceholder />
                 </Box>
+                <Typography variant="body2" color="error">
+                  {errors.knowledgeBaseFiles?.message}
+                </Typography>
                 <RejectionFiles files={fileRejections} />{' '}
               </>
             )}

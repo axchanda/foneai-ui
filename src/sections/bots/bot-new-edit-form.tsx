@@ -18,7 +18,7 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import API from 'src/utils/API';
 import type { IBotType } from 'src/types/bot';
-import { Button, Grid } from '@mui/material';
+import { Button, Grid, MenuItem } from '@mui/material';
 import { deleteBot } from 'src/utils/api/bots';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -287,7 +287,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
       <Stack spacing={3} sx={{ p: 3 }}>
         {/* when the switch is active then a select should be present with 'x', 'y', 'z' as options */}
         <Stack spacing={1.5}>
-          <Field.Autocomplete
+          {/* <Field.Autocomplete
             name="botKnowledgeBase"
             autoHighlight
             options={kbs.map((option) => option)}
@@ -297,7 +297,14 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
                 {option.label}
               </li>
             )}
-          />
+          /> */}
+          <Field.Select name="botKnowledgeBase" label="Knowledge Base">
+            {kbs.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Field.Select>
         </Stack>
       </Stack>
     </Card>
@@ -373,8 +380,8 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
               loading={isSubmitting}
               sx={{ ml: 2 }}
             >
-              {/* {!currentBot ? 'Create Bot' : 'Update Bot'} */}
-              Ji
+              {!currentBot ? 'Create Bot' : 'Update Bot'}
+              {/* Ji */}
             </LoadingButton>
           </Box>
         </Stack>

@@ -35,10 +35,9 @@ import {
 
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { IKnowledgeBaseFilters, IKnowledgeBaseItem } from 'src/types/knowledge-base';
+import type { IKnowledgeBaseFilters, IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { deleteKnowledgeBase } from 'src/utils/api/knowledge-bases';
 import { KnowledgeBaseTableRow } from 'src/sections/knowledge-bases/knowledge-base-table-row';
-
 
 // ----------------------------------------------------------------------
 
@@ -109,17 +108,16 @@ export default function KnowledgeBasesListView() {
   );
 
   const getKnowledgeBases = useCallback(async () => {
-    const knowledgeBasesPromise =  API.get<{
+    const knowledgeBasesPromise = API.get<{
       knowledgeBases: IKnowledgeBaseItem[];
       count: number;
     }>('/knowledgeBases');
 
     const [{ data }] = await Promise.all([knowledgeBasesPromise]);
-    
+
     setKnowledgeBases(data.knowledgeBases);
     setTableData(data.knowledgeBases);
     setLoaded(true);
-  
   }, []);
 
   useEffect(() => {
@@ -145,15 +143,6 @@ export default function KnowledgeBasesListView() {
         />
         {loaded ? (
           <Card>
-            {/* {canReset && (
-                        <UserTableFiltersResult
-                            filters={filters}
-                            totalResults={dataFiltered.length}
-                            onResetPage={table.onResetPage}
-                            sx={{ p: 2.5, pt: 0 }}
-                        />
-                    )} */}
-
             <Box sx={{ position: 'relative' }}>
               <TableSelectedAction
                 dense={table.dense}
@@ -240,7 +229,8 @@ export default function KnowledgeBasesListView() {
         title="Delete"
         content={
           <>
-            Are you sure want to delete the knowledge Base <strong> {table.selected.length} </strong> ?
+            Are you sure want to delete the knowledge Base{' '}
+            <strong> {table.selected.length} </strong> ?
           </>
         }
         action={
@@ -260,8 +250,6 @@ export default function KnowledgeBasesListView() {
   );
 }
 
-// ----------------------------------------------------------------------
-
 type ApplyFilterProps = {
   inputData: IKnowledgeBaseItem[];
   filters: IKnowledgeBaseFilters;
@@ -270,7 +258,7 @@ type ApplyFilterProps = {
 
 function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) {
   const { id, knowledgeBaseName } = filters;
-  
+
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {
@@ -292,7 +280,9 @@ function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) 
   // }
 
   if (knowledgeBaseName.length) {
-    inputData = inputData.filter((knowledgeBase) => knowledgeBaseName.includes(knowledgeBase.knowledgeBaseName));
+    inputData = inputData.filter((knowledgeBase) =>
+      knowledgeBaseName.includes(knowledgeBase.knowledgeBaseName)
+    );
   }
 
   return inputData;

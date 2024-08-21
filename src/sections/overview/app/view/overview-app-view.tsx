@@ -1,16 +1,11 @@
-import Button from '@mui/material/Button';
 import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 
-import { _appFeatured } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { SeoIllustration } from 'src/assets/illustrations';
 
 import { useMockedUser } from 'src/auth/hooks';
 
-import { AppWelcome } from '../app-welcome';
 import { MinutesUsed } from '../MinutesUsed';
-import { AppFeatured } from '../app-featured';
 import { AppMinutesUsed } from '../app-minutes-used';
 import { AppWidgetSummary } from '../app-widget-summary';
 
@@ -24,7 +19,7 @@ export function OverviewAppView() {
   return (
     <DashboardContent maxWidth="xl">
       <Grid container spacing={3}>
-        <Grid xs={12} md={8}>
+        {/* <Grid xs={12} md={8}>
           <AppWelcome
             title={`Welcome back 👋 \n ${user?.displayName}`}
             description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
@@ -39,7 +34,7 @@ export function OverviewAppView() {
 
         <Grid xs={12} md={4}>
           <AppFeatured list={_appFeatured} />
-        </Grid>
+        </Grid> */}
 
         <Grid xs={12} md={4}>
           <AppWidgetSummary
@@ -101,10 +96,10 @@ export function OverviewAppView() {
               ],
             }}
           /> */}
-          <MinutesUsed total={120} chart={{ series: 46 }} />
+          <MinutesUsed total={120} chart={{ series: { jul: 46, aug: 51, sep: 65 } }} />
         </Grid>
 
-        <Grid xs={12} md={6} lg={8}>
+        <Grid alignSelf="stretch" xs={12} md={6} lg={8}>
           <AppMinutesUsed
             title="Minutes used"
             // subheader="(+43%) than last year"

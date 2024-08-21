@@ -5,14 +5,16 @@ export type IWebhookItem = {
   webhookMethod: 'GET' | 'POST' | 'PUT' | 'DELETE';
   webhookTimeout?: number;
   webhookURI: string;
-  headers?: {
-    key: string;
-    value: string;
-  }[];
+  headers: IWebhookHeaders[];
   webhookRequestsPerMinute?: number;
 };
 
 export type IWebhookFilters = {
   id: string;
   webhookName: string;
+};
+
+export type IWebhookHeaders = {
+  key: string;
+  value: string;
 };
