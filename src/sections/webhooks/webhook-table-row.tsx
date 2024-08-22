@@ -1,4 +1,13 @@
-import { Button, Checkbox, Chip, IconButton, MenuItem, MenuList, TableCell, TableRow } from '@mui/material';
+import {
+  Button,
+  Checkbox,
+  Chip,
+  IconButton,
+  MenuItem,
+  MenuList,
+  TableCell,
+  TableRow,
+} from '@mui/material';
 import React from 'react';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
@@ -14,13 +23,7 @@ type Props = {
   onDeleteRow: () => void;
 };
 
-export function WebhookTableRow({
-  row,
-  selected,
-  onEditRow,
-  onSelectRow,
-  onDeleteRow,
-}: Props) {
+export function WebhookTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
@@ -40,11 +43,11 @@ export function WebhookTableRow({
         <TableCell>{row.webhookName}</TableCell>
         <TableCell>{row.webhookDescription}</TableCell>
         <TableCell>
-          <Chip 
+          <Chip
             sx={{
               backgroundColor: 'primary.light',
             }}
-            size='small'
+            size="small"
             label={row.webhookMethod}
           />
           {/* {row.webhookMethod} */}
@@ -92,7 +95,7 @@ export function WebhookTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete campaign"
+        title="Delete webhook"
         content={`Are you sure want to delete the webhook: ${row.webhookName}?`}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
@@ -102,4 +105,4 @@ export function WebhookTableRow({
       />
     </>
   );
-};
+}

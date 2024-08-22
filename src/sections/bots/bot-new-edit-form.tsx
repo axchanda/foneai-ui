@@ -447,7 +447,7 @@ const ActionDialog: React.FC<{
           borderRadius="12px"
           borderColor="background.neutral"
           sx={{
-            span: {
+            '#action': {
               cursor: 'pointer',
               ':hover': {
                 backgroundColor: 'primary.main',
@@ -464,6 +464,7 @@ const ActionDialog: React.FC<{
               <Fragment key={index}>
                 <Typography
                   component="span"
+                  id="action"
                   className={selectedAction === action ? 'selected' : ''}
                   onClick={() =>
                     setSelectedAction((prev) => (prev === action ? undefined : action))

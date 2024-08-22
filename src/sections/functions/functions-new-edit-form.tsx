@@ -205,7 +205,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
         {action.type === 'webhook' && (
           <Box display="grid" gridTemplateColumns="auto 1fr" gap={4}>
             <Typography alignSelf="center">Webhook</Typography>
-            <Field.Select name="webhook" placeholder="Select webhook">
+            <Field.Select capitalize={false} name="webhook" placeholder="Select webhook">
               {/* <MenuItem value="1">Webhook 1</MenuItem>
               <MenuItem value="2">Webhook 2</MenuItem> */}
               {webhooks.map((webhook) => (

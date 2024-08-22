@@ -28,6 +28,7 @@ type RHFSelectProps = TextFieldProps & {
   slotProps?: {
     paper?: SxProps<Theme>;
   };
+  capitalize?: boolean;
 };
 
 export function RHFSelect({
@@ -38,6 +39,7 @@ export function RHFSelect({
   helperText,
   inputProps,
   InputLabelProps,
+  capitalize,
   ...other
 }: RHFSelectProps) {
   const { control } = useFormContext();
@@ -56,7 +58,7 @@ export function RHFSelect({
           SelectProps={{
             native,
             MenuProps: { PaperProps: { sx: { maxHeight: 220, ...slotProps?.paper } } },
-            sx: { textTransform: 'capitalize' },
+            sx: { textTransform: capitalize ? 'capitalize' : 'none' },
           }}
           InputLabelProps={{ htmlFor: labelId, ...InputLabelProps }}
           inputProps={{ id: labelId, ...inputProps }}

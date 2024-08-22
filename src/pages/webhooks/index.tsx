@@ -111,17 +111,16 @@ export default function WebhookListView() {
   );
 
   const getWebhooks = useCallback(async () => {
-    const webhookPromise =  API.get<{
+    const webhookPromise = API.get<{
       webhooks: IWebhookItem[];
       count: number;
     }>('/webhooks');
 
     const [{ data }] = await Promise.all([webhookPromise]);
-    
+
     setWebhooks(data.webhooks);
     setTableData(data.webhooks);
     setLoaded(true);
-  
   }, []);
 
   useEffect(() => {
@@ -239,7 +238,7 @@ export default function WebhookListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title="Delete webhook"
         content={
           <>
             Are you sure want to delete the webhook <strong> {table.selected.length} </strong> ?
