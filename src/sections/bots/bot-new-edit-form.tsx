@@ -1,6 +1,6 @@
 /* eslint-disable spaced-comment */
 import { z as zod } from 'zod';
-import { useMemo, useEffect, useState, useCallback, Fragment } from 'react';
+import { useMemo, useEffect, useState, useCallback, Fragment, useRef } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
@@ -25,14 +25,28 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
+  IconButton,
   MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  MenuList,
 } from '@mui/material';
 import { deleteBot } from 'src/utils/api/bots';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import type { IFunctionItem } from 'src/types/function';
+import { LoadingScreen } from 'src/components/loading-screen';
+import { TableHeadCustom, useTable } from 'src/components/table';
+import { Iconify } from 'src/components/iconify';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
-const voiceIDs = ['Joanna', 'Joey', 'Justin', 'Raveena'];
+const voiceIDs: Record<string, string[]> = {
+  en: ['Joanna', 'Joey', 'Justin', 'Raveena'],
+  es: ['Conchita', 'Lucia', 'Enrique'],
+};
 
 export type NewBotSchemaType = zod.infer<typeof NewBotSchema>;
 
@@ -50,6 +64,7 @@ export const NewBotSchema = zod.object({
     .refine((value) => value % 1 === 0, { message: 'Endpointing must be an integer!' }),
   botTimezone: zod.string().min(1, { message: 'Bot Timezone is required!' }),
   daylightSavings: zod.boolean(),
+  botLanguage: zod.string().min(1, { message: 'Bot Language is required!' }),
 });
 
 type Props = {
@@ -96,17 +111,23 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
 
   const [loaded, setLoaded] = useState(false);
   const [kbs, setKbs] = useState<{ label: string; value: string }[]>([]);
+  const [functions, setFunctions] = useState<IFunctionItem[]>([]);
+  const [invocations, setInvocations] = useState<{ function: string; trigger: string }[]>([]);
 
-  const getKbs = useCallback(async () => {
-    const { data } = await API.get<{
+  const getData = useCallback(async () => {
+    const kbPromise = API.get<{
       knowledgeBases: IKnowledgeBaseItem[];
       count: number;
     }>('/knowledgeBases');
+    const functionPromise = API.get<{ functions: IFunctionItem[] }>('/functions');
+    const [{ data }, funcRes] = await Promise.all([kbPromise, functionPromise]);
     const kbOptions = data.knowledgeBases.map((kb) => ({
       key: kb._id,
       label: kb.knowledgeBaseName,
       value: kb._id,
     }));
+
+    setFunctions(funcRes.data.functions);
     setKbs(kbOptions);
     setLoaded(true);
   }, []);
@@ -119,8 +140,10 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
   }, [currentBot, defaultValues, reset]);
 
   useEffect(() => {
-    getKbs();
-  }, [getKbs]);
+    getData();
+  }, [getData]);
+
+  const voiceRef = useRef<HTMLInputElement | null>(null);
 
   // values.botLanguage = values.botLanguage || 'en';
 
@@ -199,27 +222,6 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
-        {/* <Stack spacing={1}>
-          <Typography variant="subtitle2">Language</Typography>
-          <Field.RadioGroup
-            row
-
-            onChange={(e) => {
-              setValue('botLanguage', e.target.value as 'en' | 'es');
-              resetField('botVoice.provider');
-              resetField('botVoice.voiceId');
-              // voiceRef.current?.focus();
-            }}
-            name="language"
-            options={[
-              {
-                label: 'English',
-                value: 'en',
-              }
-            ]}
-            sx={{ gap: 4 }}
-          />
-        </Stack> */}
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Voice</Typography>
           <Stack spacing={1.5} direction="row" sx={{ gap: 4, width: '100%' }}>
@@ -227,24 +229,49 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
               {/* <Grid item xs={12} sm={4}>
                 <Field.Autocomplete
                   name="voiceProvider"
-                  label='Provider'
-                  options={
-                    voiceProviders[values.botLanguage || 'en']
-                  }
+                  label="Provider"
+                  options={voiceProviders[values.botLanguage || 'en']}
                   placeholder="Select a voice provider"
                   defaultValue="AWS"
                   fullWidth
                 />
               </Grid> */}
-              <Grid item xs={12} sm={8}>
-                <Field.Autocomplete
-                  name="botVoiceId"
-                  // label='Voice ID'
-                  options={voiceIDs}
-                  placeholder="Select a voice ID"
-                  defaultValue=""
-                  fullWidth
-                />
+              <Grid item xs={12} sm={6}>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2">Language</Typography>
+                  <Field.Select
+                    onChange={(e) => {
+                      setValue('botLanguage', e.target.value as 'en' | 'es');
+                      resetField('botVoiceId');
+                      voiceRef.current?.focus();
+                    }}
+                    name="language"
+                  >
+                    <MenuItem value="en">English</MenuItem>
+                    <MenuItem value="es">Spanish</MenuItem>
+                  </Field.Select>
+                </Stack>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Stack spacing={1}>
+                  <Typography variant="subtitle2">Voice Id</Typography>
+
+                  <Field.Select
+                    name="botVoiceId"
+                    // label='Voice ID'
+                    ref={voiceRef}
+                    // options={voiceIDs[values.botLanguage || 'en']}
+                    placeholder="Select a voice ID"
+                    defaultValue=""
+                    fullWidth
+                  >
+                    {voiceIDs[values.botLanguage || 'en'].map((voiceId) => (
+                      <MenuItem key={voiceId} value={voiceId}>
+                        {voiceId}
+                      </MenuItem>
+                    ))}
+                  </Field.Select>
+                </Stack>
               </Grid>
             </Grid>
           </Stack>
@@ -336,18 +363,6 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
           <Field.Switch name="daylightSavings" label="Daylight Savings" />
         </Stack>
       </Stack>
-      <Box p={3}>
-        <Button
-          onClick={() => {
-            actionDialog.setValue(true);
-          }}
-          variant="contained"
-          color="primary"
-          disabled={!values.botInstructions || values.botInstructions.trim().length === 0}
-        >
-          Add Action
-        </Button>
-      </Box>
     </Card>
   );
 
@@ -355,58 +370,69 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
 
   return (
     <>
-      <Form methods={methods} onSubmit={onSubmit}>
-        <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 880 } }}>
-          {renderDetails}
+      {loaded ? (
+        <Form methods={methods} onSubmit={onSubmit}>
+          <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 880 } }}>
+            {renderDetails}
 
-          {renderProperties}
+            {renderProperties}
 
-          {renderKnowledgeBase}
+            {renderKnowledgeBase}
 
-          {renderMisc}
+            {renderMisc}
 
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent={currentBot ? 'space-between' : 'end'}
-            flexWrap="wrap"
-          >
-            {/* <FormControlLabel
+            <InvokeFunction
+              functions={functions}
+              botInstructions={values.botInstructions}
+              invocations={invocations}
+              setInvocations={setInvocations}
+            />
+
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent={currentBot ? 'space-between' : 'end'}
+              flexWrap="wrap"
+            >
+              {/* <FormControlLabel
         control={<Switch defaultChecked inputProps={{ id: 'publish-switch' }} />}
         label="Publish"
         sx={{ flexGrow: 1, pl: 3 }}
       /> */}
-            {currentBot && (
-              <Button
-                onClick={async () => {
-                  if (isUsed) {
-                    alertDialog.setValue(true);
-                  } else {
-                    await deleteBot(currentBot._id, () => {
-                      router.push('/bots');
-                    });
-                  }
-                }}
+              {currentBot && (
+                <Button
+                  onClick={async () => {
+                    if (isUsed) {
+                      alertDialog.setValue(true);
+                    } else {
+                      await deleteBot(currentBot._id, () => {
+                        router.push('/bots');
+                      });
+                    }
+                  }}
+                  variant="contained"
+                  size="large"
+                  color="error"
+                >
+                  Delete bot
+                </Button>
+              )}
+              <LoadingButton
+                type="submit"
                 variant="contained"
                 size="large"
-                color="error"
+                loading={isSubmitting}
+                sx={{ ml: 2 }}
               >
-                Delete bot
-              </Button>
-            )}
-            <LoadingButton
-              type="submit"
-              variant="contained"
-              size="large"
-              loading={isSubmitting}
-              sx={{ ml: 2 }}
-            >
-              {!currentBot ? 'Create Bot' : 'Update Bot'}
-              {/* Ji */}
-            </LoadingButton>
-          </Box>
-        </Stack>
-      </Form>
+                {!currentBot ? 'Create Bot' : 'Update Bot'}
+                {/* Ji */}
+              </LoadingButton>
+            </Box>
+          </Stack>
+        </Form>
+      ) : (
+        <LoadingScreen />
+      )}
       <ConfirmDialog
         title="Unable to delete bot"
         content="This bot is currently being used in some campaign(s). Please remove it from the linked campaign(s) before deleting."
@@ -416,29 +442,21 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
           alertDialog.setValue(false);
         }}
       />
-      {actionDialog.value && (
-        <ActionDialog
-          open={actionDialog.value}
-          onClose={() => {
-            actionDialog.setValue(false);
-          }}
-          botInstrunctions={values.botInstructions}
-        />
-      )}
     </>
   );
 }
 
-const ActionDialog: React.FC<{
+const ActionTriggerDialog: React.FC<{
   open: boolean;
   onClose: () => void;
   botInstrunctions: string;
-}> = ({ open, onClose, botInstrunctions }) => {
+  onSubmit: (action: string) => void;
+}> = ({ open, onClose, botInstrunctions, onSubmit }) => {
   const actions = botInstrunctions.split('.').filter((line) => line.trim().length > 0);
   const [selectedAction, setSelectedAction] = useState<string | undefined>(undefined);
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Select action</DialogTitle>
+      <DialogTitle>Select trigger</DialogTitle>
       <Divider />
       <DialogContent>
         <Box
@@ -483,10 +501,424 @@ const ActionDialog: React.FC<{
         <Button onClick={onClose} variant="outlined" color="error">
           Close
         </Button>
-        <Button disabled={!selectedAction} onClick={onClose} variant="contained">
+        <Button
+          disabled={!selectedAction}
+          onClick={() => {
+            if (!selectedAction) return;
+            onSubmit(selectedAction);
+          }}
+          variant="contained"
+        >
           Submit
         </Button>
       </DialogActions>
     </Dialog>
+  );
+};
+
+const TABLE_HEAD = [
+  // { id: 'checkbox', width: '' },
+  { id: 'function', label: 'Function', width: 255 },
+  { id: 'trigger', label: 'Trigger', width: 255 },
+  { id: '', width: 200 },
+];
+
+const InvokeFunction: React.FC<{
+  functions: IFunctionItem[];
+  botInstructions: string;
+  invocations: {
+    function: string;
+    trigger: string;
+  }[];
+  setInvocations: React.Dispatch<React.SetStateAction<{ function: string; trigger: string }[]>>;
+}> = ({ botInstructions, functions, invocations, setInvocations }) => {
+  const shouldShowForm = useBoolean();
+  const table = useTable();
+  const [invocation, setInvocation] = useState<{
+    function: string;
+    trigger: string;
+  }>({
+    function: '',
+    trigger: '',
+  });
+  const [errors, setErrors] = useState<{
+    function: boolean;
+    trigger: boolean;
+  }>({
+    function: false,
+    trigger: false,
+  });
+
+  const openActionDialog = useBoolean();
+
+  return (
+    <>
+      <Card>
+        <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
+          <Stack>
+            <Typography variant="h5">Invoke Function</Typography>
+          </Stack>
+          <Button
+            onClick={() => {
+              shouldShowForm.setValue(true);
+            }}
+            variant="contained"
+          >
+            Add New Invocation
+          </Button>
+        </Stack>
+        <Divider />
+        <Divider />
+        <Box p={4}>
+          {Boolean(invocations.length) || shouldShowForm.value ? (
+            <Card>
+              <Table>
+                <TableHeadCustom
+                  order={table.order}
+                  orderBy={table.orderBy}
+                  headLabel={TABLE_HEAD}
+                  numSelected={table.selected.length}
+                />
+                <TableBody>
+                  {shouldShowForm.value && (
+                    <TableRow>
+                      <TableCell
+                        sx={{
+                          verticalAlign: 'top',
+                        }}
+                      >
+                        <Field.Select
+                          name="key"
+                          value={invocation.function}
+                          onChange={(e) => {
+                            setInvocation((prev) => ({
+                              ...prev,
+                              function: e.target.value,
+                            }));
+                          }}
+                          placeholder="Header key"
+                          error={errors.function}
+                        >
+                          {functions.map((func) => (
+                            <MenuItem key={func._id} value={func._id}>
+                              {func.functionName}
+                            </MenuItem>
+                          ))}
+                        </Field.Select>
+                      </TableCell>
+
+                      <TableCell
+                        sx={{
+                          verticalAlign: 'top',
+                        }}
+                      >
+                        {invocation.trigger ? (
+                          <Typography>{invocation.trigger}</Typography>
+                        ) : (
+                          <Button
+                            onClick={() => {
+                              openActionDialog.setValue(true);
+                            }}
+                            fullWidth
+                            size="large"
+                            variant="contained"
+                          >
+                            Add Trigger
+                          </Button>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Stack gap={2}>
+                          <Button
+                            variant="contained"
+                            onClick={() => {
+                              let isError = false;
+                              if (!invocation.function) {
+                                setErrors((prev) => ({
+                                  ...prev,
+                                  function: true,
+                                }));
+                                isError = true;
+                              }
+                              if (!invocation.trigger || invocation.trigger.trim().length < 1) {
+                                setErrors((prev) => ({
+                                  ...prev,
+                                  trigger: true,
+                                }));
+                                isError = true;
+                              }
+
+                              if (!isError) {
+                                setInvocations((prev) => [...prev, invocation]);
+                                setInvocation({
+                                  function: '',
+                                  trigger: '',
+                                });
+                                setErrors({
+                                  function: false,
+                                  trigger: false,
+                                });
+                                shouldShowForm.setValue(false);
+                              }
+                            }}
+                            size="large"
+                            color="primary"
+                            startIcon={<Iconify icon="ic:round-check" />}
+                          >
+                            Submit
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            startIcon={<Iconify icon="ic:round-close" />}
+                            size="large"
+                            onClick={() => {
+                              shouldShowForm.setValue(false);
+                              setInvocation({
+                                function: '',
+                                trigger: '',
+                              });
+                              setErrors({
+                                function: false,
+                                trigger: false,
+                              });
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {invocations.map((i, index) => {
+                    return (
+                      <InvocationsTableRow
+                        key={JSON.stringify(i) + index}
+                        currentInvocation={i}
+                        removeInvocation={() => {
+                          setInvocations((prev) => {
+                            const newInvocations = [...prev];
+                            newInvocations.splice(index, 1);
+                            return newInvocations;
+                          });
+                        }}
+                        updateInvocation={(newInvocation) => {
+                          setInvocations((prev) => {
+                            const newInvocations = [...prev];
+                            newInvocations[index] = newInvocation;
+                            return newInvocations;
+                          });
+                        }}
+                        functions={functions}
+                        botInstructions={botInstructions}
+                      />
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </Card>
+          ) : (
+            <Stack>
+              <Typography variant="h5" align="center">
+                No Invocations
+              </Typography>
+            </Stack>
+          )}
+        </Box>
+      </Card>
+      <ActionTriggerDialog
+        open={openActionDialog.value}
+        onClose={() => openActionDialog.setValue(false)}
+        botInstrunctions={botInstructions}
+        onSubmit={(action) => {
+          setInvocation((prev) => ({
+            ...prev,
+            trigger: action,
+          }));
+          openActionDialog.setValue(false);
+        }}
+      />
+    </>
+  );
+};
+
+const InvocationsTableRow: React.FC<{
+  currentInvocation: {
+    function: string;
+    trigger: string;
+  };
+  removeInvocation: () => void;
+  updateInvocation: (newInvocation: { function: string; trigger: string }) => void;
+  functions: IFunctionItem[];
+  botInstructions: string;
+}> = ({ currentInvocation, removeInvocation, updateInvocation, functions, botInstructions }) => {
+  const popover = usePopover();
+  const editing = useBoolean();
+  const [invocation, setInvocation] = useState<{
+    function: string;
+    trigger: string;
+  }>(currentInvocation);
+  const [errors, setErrors] = useState<{
+    function: boolean;
+    trigger: boolean;
+  }>({
+    function: false,
+    trigger: false,
+  });
+  const openActionDialog = useBoolean();
+
+  return (
+    <>
+      <TableRow>
+        <TableCell
+          sx={{
+            verticalAlign: 'top',
+          }}
+        >
+          <Field.Select
+            name="key"
+            disabled={!editing.value}
+            value={invocation.function}
+            onChange={(e) => {
+              setInvocation((prev) => ({
+                ...prev,
+                function: e.target.value,
+              }));
+            }}
+            placeholder="Header key"
+            error={errors.function}
+          >
+            {functions.map((func) => (
+              <MenuItem key={func._id} value={func._id}>
+                {func.functionName}
+              </MenuItem>
+            ))}
+          </Field.Select>
+        </TableCell>
+
+        <TableCell
+          sx={{
+            verticalAlign: 'top',
+          }}
+        >
+          {!editing.value ? (
+            <Typography>{invocation.trigger}</Typography>
+          ) : (
+            <Button
+              size="large"
+              fullWidth
+              onClick={() => {
+                openActionDialog.setValue(true);
+              }}
+              variant="contained"
+            >
+              Add Trigger
+            </Button>
+          )}
+        </TableCell>
+        <TableCell align="right">
+          {editing.value ? (
+            <Stack gap={2}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  let isError = false;
+                  if (!invocation.function) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      function: true,
+                    }));
+                    isError = true;
+                  }
+                  if (!invocation.trigger || invocation.trigger.trim().length < 1) {
+                    setErrors((prev) => ({
+                      ...prev,
+                      trigger: true,
+                    }));
+                    isError = true;
+                  }
+
+                  if (!isError) {
+                    updateInvocation(invocation);
+                    setErrors({
+                      function: false,
+                      trigger: false,
+                    });
+                    editing.setValue(false);
+                  }
+                }}
+                size="large"
+                color="primary"
+                startIcon={<Iconify icon="ic:round-check" />}
+              >
+                Update
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<Iconify icon="ic:round-close" />}
+                size="large"
+                onClick={() => {
+                  setInvocation({
+                    ...currentInvocation,
+                  });
+                  setErrors({
+                    function: false,
+                    trigger: false,
+                  });
+                  editing.setValue(false);
+                }}
+              >
+                Cancel
+              </Button>
+            </Stack>
+          ) : (
+            <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+              <Iconify icon="eva:more-vertical-fill" />
+            </IconButton>
+          )}
+        </TableCell>
+      </TableRow>
+      <CustomPopover
+        open={popover.open}
+        anchorEl={popover.anchorEl}
+        onClose={popover.onClose}
+        slotProps={{ arrow: { placement: 'right-top' } }}
+      >
+        <MenuList>
+          <MenuItem
+            onClick={() => {
+              editing.setValue(true);
+              popover.onClose();
+            }}
+          >
+            <Iconify icon="solar:pen-bold" />
+            Edit
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              removeInvocation();
+              popover.onClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <Iconify icon="solar:trash-bin-trash-bold" />
+            Delete
+          </MenuItem>
+        </MenuList>
+      </CustomPopover>
+      <ActionTriggerDialog
+        open={openActionDialog.value}
+        onClose={() => openActionDialog.setValue(false)}
+        botInstrunctions={botInstructions}
+        onSubmit={(action) => {
+          setInvocation((prev) => ({
+            ...prev,
+            trigger: action,
+          }));
+          openActionDialog.setValue(false);
+        }}
+      />
+    </>
   );
 };
