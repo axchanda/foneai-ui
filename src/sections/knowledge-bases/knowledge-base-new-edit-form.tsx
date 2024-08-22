@@ -116,7 +116,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       let fileURL = '';
       let fileName = '';
       let fileToArchive: string | undefined;
-      if (!currentKb && files.length <= 0) {
+      if ((currentKb?.knowledgeBaseFiles || []).length <= 0 && files.length <= 0) {
         setError('knowledgeBaseFiles', { message: 'File is required' });
       }
       if (isNewFileUploaded) {

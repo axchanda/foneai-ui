@@ -6,7 +6,7 @@ export type IKnowledgeBaseItem = {
     question: string;
     answer: string;
   }[];
-  knowledgeBaseFiles?: {
+  knowledgeBaseFiles: {
     fileName: string;
     fileURL: string;
   }[];

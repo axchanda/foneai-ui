@@ -18,10 +18,23 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import API from 'src/utils/API';
 import type { IBotType } from 'src/types/bot';
-import { Button, Grid, MenuItem } from '@mui/material';
+import {
+  Avatar,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  MenuItem,
+} from '@mui/material';
 import { deleteBot } from 'src/utils/api/bots';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 const voiceIDs = ['Joanna', 'Joey', 'Justin', 'Raveena'];
@@ -52,6 +65,7 @@ type Props = {
 export function BotNewEditForm({ currentBot, isUsed }: Props) {
   const router = useRouter();
   const alertDialog = useBoolean();
+  const actionDialog = useBoolean();
   const defaultValues = useMemo(
     () => ({
       botName: currentBot?.botName || '',
@@ -327,6 +341,18 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
           <Field.Switch name="daylightSavings" label="Daylight Savings" />
         </Stack>
       </Stack>
+      <Box p={3}>
+        <Button
+          onClick={() => {
+            actionDialog.setValue(true);
+          }}
+          variant="contained"
+          color="primary"
+          disabled={!values.botInstructions || values.botInstructions.trim().length === 0}
+        >
+          Add Action
+        </Button>
+      </Box>
     </Card>
   );
 
@@ -395,6 +421,75 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
           alertDialog.setValue(false);
         }}
       />
+      <ActionDialog
+        open={actionDialog.value}
+        onClose={() => {
+          actionDialog.setValue(false);
+        }}
+        botInstrunctions={values.botInstructions}
+      />
     </>
   );
 }
+
+const ActionDialog: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  botInstrunctions: string;
+}> = ({ open, onClose, botInstrunctions }) => {
+  const [actions, setActions] = useState<string[]>(
+    botInstrunctions.split('.').filter((line) => line.trim().length > 0)
+  );
+  const [selectedAction, setSelectedAction] = useState<string | undefined>(undefined);
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Select action</DialogTitle>
+      <Divider />
+      <DialogContent>
+        <List>
+          {actions.map((action, index) => (
+            <ListItem
+              sx={{
+                cursor: 'pointer',
+                color: selectedAction === action ? 'primary.main' : 'text.primary',
+
+                ':hover': {
+                  color: 'secondary.main',
+                  '.avatar': {
+                    backgroundColor: 'secondary.main',
+                  },
+                },
+                '.avatar': {
+                  backgroundColor: selectedAction === action ? 'primary.main' : 'text.primary',
+                },
+              }}
+              key={index}
+              onClick={() => {
+                setSelectedAction((prev) => (prev === action ? undefined : action));
+              }}
+            >
+              <ListItemAvatar>
+                <Avatar className="avatar">
+                  <Iconify
+                    // color={selectedAction === action ? 'primary.main' : 'text.primary'}
+                    icon="mdi:call-to-action"
+                  />
+                </Avatar>
+              </ListItemAvatar>
+              <Typography variant="subtitle2">{action}</Typography>
+            </ListItem>
+          ))}
+        </List>
+      </DialogContent>
+      <Divider />
+      <DialogActions>
+        <Button onClick={onClose} variant="outlined" color="error">
+          Close
+        </Button>
+        <Button disabled={!selectedAction} onClick={onClose} variant="contained">
+          Submit
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};

@@ -8,14 +8,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
-  FormControlLabel,
   Grid,
-  Radio,
-  RadioGroup,
   TextField,
   Typography,
   IconButton,
+  FormControlLabel,
+  FormGroup,
+  Checkbox,
 } from '@mui/material';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -109,26 +108,23 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
       <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
         <DialogTitle sx={{ pb: 2 }}>Create New API Key</DialogTitle>
         <DialogContent sx={{ typography: 'body2' }}>
-          <ol>
-            <li>
-              <Typography fontWeight="600">Enter name</Typography>
-              <Typography variant="subtitle2" mt={2} mb={1} color="#919EAB">
-                Friendly name (comment)
-              </Typography>
-              <TextField
-                fullWidth
-                inputProps={{
-                  autoComplete: 'off',
-                }}
-                name="comment"
-                label="Comment"
-                placeholder="MY_KEY"
-                value={apiKeyName}
-                onChange={(e) => setApiKeyName(e.target.value)}
-              />
-            </li>
-            {/* <Divider sx={{ margin: '15px 0' }} /> */}
-            <li>
+          <Typography fontWeight="600">Enter name</Typography>
+          <Typography variant="subtitle2" mt={2} mb={1} color="#919EAB">
+            Friendly name (comment)
+          </Typography>
+          <TextField
+            fullWidth
+            inputProps={{
+              autoComplete: 'off',
+            }}
+            name="comment"
+            label="Comment"
+            placeholder="MY_KEY"
+            value={apiKeyName}
+            onChange={(e) => setApiKeyName(e.target.value)}
+          />
+          {/* <Divider sx={{ margin: '15px 0' }} /> */}
+          {/* <li>
               <Typography mb={2} mt={4} fontWeight="600">
                 Set expiration
               </Typography>
@@ -145,8 +141,7 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
                   <FormControlLabel value="date" control={<Radio />} label="Date" />
                 </RadioGroup>
               </FormControl>
-            </li>
-          </ol>
+            </li> */}
         </DialogContent>
         <DialogActions>
           <Button variant="outlined" color="error" onClick={onClose}>
@@ -166,9 +161,13 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
       </Dialog>
       <SetupConfirmationDialog
         open={openConfirmationDialog.value}
-        onClose={openConfirmationDialog.onFalse}
+        onClose={() => {
+          setApiKeyName('');
+          openConfirmationDialog.onFalse();
+        }}
         onConfirm={() => {
           openConfirmationDialog.onFalse();
+          setApiKeyName('');
           onClose();
         }}
         apiKeyName={apiKeyName}
@@ -194,6 +193,7 @@ const SetupConfirmationDialog = ({
   const [isCopied, setCopied] = useClipboard(_mock.id(4), {
     successDuration: 3000,
   });
+  const [agreed, setAgreed] = React.useState(false);
 
   return (
     <Dialog fullWidth maxWidth="xs" open={open} sx={{ zIndex: 1000 }} onClose={onClose}>
@@ -235,13 +235,53 @@ const SetupConfirmationDialog = ({
               </IconButton>
             </Box>
           </>
+          <Typography mt={1} variant="subtitle1">
+            Please copy this key and save it in a secure location. For security reasons, we will not
+            be able to display it again.
+          </Typography>
+          <FormGroup
+            sx={{
+              my: 2,
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  value={agreed}
+                  onChange={(e) => {
+                    // @ts-ignore
+                    setAgreed(e.target.checked);
+                  }}
+                  name="agree"
+                  // label="I have copied the key"
+                  required
+                />
+              }
+              label="I have copied the key"
+            />
+          </FormGroup>
         </>
       </DialogContent>
       <DialogActions>
-        <Button variant="outlined" color="error" onClick={onClose}>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={() => {
+            setAgreed(false);
+            onClose();
+          }}
+        >
           Cancel
         </Button>
-        <Button variant="contained" color="primary" onClick={onConfirm}>
+        <Button
+          disabled={!agreed}
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            setAgreed(false);
+            onConfirm();
+          }}
+        >
           Create key
         </Button>
       </DialogActions>
