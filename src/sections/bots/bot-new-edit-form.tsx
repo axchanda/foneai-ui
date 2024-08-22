@@ -1,6 +1,6 @@
 /* eslint-disable spaced-comment */
 import { z as zod } from 'zod';
-import { useMemo, useEffect, useState, useCallback } from 'react';
+import { useMemo, useEffect, useState, useCallback, Fragment } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
@@ -19,22 +19,17 @@ import { Form, Field } from 'src/components/hook-form';
 import API from 'src/utils/API';
 import type { IBotType } from 'src/types/bot';
 import {
-  Avatar,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
   MenuItem,
 } from '@mui/material';
 import { deleteBot } from 'src/utils/api/bots';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 const voiceIDs = ['Joanna', 'Joey', 'Justin', 'Raveena'];
@@ -446,40 +441,41 @@ const ActionDialog: React.FC<{
       <DialogTitle>Select action</DialogTitle>
       <Divider />
       <DialogContent>
-        <List>
-          {actions.map((action, index) => (
-            <ListItem
-              sx={{
-                cursor: 'pointer',
-                color: selectedAction === action ? 'primary.main' : 'text.primary',
-
-                ':hover': {
-                  color: 'secondary.main',
-                  '.avatar': {
-                    backgroundColor: 'secondary.main',
-                  },
-                },
-                '.avatar': {
-                  backgroundColor: selectedAction === action ? 'primary.main' : 'text.primary',
-                },
-              }}
-              key={index}
-              onClick={() => {
-                setSelectedAction((prev) => (prev === action ? undefined : action));
-              }}
-            >
-              <ListItemAvatar>
-                <Avatar className="avatar">
-                  <Iconify
-                    // color={selectedAction === action ? 'primary.main' : 'text.primary'}
-                    icon="mdi:call-to-action"
-                  />
-                </Avatar>
-              </ListItemAvatar>
-              <Typography variant="subtitle2">{action}</Typography>
-            </ListItem>
-          ))}
-        </List>
+        <Box
+          my={2}
+          border="2px solid"
+          borderRadius="12px"
+          borderColor="background.neutral"
+          sx={{
+            span: {
+              cursor: 'pointer',
+              ':hover': {
+                backgroundColor: 'primary.main',
+              },
+              '&.selected': {
+                backgroundColor: 'primary.main',
+              },
+            },
+          }}
+          p={2}
+        >
+          <Typography variant="subtitle1">
+            {actions.map((action, index) => (
+              <Fragment key={index}>
+                <Typography
+                  component="span"
+                  className={selectedAction === action ? 'selected' : ''}
+                  onClick={() =>
+                    setSelectedAction((prev) => (prev === action ? undefined : action))
+                  }
+                >
+                  {action}
+                </Typography>
+                <Typography component="span"> . </Typography>
+              </Fragment>
+            ))}
+          </Typography>
+        </Box>
       </DialogContent>
       <Divider />
       <DialogActions>
