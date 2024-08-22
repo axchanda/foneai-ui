@@ -416,13 +416,15 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
           alertDialog.setValue(false);
         }}
       />
-      <ActionDialog
-        open={actionDialog.value}
-        onClose={() => {
-          actionDialog.setValue(false);
-        }}
-        botInstrunctions={values.botInstructions}
-      />
+      {actionDialog.value && (
+        <ActionDialog
+          open={actionDialog.value}
+          onClose={() => {
+            actionDialog.setValue(false);
+          }}
+          botInstrunctions={values.botInstructions}
+        />
+      )}
     </>
   );
 }
@@ -432,9 +434,7 @@ const ActionDialog: React.FC<{
   onClose: () => void;
   botInstrunctions: string;
 }> = ({ open, onClose, botInstrunctions }) => {
-  const [actions, setActions] = useState<string[]>(
-    botInstrunctions.split('.').filter((line) => line.trim().length > 0)
-  );
+  const actions = botInstrunctions.split('.').filter((line) => line.trim().length > 0);
   const [selectedAction, setSelectedAction] = useState<string | undefined>(undefined);
   return (
     <Dialog open={open} onClose={onClose}>
