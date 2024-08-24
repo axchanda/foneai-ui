@@ -1,16 +1,9 @@
-import { paths } from 'src/routes/paths';
-
-import { CONFIG } from 'src/config-global';
-
-import { SvgColor } from 'src/components/svg-color';
-
-
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
 const icon = (name: string) => (
-  <Iconify width={16} icon={name} color={'primary'} sx={{ flexShrink: 0 }} />
+  <Iconify width={16} icon={name} color="primary" sx={{ flexShrink: 0 }} />
 );
 
 const ICONS = {
@@ -52,7 +45,7 @@ export const navData = [
         path: '/dashboard',
         icon: ICONS.dashboard,
       },
-    ]
+    ],
   },
   {
     subheader: 'Voice bot',
@@ -68,9 +61,9 @@ export const navData = [
         icon: ICONS.campaigns,
       },
       {
-        title: "Knowledge Bases",
-        "path": "/knowledge-bases",
-        icon: ICONS.knowledgeBase
+        title: 'Knowledge Bases',
+        path: '/knowledge-bases',
+        icon: ICONS.knowledgeBase,
       },
       {
         title: 'Webhooks',
@@ -81,8 +74,8 @@ export const navData = [
         title: 'Functions',
         path: '/functions',
         icon: ICONS.functions,
-      }
-    ]
+      },
+    ],
   },
   {
     subheader: 'Management',
@@ -96,7 +89,7 @@ export const navData = [
         title: 'Setup',
         path: '/setup',
         icon: ICONS.setup,
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];

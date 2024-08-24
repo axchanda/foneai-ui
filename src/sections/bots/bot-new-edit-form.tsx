@@ -1,6 +1,6 @@
 /* eslint-disable spaced-comment */
 import { z as zod } from 'zod';
-import { useMemo, useEffect, useState, useCallback, Fragment, useRef } from 'react';
+import { useMemo, useEffect, useState, useCallback, Fragment } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
@@ -82,7 +82,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
       botIntroduction: currentBot?.botIntroduction || '',
       botInstructions: currentBot?.botInstructions || '',
       botLanguage: currentBot?.botLanguage || 'en',
-      botVoiceId: currentBot?.botVoiceId || 'Joanna',
+      botVoiceId: currentBot?.botVoiceId || '',
       botIsInterruptable: currentBot?.botIsInterruptable || false,
       endpointing: currentBot?.endpointing || 20,
       botKnowledgeBase: currentBot?.botKnowledgeBase || '',
@@ -113,6 +113,8 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
   const [kbs, setKbs] = useState<{ label: string; value: string }[]>([]);
   const [functions, setFunctions] = useState<IFunctionItem[]>([]);
   const [invocations, setInvocations] = useState<{ function: string; trigger: string }[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState<string | null>(currentBot?.botVoiceId || null);
+  const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
 
   const getData = useCallback(async () => {
     const kbPromise = API.get<{
@@ -139,14 +141,14 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
     }
   }, [currentBot, defaultValues, reset]);
 
+  console.log(values.botVoiceId);
+
   useEffect(() => {
     getData();
   }, [getData]);
 
-  const voiceRef = useRef<HTMLInputElement | null>(null);
-
   // values.botLanguage = values.botLanguage || 'en';
-
+  console.log(values.botLanguage);
   const onSubmit = handleSubmit(async (data) => {
     console.log(data);
     try {
@@ -226,25 +228,17 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
           <Typography variant="subtitle2">Voice</Typography>
           <Stack spacing={1.5} direction="row" sx={{ gap: 4, width: '100%' }}>
             <Grid container spacing={1.5}>
-              {/* <Grid item xs={12} sm={4}>
-                <Field.Autocomplete
-                  name="voiceProvider"
-                  label="Provider"
-                  options={voiceProviders[values.botLanguage || 'en']}
-                  placeholder="Select a voice provider"
-                  defaultValue="AWS"
-                  fullWidth
-                />
-              </Grid> */}
               <Grid item xs={12} sm={6}>
                 <Stack spacing={1}>
                   <Typography variant="subtitle2">Language</Typography>
                   <Field.Select
                     onChange={(e) => {
                       setValue('botLanguage', e.target.value as 'en' | 'es');
-                      resetField('botVoiceId');
-                      voiceRef.current?.focus();
+                      setValue('botVoiceId', '');
+                      setSelectedVoice(null);
+                      // voiceRef.current?.focus();
                     }}
+                    defaultValue={values.botLanguage}
                     name="language"
                   >
                     <MenuItem value="en">English</MenuItem>
@@ -253,24 +247,33 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
                 </Stack>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <Stack spacing={1}>
-                  <Typography variant="subtitle2">Voice Id</Typography>
+                <Stack>
+                  <Stack spacing={1}>
+                    <Typography variant="subtitle2">Voice Id</Typography>
 
-                  <Field.Select
-                    name="botVoiceId"
-                    // label='Voice ID'
-                    ref={voiceRef}
-                    // options={voiceIDs[values.botLanguage || 'en']}
-                    placeholder="Select a voice ID"
-                    defaultValue=""
-                    fullWidth
-                  >
-                    {voiceIDs[values.botLanguage || 'en'].map((voiceId) => (
-                      <MenuItem key={voiceId} value={voiceId}>
-                        {voiceId}
-                      </MenuItem>
-                    ))}
-                  </Field.Select>
+                    {/* <Field.Text
+                      name="botVoiceId"
+                      // label='Voice ID'
+                      ref={voiceRef}
+                      // options={voiceIDs[values.botLanguage || 'en']}
+                      placeholder="Select a voice ID"
+                      defaultValue=""
+                      fullWidth
+                      disabled
+                    /> */}
+                    <Button
+                      disabled={!values.botLanguage}
+                      onClick={() => {
+                        setOpenVoiceDialog(true);
+                      }}
+                      sx={{ minHeight: '55.99px' }}
+                      variant="contained"
+                      size="large"
+                    >
+                      {values.botVoiceId || 'Select Voice'}
+                      <Iconify icon="eva:arrow-ios-downward" />
+                    </Button>
+                  </Stack>
                 </Stack>
               </Grid>
             </Grid>
@@ -440,6 +443,23 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
         action={<></>}
         onClose={() => {
           alertDialog.setValue(false);
+        }}
+      />
+      <VoiceDialog
+        open={openVoiceDialog}
+        onClose={() => setOpenVoiceDialog(false)}
+        // voices={voiceIDs[values.botLanguage || 'en']}
+        onSelect={(voice) => {
+          setSelectedVoice(voice);
+          setValue('botVoiceId', voice);
+          setOpenVoiceDialog(false);
+        }}
+        selectedVoice={selectedVoice}
+        setSelectedVoice={setSelectedVoice}
+        language={values.botLanguage}
+        onConfirm={(voiceId: string) => {
+          setValue('botVoiceId', voiceId);
+          setOpenVoiceDialog(false);
         }}
       />
     </>
@@ -920,5 +940,262 @@ const InvocationsTableRow: React.FC<{
         }}
       />
     </>
+  );
+};
+
+const voicesEn: {
+  provider: 'AWS' | 'GCP' | 'Azure';
+  gender: 'M' | 'F';
+  accent: string;
+  voice: string;
+  price: 'free' | 'paid';
+  file: string;
+}[] = [
+  {
+    provider: 'AWS',
+    gender: 'F',
+    accent: 'us',
+    voice: 'Joanna',
+    price: 'free',
+    file: '/voices/female_american.mp3',
+  },
+  {
+    provider: 'GCP',
+    gender: 'M',
+    accent: 'us',
+    voice: 'Mark',
+    price: 'free',
+    file: '/voices/male_american.mp3',
+  },
+  {
+    provider: 'AWS',
+    gender: 'F',
+    accent: 'au',
+    voice: 'Nicole',
+    price: 'paid',
+    file: '/voices/female_australian.mp3',
+  },
+];
+
+const voicesEs: {
+  provider: 'AWS' | 'GCP' | 'Azure';
+  gender: 'M' | 'F';
+  accent: string;
+  voice: string;
+  price: 'free' | 'paid';
+  file: string;
+}[] = [
+  {
+    provider: 'GCP',
+    gender: 'M',
+    accent: 'mx',
+    voice: 'Miguel',
+    price: 'free',
+    file: '/voices/male_spanish.mp3',
+  },
+];
+
+const voiceTableHead = [
+  { id: 'provider', label: 'Provider', width: 80 },
+  { id: 'gender', label: 'Gender', width: 80 },
+  { id: 'accent', label: 'Accent', width: 80 },
+  { id: 'voice', label: 'Voice ID', width: 180 },
+  { id: 'price', label: 'Price', width: 120 },
+  { id: 'file', label: 'File', width: 180 },
+  { id: '', width: 80 },
+];
+const VoiceDialog: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  // voices: string[];
+  onSelect: (voice: string) => void;
+  selectedVoice: string | null;
+  setSelectedVoice: React.Dispatch<React.SetStateAction<string | null>>;
+  language: string;
+  onConfirm: (voice: string) => void;
+}> = ({ open, onClose, onSelect, language, selectedVoice, setSelectedVoice }) => {
+  const table = useTable();
+  const [selected, setSelected] = useState<string | null>(selectedVoice);
+  const voices = useMemo(() => {
+    if (language === 'en') {
+      return voicesEn;
+    }
+    return voicesEs;
+  }, [language]);
+
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+
+  return (
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>Select Voice</DialogTitle>
+      <Divider />
+      <DialogContent>
+        <Card
+          sx={{
+            my: 2,
+          }}
+        >
+          <Table>
+            <TableHeadCustom
+              order={table.order}
+              orderBy={table.orderBy}
+              headLabel={voiceTableHead}
+              numSelected={table.selected.length}
+            />
+            <TableBody>
+              {voices.map((voice) => (
+                <VoicesTableRow
+                  key={voice.voice}
+                  voice={voice}
+                  selected={selected}
+                  setSelected={setSelected}
+                  currentlyPlaying={currentlyPlaying}
+                  setCurrentlyPlaying={setCurrentlyPlaying}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+      </DialogContent>
+      <Divider />
+      <DialogActions>
+        <Button
+          onClick={() => {
+            setCurrentlyPlaying(null);
+            onClose();
+          }}
+          variant="outlined"
+          color="error"
+        >
+          Close
+        </Button>
+        <Button
+          onClick={() => {
+            if (selected) {
+              onSelect(selected);
+            }
+          }}
+          variant="contained"
+          disabled={!selected}
+          color="primary"
+        >
+          Submit
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const VoicesTableRow: React.FC<{
+  voice: {
+    provider: 'AWS' | 'GCP' | 'Azure';
+    gender: 'M' | 'F';
+    accent: string;
+    voice: string;
+    price: 'free' | 'paid';
+    file: string;
+  };
+  selected: string | null;
+  setSelected: React.Dispatch<React.SetStateAction<string | null>>;
+  currentlyPlaying: string | null;
+  setCurrentlyPlaying: React.Dispatch<React.SetStateAction<string | null>>;
+}> = ({ voice, selected, setSelected, currentlyPlaying, setCurrentlyPlaying }) => {
+  const audio = useMemo(() => {
+    return new Audio(voice.file);
+  }, [voice.file]);
+
+  useEffect(() => {
+    if (currentlyPlaying === voice.file) {
+      audio.play();
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }, [audio, currentlyPlaying, voice.file]);
+
+  return (
+    <TableRow
+      sx={{
+        '&:hover': {
+          backgroundColor: 'background.neutral',
+        },
+        cursor: 'pointer',
+      }}
+      onClick={() => {
+        setSelected(voice.voice);
+      }}
+      key={voice.voice}
+    >
+      <TableCell
+        sx={{
+          textTransform: 'capitalize',
+        }}
+        // width={80}
+      >
+        <Stack justifyContent="center" alignItems="center" spacing={1.5}>
+          <Iconify
+            icon={voice.provider === 'AWS' ? 'skill-icons:aws-dark' : 'skill-icons:gcp-dark'}
+            width="2.5rem"
+          />
+          {/* <Typography variant="caption">{voice.provider}</Typography> */}
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <Stack justifyContent="center" alignItems="center" spacing={1.5}>
+          <Iconify
+            icon={voice.gender === 'M' ? 'noto:male-sign' : 'noto:female-sign'}
+            width="2.5rem"
+          />
+          {/* <Typography variant="caption" textAlign="center">
+        {voice.gender}
+      </Typography> */}
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <Stack justifyContent="center" alignItems="center">
+          <Iconify
+            icon={voice.accent === 'us' ? 'twemoji:flag-united-states' : 'twemoji:flag-australia'}
+            width="1.5rem"
+          />
+          <Typography variant="caption">{voice.accent}</Typography>
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <Stack>
+          <Typography>{voice.voice}</Typography>
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <Stack>
+          <Typography
+            sx={{
+              textTransform: 'capitalize',
+            }}
+          >
+            {voice.price}
+          </Typography>
+        </Stack>
+      </TableCell>
+      <TableCell>
+        <IconButton
+          onClick={() => {
+            setCurrentlyPlaying((prev) => (prev === voice.file ? null : voice.file));
+          }}
+        >
+          <Iconify
+            icon={currentlyPlaying !== voice.voice ? 'gravity-ui:play-fill' : 'solar:pause-bold'}
+          />
+        </IconButton>
+      </TableCell>
+      <TableCell>
+        <Iconify
+          icon={
+            selected === voice.voice
+              ? 'mdi:checkbox-marked-circle'
+              : 'ri:checkbox-blank-circle-line'
+          }
+        />
+      </TableCell>
+    </TableRow>
   );
 };

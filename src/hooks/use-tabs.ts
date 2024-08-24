@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -8,12 +8,18 @@ export type UseTabsReturn = {
   onChange: (event: React.SyntheticEvent, newValue: string) => void;
 };
 
-export function useTabs(defaultValue: string): UseTabsReturn {
+export function useTabs(defaultValue: string, callbackValue?: string): UseTabsReturn {
   const [value, setValue] = useState(defaultValue);
 
   const onChange = useCallback((event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
   }, []);
+
+  useEffect(() => {
+    if (callbackValue) {
+      setValue(callbackValue);
+    }
+  }, [callbackValue]);
 
   const memoizedValue = useMemo(() => ({ value, setValue, onChange }), [onChange, value]);
 

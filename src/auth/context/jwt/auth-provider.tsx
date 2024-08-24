@@ -1,12 +1,12 @@
-import { useMemo, useEffect, useCallback } from 'react';
+import { useMemo, useEffect, useCallback, createContext } from 'react';
 
 import { useSetState } from 'src/hooks/use-set-state';
 
+import API from 'src/utils/API';
 import { STORAGE_KEY } from './constant';
-import { AuthContext } from '../auth-context';
 import { setSession, isValidToken } from './utils';
 
-import type { AuthState } from '../../types';
+import type { IAuthContext, IUser } from '../../types';
 
 // ----------------------------------------------------------------------
 
@@ -20,10 +20,19 @@ type Props = {
   children: React.ReactNode;
 };
 
+export const AuthContext = createContext<IAuthContext>({
+  user: null,
+  loading: true,
+  authenticated: false,
+});
+
 export function AuthProvider({ children }: Props) {
-  const { state, setState } = useSetState<AuthState>({
+  const { state, setState } = useSetState<IAuthContext>({
     user: null,
     loading: true,
+    authenticated: false,
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    async checkUserSession() {},
   });
 
   const checkUserSession = useCallback(async () => {
@@ -32,18 +41,18 @@ export function AuthProvider({ children }: Props) {
 
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
-
+        const { data } = await API.get<IUser>(`/profile`);
         // const res = await axios.get(endpoints.auth.me);
 
         // const { user } = res.data;
 
-        setState({ user: { accessToken }, loading: false });
+        setState({ user: { ...data }, loading: false, authenticated: true });
       } else {
-        setState({ user: null, loading: false });
+        setState({ user: null, loading: false, authenticated: false });
       }
     } catch (error) {
       console.error(error);
-      setState({ user: null, loading: false });
+      setState({ user: null, loading: false, authenticated: false });
     }
   }, [setState]);
 
@@ -63,7 +72,7 @@ export function AuthProvider({ children }: Props) {
       user: state.user
         ? {
             ...state.user,
-            role: state.user?.role ?? 'admin',
+            role: state.user?.roles[0] ?? 'admin',
           }
         : null,
       checkUserSession,

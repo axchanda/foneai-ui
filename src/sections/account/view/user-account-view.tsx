@@ -37,8 +37,9 @@ export function AccountView() {
   const tab = searchParams.get('tab');
   const selectedTab =
     TABS.find((t) => t.value.toLowerCase() === tab?.toLowerCase())?.value || 'general';
-  const tabs = useTabs(selectedTab);
+  const tabs = useTabs(selectedTab, selectedTab);
   const navigate = useNavigate();
+  console.log({ tab, tabs, selectedTab });
   return (
     <DashboardContent>
       <CustomBreadcrumbs

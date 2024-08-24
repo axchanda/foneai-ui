@@ -1,4 +1,24 @@
-export type UserType = Record<string, any> | null;
+export type IUser = {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  roles: string[];
+  avatar: string | null;
+  organization: string;
+  organizationRole: string;
+  profileLanguage: string;
+};
+
+export type UserType = IUser | null;
+
+export type IAuthContext = {
+  user: UserType;
+  loading: boolean;
+  authenticated: boolean;
+  checkUserSession?: () => Promise<void>;
+};
 
 export type AuthState = {
   user: UserType;

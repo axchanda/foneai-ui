@@ -8,7 +8,7 @@ import { CONFIG } from 'src/config-global';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import axios from 'axios';
-import { useAuthContext } from '../hooks';
+import { useAuth } from '../context/jwt/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ export function AuthGuard({ children }: Props) {
 
   const searchParams = useSearchParams();
 
-  const { authenticated, loading } = useAuthContext();
+  const { authenticated, loading } = useAuth();
 
   const [isChecking, setIsChecking] = useState<boolean>(true);
   // const [isBackendAlive, setIsBackendAlive] = useState<boolean>(false)

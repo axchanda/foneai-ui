@@ -36,7 +36,7 @@ export type DashboardLayoutProps = {
   data?: {
     nav?: NavSectionProps['data'];
   };
-  compact?: boolean
+  compact?: boolean;
 };
 
 export function DashboardLayout({ sx, children, data, compact = false }: DashboardLayoutProps) {
@@ -73,77 +73,79 @@ export function DashboardLayout({ sx, children, data, compact = false }: Dashboa
          *************************************** */
 
         headerSection={
-          compact ? null : <HeaderBase
-            layoutQuery={layoutQuery}
-            disableElevation={isNavVertical}
-            onOpenNav={mobileNavOpen.onTrue}
-            data={{
-              nav: navData,
-              langs: allLangs,
-              account: _account,
-              contacts: _contacts,
-              workspaces: _workspaces,
-              notifications: _notifications,
-            }}
-            slotsDisplay={{
-              signIn: false,
-              purchase: false,
-              helpLink: false,
-            }}
-            slots={{
-              topArea: (
-                <Alert severity="info" sx={{ display: 'none', borderRadius: 0 }}>
-                  This is an info Alert.
-                </Alert>
-              ),
-              bottomArea: isNavHorizontal ? (
-                <NavHorizontal
-                  data={navData}
-                  layoutQuery={layoutQuery}
-                  cssVars={navColorVars.section}
-                />
-              ) : null,
-            }}
-            slotProps={{
-              toolbar: {
-                sx: {
-                  [`& [data-slot="logo"]`]: {
-                    display: 'none',
-                  },
-                  [`& [data-area="right"]`]: {
-                    gap: { xs: 0, sm: 0.75 },
-                  },
-                  ...(isNavHorizontal && {
-                    bgcolor: 'var(--layout-nav-bg)',
-                    [`& .${iconButtonClasses.root}`]: {
-                      color: 'var(--layout-nav-text-secondary-color)',
-                    },
-                    [theme.breakpoints.up(layoutQuery)]: {
-                      height: 'var(--layout-nav-horizontal-height)',
-                    },
-                    [`& [data-slot="workspaces"]`]: {
-                      color: 'var(--layout-nav-text-primary-color)',
-                    },
+          compact ? null : (
+            <HeaderBase
+              layoutQuery={layoutQuery}
+              disableElevation={isNavVertical}
+              onOpenNav={mobileNavOpen.onTrue}
+              data={{
+                nav: navData,
+                langs: allLangs,
+                account: _account,
+                contacts: _contacts,
+                workspaces: _workspaces,
+                notifications: _notifications,
+              }}
+              slotsDisplay={{
+                signIn: false,
+                purchase: false,
+                helpLink: false,
+              }}
+              slots={{
+                topArea: (
+                  <Alert severity="info" sx={{ display: 'none', borderRadius: 0 }}>
+                    This is an info Alert.
+                  </Alert>
+                ),
+                bottomArea: isNavHorizontal ? (
+                  <NavHorizontal
+                    data={navData}
+                    layoutQuery={layoutQuery}
+                    cssVars={navColorVars.section}
+                  />
+                ) : null,
+              }}
+              slotProps={{
+                toolbar: {
+                  sx: {
                     [`& [data-slot="logo"]`]: {
                       display: 'none',
-                      [theme.breakpoints.up(layoutQuery)]: { display: 'inline-flex' },
                     },
-                    [`& [data-slot="divider"]`]: {
-                      [theme.breakpoints.up(layoutQuery)]: {
-                        display: 'flex',
+                    [`& [data-area="right"]`]: {
+                      gap: { xs: 0, sm: 0.75 },
+                    },
+                    ...(isNavHorizontal && {
+                      bgcolor: 'var(--layout-nav-bg)',
+                      [`& .${iconButtonClasses.root}`]: {
+                        color: 'var(--layout-nav-text-secondary-color)',
                       },
-                    },
-                  }),
+                      [theme.breakpoints.up(layoutQuery)]: {
+                        height: 'var(--layout-nav-horizontal-height)',
+                      },
+                      [`& [data-slot="workspaces"]`]: {
+                        color: 'var(--layout-nav-text-primary-color)',
+                      },
+                      [`& [data-slot="logo"]`]: {
+                        display: 'none',
+                        [theme.breakpoints.up(layoutQuery)]: { display: 'inline-flex' },
+                      },
+                      [`& [data-slot="divider"]`]: {
+                        [theme.breakpoints.up(layoutQuery)]: {
+                          display: 'flex',
+                        },
+                      },
+                    }),
+                  },
                 },
-              },
-              container: {
-                maxWidth: false,
-                sx: {
-                  ...(isNavVertical && { px: { [layoutQuery]: 5 } }),
+                container: {
+                  maxWidth: false,
+                  sx: {
+                    ...(isNavVertical && { px: { [layoutQuery]: 5 } }),
+                  },
                 },
-              },
-            }}
-          />
+              }}
+            />
+          )
         }
         /** **************************************
          * Sidebar
