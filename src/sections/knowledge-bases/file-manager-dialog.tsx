@@ -53,7 +53,7 @@ export function FileManagerDialog({
 
   const handleUpload = () => {
     onClose();
-    console.info('ON UPLOAD');
+    // console.info('ON UPLOAD');
   };
 
   const handleRemoveFile = (inputFile: File | string) => {

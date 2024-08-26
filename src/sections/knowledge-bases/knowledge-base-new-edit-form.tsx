@@ -105,7 +105,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       toast.success('File uploaded successfully');
       return fileURL;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       toast.error('Failed to upload file');
       throw new Error('Failed to upload file');
     }
@@ -148,7 +148,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       );
       router.push('/knowledge-bases');
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -190,7 +190,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     // TODO: handle multiple files deletion
     // const filtered = files.filter((file) => file !== inputFile);
     // setFiles(filtered);
-    console.log('DELETE FILE');
+    // console.log('DELETE FILE');
     setFiles([]);
     confirm.onFalse();
   };

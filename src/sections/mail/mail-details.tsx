@@ -219,7 +219,7 @@ export function MailDetails({ mail, renderLabel, empty, loading }: Props) {
               tooltip
               imageView
               file={attachment.preview}
-              onDownload={() => console.info('DOWNLOAD')}
+              onDownload={() => // console.info('DOWNLOAD')}
               sx={{ width: 48, height: 48, backgroundColor: 'background.neutral' }}
               slotProps={{ icon: { width: 24, height: 24 } }}
             />

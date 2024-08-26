@@ -48,9 +48,9 @@ export function CenteredVerifyView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

@@ -124,9 +124,9 @@ export function UserNewEditForm({ currentUser }: Props) {
       reset();
       toast.success(currentUser ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.user.list);
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

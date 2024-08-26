@@ -58,76 +58,85 @@ export function UploadSinglePDF({
   const hasRunRef = useRef(false);
 
   useEffect(() => {
-    if(value) {
-      console.log(value);
+    if (value) {
+      // console.log(value);
       // let updateValue = value.slice(-1)
-      // console.log(updateValue);
+      // // console.log(updateValue);
     }
   }, [value]);
 
   const handleEditLocally = () => {
-    if(inputRef.current) {
+    if (inputRef.current) {
       inputRef.current?.click();
     } else {
-      console.log('inputRef.current is null')
+      // console.log('inputRef.current is null')
     }
-  }
+  };
 
   const renderMultiPreview = hasFiles && (
     <>
-      <MultiFilePreview files={value} thumbnail={thumbnail} onEdit={handleEditLocally} sx={{ my: 3 }} />
+      <MultiFilePreview
+        files={value}
+        thumbnail={thumbnail}
+        onEdit={handleEditLocally}
+        sx={{ my: 3 }}
+      />
     </>
   );
 
-  const renderFileInput = ( 
+  const renderFileInput = (
     <>
-      <input {...getInputProps()}
+      <input
+        {...getInputProps()}
         ref={inputRef}
         accept="application/pdf"
         style={{ display: 'none' }}
-      />  
-      {!hasFiles && <>
-        <Box
-          {...getRootProps()}
-          sx={{
-            p: 5,
-            outline: 'none',
-            borderRadius: 1,
-            cursor: 'pointer',
-            display: showBox,
-            overflow: 'hidden',
-            position: 'relative',
-            bgcolor: (theme) => varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
-            border: (theme) => `1px dashed ${varAlpha(theme.vars.palette.grey['500Channel'], 0.2)}`,
-            transition: (theme) => theme.transitions.create(['opacity', 'padding']),
-            '&:hover': { opacity: 0.72 },
-            ...(isDragActive && { opacity: 0.72 }),
-            ...(disabled && { opacity: 0.48, pointerEvents: 'none' }),
-            ...(hasError && {
-              color: 'error.main',
-              borderColor: 'error.main',
-              bgcolor: (theme) => varAlpha(theme.vars.palette.error.mainChannel, 0.08),
-            }),
-            ...(hasFile && { padding: '28% 0' }),
-          }}
-        >
+      />
+      {!hasFiles && (
+        <>
+          <Box
+            {...getRootProps()}
+            sx={{
+              p: 5,
+              outline: 'none',
+              borderRadius: 1,
+              cursor: 'pointer',
+              display: showBox,
+              overflow: 'hidden',
+              position: 'relative',
+              bgcolor: (theme) => varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
+              border: (theme) =>
+                `1px dashed ${varAlpha(theme.vars.palette.grey['500Channel'], 0.2)}`,
+              transition: (theme) => theme.transitions.create(['opacity', 'padding']),
+              '&:hover': { opacity: 0.72 },
+              ...(isDragActive && { opacity: 0.72 }),
+              ...(disabled && { opacity: 0.48, pointerEvents: 'none' }),
+              ...(hasError && {
+                color: 'error.main',
+                borderColor: 'error.main',
+                bgcolor: (theme) => varAlpha(theme.vars.palette.error.mainChannel, 0.08),
+              }),
+              ...(hasFile && { padding: '28% 0' }),
+            }}
+          >
+            {/* Single file */}
+            {hasFile ? <SingleFilePreview file={value as File} /> : <UploadPlaceholder />}
+          </Box>
+
           {/* Single file */}
-          {hasFile ? <SingleFilePreview file={value as File} /> : <UploadPlaceholder />}
-        </Box>
+          {hasFile && <DeleteButton onClick={onDelete} />}
 
-        {/* Single file */}
-        {hasFile && <DeleteButton onClick={onDelete} />}
+          {helperText && (
+            <FormHelperText error={!!error} sx={{ px: 2 }}>
+              {helperText}
+            </FormHelperText>
+          )}
 
-        {helperText && (
-          <FormHelperText error={!!error} sx={{ px: 2 }}>
-            {helperText}
-          </FormHelperText>
-        )}
-
-        <RejectionFiles files={fileRejections} />
-      </>}
+          <RejectionFiles files={fileRejections} />
+        </>
+      )}
     </>
-  )
+  );
 
   return (
     <Box sx={{ width: 1, position: 'relative', ...sx }}>

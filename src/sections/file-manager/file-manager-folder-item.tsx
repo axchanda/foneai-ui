@@ -290,7 +290,7 @@ export function FileManagerFolderItem({
         onUpdate={() => {
           editFolder.onFalse();
           setFolderName(folderName);
-          console.info('UPDATE FOLDER', folderName);
+          // console.info('UPDATE FOLDER', folderName);
         }}
         folderName={folderName}
         onChangeFolderName={handleChangeFolderName}

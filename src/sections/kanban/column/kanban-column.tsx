@@ -52,7 +52,7 @@ export function KanbanColumn({ children, column, tasks, disabled, sx }: ColumnPr
           toast.success('Update success!', { position: 'top-center' });
         }
       } catch (error) {
-        console.error(error);
+        // console.error(error);
       }
     },
     [column.id, column.name]
@@ -62,7 +62,7 @@ export function KanbanColumn({ children, column, tasks, disabled, sx }: ColumnPr
     try {
       clearColumn(column.id);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [column.id]);
 
@@ -72,7 +72,7 @@ export function KanbanColumn({ children, column, tasks, disabled, sx }: ColumnPr
 
       toast.success('Delete success!', { position: 'top-center' });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [column.id]);
 
@@ -83,7 +83,7 @@ export function KanbanColumn({ children, column, tasks, disabled, sx }: ColumnPr
 
         openAddTask.onFalse();
       } catch (error) {
-        console.error(error);
+        // console.error(error);
       }
     },
     [column.id, openAddTask]

@@ -80,9 +80,9 @@ export function CheckoutPayment() {
     try {
       checkout.onNextStep();
       checkout.onReset();
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

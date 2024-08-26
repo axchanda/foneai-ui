@@ -77,7 +77,7 @@ export function FirebaseSignInView() {
 
       router.refresh();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setErrorMsg(error instanceof Error ? error.message : error);
     }
   });
@@ -86,7 +86,7 @@ export function FirebaseSignInView() {
     try {
       await signInWithGoogle();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -94,7 +94,7 @@ export function FirebaseSignInView() {
     try {
       await signInWithGithub();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -102,7 +102,7 @@ export function FirebaseSignInView() {
     try {
       await signInWithTwitter();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 

@@ -25,13 +25,12 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 
     return res.data;
   } catch (error) {
-    console.error('Failed to fetch:', error);
+    // console.error('Failed to fetch:', error);
     throw error;
   }
 };
 
 // ----------------------------------------------------------------------
-
 
 const backendUrl = CONFIG.backendURL;
 

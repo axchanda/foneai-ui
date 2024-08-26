@@ -37,7 +37,7 @@ export const ChangePassWordSchema = zod
   })
   .refine(
     (data) =>
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data.newPassword),
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data.newPassword),
     {
       message:
         'Password must be minimum 8+ and must contain one uppercase, one number, one special character.',
@@ -68,9 +68,9 @@ export function AccountChangePassword() {
       await new Promise((resolve) => setTimeout(resolve, 500));
       reset();
       toast.success('Update success!');
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

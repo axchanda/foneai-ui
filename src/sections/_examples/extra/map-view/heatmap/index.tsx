@@ -35,7 +35,7 @@ export function MapHeatmap({ ...other }: MapProps) {
 
         selectTime(endTime);
       })
-      .catch((error) => console.error('Could not load data', error));
+      .catch((error) => // console.error('Could not load data', error));
   }, []);
 
   const data: any = useMemo(

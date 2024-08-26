@@ -80,7 +80,7 @@ export function AmplifySignUpView() {
 
       router.push(href);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setErrorMsg(error instanceof Error ? error.message : error);
     }
   });

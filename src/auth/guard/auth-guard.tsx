@@ -37,7 +37,7 @@ export function AuthGuard({ children }: Props) {
     }
   }, []);
 
-  // console.log({ isBackendAlive, isChecking })
+  // // console.log({ isBackendAlive, isChecking })
 
   const createQueryString = useCallback(
     (name: string, value: string) => {

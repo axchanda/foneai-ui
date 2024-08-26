@@ -72,7 +72,7 @@ export function UploadView() {
             onDrop={handleDropMultiFile}
             onRemove={handleRemoveFile}
             onRemoveAll={handleRemoveAllFiles}
-            onUpload={() => console.info('ON UPLOAD')}
+            onUpload={() => // console.info('ON UPLOAD')}
           />
         </>
       ),

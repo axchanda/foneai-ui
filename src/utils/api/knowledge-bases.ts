@@ -3,7 +3,7 @@ import API from '../API';
 
 export const deleteKnowledgeBase = async (id: string, cb?: () => any) => {
   try {
-    console.log(id);
+    // console.log(id);
     await API.delete(`/knowledgeBases/${id}`);
     toast.success('Delete success!');
     if (cb) {
@@ -11,6 +11,6 @@ export const deleteKnowledgeBase = async (id: string, cb?: () => any) => {
     }
   } catch (error) {
     toast.error('Delete failed!');
-    console.error(error);
+    // console.error(error);
   }
 };

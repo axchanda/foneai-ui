@@ -10,6 +10,6 @@ export const deleteCampaign = async (id: string, cb?: () => any) => {
     }
   } catch (error) {
     toast.error('Delete failed!');
-    console.error(error);
+    // console.error(error);
   }
 };

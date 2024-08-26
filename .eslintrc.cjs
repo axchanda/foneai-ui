@@ -70,5 +70,6 @@ module.exports = {
     'perfectionist/sort-named-exports': 'off',
     'perfectionist/sort-imports': 'off',
     'react/prop-types': 'off',
+    'no-console': 'error',
   },
 };

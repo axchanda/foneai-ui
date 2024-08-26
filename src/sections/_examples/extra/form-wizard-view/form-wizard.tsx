@@ -98,10 +98,10 @@ export function FormWizard() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       toast.success('Create success!');
-      console.info('DATA', data);
+      // console.info('DATA', data);
       handleNext();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

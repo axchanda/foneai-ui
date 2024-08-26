@@ -119,7 +119,7 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
       toast.success(currentWebhook ? 'Update Webhook success!' : 'Create Webhook success!');
       router.push('/webhooks');
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -227,7 +227,7 @@ const HeadersForm: React.FC<{
     value: false,
   });
 
-  console.log({ headers });
+  // console.log({ headers });
 
   const shouldShowForm = useBoolean(false);
   return (
@@ -409,7 +409,7 @@ const HeaderTableRow: React.FC<{
     key: false,
     value: false,
   });
-  console.log({ currentHeader });
+  // console.log({ currentHeader });
   return (
     <>
       <TableRow>

@@ -54,9 +54,9 @@ export function AccountNotifications() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       toast.success('Update success!');
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

@@ -46,7 +46,7 @@ export function RHFAutocomplete({
               placeholder={placeholder}
               error={!!error}
               helperText={error ? error?.message : helperText}
-              inputProps={{ ...params.inputProps, autoComplete: 'new-password' }}
+              inputProps={{ ...params.inputProps, autoComplete: 'off' }}
             />
           )}
           {...other}

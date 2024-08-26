@@ -35,7 +35,7 @@ export function useTranslate(ns?: string) {
           dayjs.locale(currentLang.adapterLocale);
         }
       } catch (error) {
-        console.error(error);
+        // console.error(error);
       }
     },
     [currentLang, i18n]

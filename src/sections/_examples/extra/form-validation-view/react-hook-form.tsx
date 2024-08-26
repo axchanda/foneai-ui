@@ -107,9 +107,9 @@ export function ReactHookForm({ debug }: Props) {
     try {
       await new Promise((resolve) => setTimeout(resolve, 3000));
       reset();
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -299,7 +299,7 @@ export function ReactHookForm({ debug }: Props) {
                   )
                 }
                 onRemoveAll={() => setValue('multiUpload', [], { shouldValidate: true })}
-                onUpload={() => console.info('ON UPLOAD')}
+                onUpload={() => // console.info('ON UPLOAD')}
               />
             </Block>
 

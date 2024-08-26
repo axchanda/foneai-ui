@@ -98,9 +98,9 @@ export function UserQuickEditForm({ currentUser, open, onClose }: Props) {
 
       await promise;
 
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

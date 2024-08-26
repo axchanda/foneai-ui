@@ -112,9 +112,9 @@ export function JobNewEditForm({ currentJob }: Props) {
       reset();
       toast.success(currentJob ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.job.root);
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

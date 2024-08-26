@@ -55,7 +55,7 @@ const SetupPage: React.FC = () => {
       <Helmet>
         <title>Fone AI</title>
       </Helmet>
-      <DashboardContent maxWidth="xl">
+      <DashboardContent>
         <Grid container spacing={12}>
           <Grid item xs={12} md={4}>
             <Typography variant="h4" sx={{ whiteSpace: 'pre-line', mb: 1 }}>
@@ -103,9 +103,15 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
   const openConfirmationDialog = useBoolean();
   const [apiKeyName, setApiKeyName] = React.useState('');
   const [expiration, setExpiration] = React.useState('never');
+
+  const handleClose = (event: {}, reason: string) => {
+    if (reason !== 'backdropClick') {
+      onClose();
+    }
+  };
   return (
     <>
-      <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
+      <Dialog fullWidth maxWidth="xs" open={open} onClose={handleClose}>
         <DialogTitle sx={{ pb: 2 }}>Create New API Key</DialogTitle>
         <DialogContent sx={{ typography: 'body2' }}>
           <Typography fontWeight="600">Enter name</Typography>
@@ -195,8 +201,14 @@ const SetupConfirmationDialog = ({
   });
   const [agreed, setAgreed] = React.useState(false);
 
+  const handleClose = (event: {}, reason: string) => {
+    if (reason !== 'backdropClick') {
+      onClose();
+    }
+  };
+
   return (
-    <Dialog fullWidth maxWidth="xs" open={open} sx={{ zIndex: 1000 }} onClose={onClose}>
+    <Dialog fullWidth maxWidth="xs" open={open} onClose={handleClose}>
       <DialogTitle sx={{ pb: 2 }}>Your New API Key</DialogTitle>
       <DialogContent sx={{ typography: 'body2' }}>
         <>

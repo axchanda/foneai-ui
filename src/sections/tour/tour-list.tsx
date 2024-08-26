@@ -34,7 +34,7 @@ export function TourList({ tours }: Props) {
   );
 
   const handleDelete = useCallback((id: string) => {
-    console.info('DELETE', id);
+    // console.info('DELETE', id);
   }, []);
 
   return (

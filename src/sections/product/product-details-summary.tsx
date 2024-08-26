@@ -101,7 +101,7 @@ export function ProductDetailsSummary({
       onGotoStep?.(0);
       router.push(paths.product.checkout);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -109,7 +109,7 @@ export function ProductDetailsSummary({
     try {
       onAddCart?.({ ...values, colors: [values.colors], subtotal: values.price * values.quantity });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [onAddCart, values]);
 

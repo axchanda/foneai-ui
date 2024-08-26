@@ -67,7 +67,7 @@ export function AmplifyVerifyView() {
       await confirmSignUp({ username: data.email, confirmationCode: data.code });
       router.push(paths.auth.amplify.signIn);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -76,7 +76,7 @@ export function AmplifyVerifyView() {
       startCountdown();
       await resendSignUpCode?.({ username: values.email });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [startCountdown, values.email]);
 

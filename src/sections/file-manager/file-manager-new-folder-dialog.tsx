@@ -52,7 +52,7 @@ export function FileManagerNewFolderDialog({
 
   const handleUpload = () => {
     onClose();
-    console.info('ON UPLOAD');
+    // console.info('ON UPLOAD');
   };
 
   const handleRemoveFile = (inputFile: File | string) => {
@@ -79,7 +79,7 @@ export function FileManagerNewFolderDialog({
           />
         )}
 
-{/* <Upload multiple value={files} onDrop={handleDrop} onRemove={handleRemoveFile} /> */}
+        {/* <Upload multiple value={files} onDrop={handleDrop} onRemove={handleRemoveFile} /> */}
         <Upload multiple value={files} onDrop={handleDrop} onRemove={handleRemoveFile} />
       </DialogContent>
 

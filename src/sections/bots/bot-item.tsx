@@ -34,7 +34,7 @@ type Props = {
 export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
   const popover = usePopover();
   const confirm = useBoolean();
-  console.log(bot);
+  // console.log(bot);
   return (
     <>
       <Card onDoubleClick={onEdit}>
@@ -94,7 +94,13 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
             },
             {
               label: bot.botIsInterruptable ? 'Interruptable' : 'Non-interruptable',
-              icon: <Iconify width={16} icon="icon-park-outline:link-interrupt" sx={{ flexShrink: 0 }} />,
+              icon: (
+                <Iconify
+                  width={16}
+                  icon="icon-park-outline:link-interrupt"
+                  sx={{ flexShrink: 0 }}
+                />
+              ),
             },
             {
               label: bot.botVoiceId,

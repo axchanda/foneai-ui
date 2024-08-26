@@ -107,7 +107,7 @@ export function ChatMessageInput({
           setMessage('');
         }
       } catch (error) {
-        console.error(error);
+        // console.error(error);
       }
     },
     [conversationData, message, messageData, onAddRecipients, router, selectedConversationId]

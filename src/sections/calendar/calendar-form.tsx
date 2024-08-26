@@ -95,7 +95,7 @@ export function CalendarForm({ currentEvent, colorOptions, onClose }: Props) {
         reset();
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -105,7 +105,7 @@ export function CalendarForm({ currentEvent, colorOptions, onClose }: Props) {
       toast.success('Delete success!');
       onClose();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [currentEvent?.id, onClose]);
 

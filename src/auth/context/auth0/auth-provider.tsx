@@ -57,7 +57,7 @@ function AuthProviderContainer({ children }: Props) {
         delete axios.defaults.headers.common.Authorization;
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [getAccessTokenSilently, isAuthenticated]);
 

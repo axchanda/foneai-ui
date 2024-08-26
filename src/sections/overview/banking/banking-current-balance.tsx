@@ -97,12 +97,12 @@ function Item({ item, showCurrency, onToggleCurrency }: ItemProps) {
 
   const handleDelete = useCallback(() => {
     popover.onClose();
-    console.info('DELETE', item.id);
+    // console.info('DELETE', item.id);
   }, [item.id, popover]);
 
   const handleEdit = useCallback(() => {
     popover.onClose();
-    console.info('EDIT', item.id);
+    // console.info('EDIT', item.id);
   }, [item.id, popover]);
 
   return (

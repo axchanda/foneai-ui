@@ -85,7 +85,7 @@ export function getStorage(key: string) {
       return JSON.parse(result);
     }
   } catch (error) {
-    console.error('Error while getting from storage:', error);
+    // console.error('Error while getting from storage:', error);
   }
 
   return null;
@@ -96,7 +96,7 @@ export function setStorage<T>(key: string, value: T) {
     const serializedValue = JSON.stringify(value);
     window.localStorage.setItem(key, serializedValue);
   } catch (error) {
-    console.error('Error while setting storage:', error);
+    // console.error('Error while setting storage:', error);
   }
 }
 
@@ -104,6 +104,6 @@ export function removeStorage(key: string) {
   try {
     window.localStorage.removeItem(key);
   } catch (error) {
-    console.error('Error while removing from storage:', error);
+    // console.error('Error while removing from storage:', error);
   }
 }

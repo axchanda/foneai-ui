@@ -69,7 +69,7 @@ export function JwtSignInView() {
 
       router.refresh();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
 
       // setErrorMsg(error instanceof Error ? error.message : error);
       setErrorMessages(error as Record<string, string>);

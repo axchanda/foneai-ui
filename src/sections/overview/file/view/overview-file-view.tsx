@@ -47,7 +47,7 @@ export function OverviewFileView() {
   const handleCreateNewFolder = useCallback(() => {
     newFolder.onFalse();
     setFolderName('');
-    console.info('CREATE NEW FOLDER');
+    // console.info('CREATE NEW FOLDER');
   }, [newFolder]);
 
   const handleDrop = useCallback(
@@ -188,7 +188,7 @@ export function OverviewFileView() {
                     <FileManagerFolderItem
                       key={folder.id}
                       folder={folder}
-                      onDelete={() => console.info('DELETE', folder.id)}
+                      onDelete={() => // console.info('DELETE', folder.id)}
                       sx={{ ...(_folders.length > 3 && { width: 240, flexShrink: 0 }) }}
                     />
                   ))}
@@ -206,7 +206,7 @@ export function OverviewFileView() {
                   <FileRecentItem
                     key={file.id}
                     file={file}
-                    onDelete={() => console.info('DELETE', file.id)}
+                    onDelete={() => // console.info('DELETE', file.id)}
                   />
                 ))}
               </Box>

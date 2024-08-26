@@ -16,7 +16,7 @@ type Props = {
 
 export function Chips({ variant = 'filled' }: Props) {
   const handleDelete = () => {
-    console.info('You clicked the delete icon.');
+    // console.info('You clicked the delete icon.');
   };
 
   return (

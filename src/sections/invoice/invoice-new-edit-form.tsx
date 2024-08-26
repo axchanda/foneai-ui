@@ -119,9 +119,9 @@ export function InvoiceNewEditForm({ currentInvoice }: Props) {
       reset();
       loadingSave.onFalse();
       router.push(paths.dashboard.invoice.root);
-      console.info('DATA', JSON.stringify(data, null, 2));
+      // console.info('DATA', JSON.stringify(data, null, 2));
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       loadingSave.onFalse();
     }
   });
@@ -134,9 +134,9 @@ export function InvoiceNewEditForm({ currentInvoice }: Props) {
       reset();
       loadingSend.onFalse();
       router.push(paths.dashboard.invoice.root);
-      console.info('DATA', JSON.stringify(data, null, 2));
+      // console.info('DATA', JSON.stringify(data, null, 2));
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       loadingSend.onFalse();
     }
   });

@@ -113,7 +113,7 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
             </Typography>
 
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }} noWrap>
-              {user?.username}
+              {user?.firstName} {user?.lastName}
             </Typography>
           </Stack>
 

@@ -37,7 +37,7 @@ export function AuthProvider({ children }: Props) {
 
       if (error) {
         setState({ user: null, loading: false });
-        console.error(error);
+        // console.error(error);
         throw error;
       }
 
@@ -51,7 +51,7 @@ export function AuthProvider({ children }: Props) {
         delete axios.defaults.headers.common.Authorization;
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setState({ user: null, loading: false });
     }
   }, [setState]);

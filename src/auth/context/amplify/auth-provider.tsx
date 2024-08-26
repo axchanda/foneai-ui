@@ -62,7 +62,7 @@ export function AuthProvider({ children }: Props) {
         delete axios.defaults.headers.common.Authorization;
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setState({ user: null, loading: false });
     }
   }, [setState]);

@@ -15,14 +15,14 @@ type Props = {
 
 export default function KnowledgeBaseEdit({ kb: currentKb }: Props) {
   const [loaded, setLoaded] = useState(false);
-  
+
   const { id } = useParams();
   const [knowledgeBase, setKnowledgeBase] = useState<IKnowledgeBaseItem | null>(null);
 
   const getKnowledgeBaseById = useCallback(async () => {
     const { data } = await API.get<IKnowledgeBaseItem>('/knowledgeBases/' + id);
     setKnowledgeBase(data);
-    console.log(data);
+    // console.log(data);
     setLoaded(true);
   }, [id]);
 
@@ -30,15 +30,14 @@ export default function KnowledgeBaseEdit({ kb: currentKb }: Props) {
     getKnowledgeBaseById();
   }, [getKnowledgeBaseById]);
 
-
   return (
     <DashboardContent>
-      <CustomBreadcrumbs
-        heading="Edit Knowledge Base"
-        sx={{ mb: { xs: 3, md: 5 } }}
-      />
-      {loaded ? 
-        <KnowledgeBaseNewEditForm currentKb = {knowledgeBase || undefined} /> : <LoadingScreen />}
+      <CustomBreadcrumbs heading="Edit Knowledge Base" sx={{ mb: { xs: 3, md: 5 } }} />
+      {loaded ? (
+        <KnowledgeBaseNewEditForm currentKb={knowledgeBase || undefined} />
+      ) : (
+        <LoadingScreen />
+      )}
     </DashboardContent>
   );
 }

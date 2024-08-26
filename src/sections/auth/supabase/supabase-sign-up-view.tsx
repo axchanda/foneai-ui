@@ -76,7 +76,7 @@ export function SupabaseSignUpView() {
 
       router.push(paths.auth.supabase.verify);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setErrorMsg(error instanceof Error ? error.message : error);
     }
   });

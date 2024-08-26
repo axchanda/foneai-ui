@@ -66,7 +66,7 @@ export function SupabaseUpdatePasswordView() {
 
       router.push(paths.dashboard.root);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setErrorMsg(error instanceof Error ? error.message : error);
     }
   });

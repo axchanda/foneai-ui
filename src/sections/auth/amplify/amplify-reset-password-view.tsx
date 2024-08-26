@@ -57,7 +57,7 @@ export function AmplifyResetPasswordView() {
       const href = `${paths.auth.amplify.updatePassword}?${searchParams}`;
       router.push(href);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

@@ -26,7 +26,7 @@ export function SnackbarView() {
 
       await promise;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -88,13 +88,13 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="primary" size="small" onClick={() => console.info('Action!')}>
+                    <Button color="primary" size="small" onClick={() => // console.info('Action!')}>
                       Action
                     </Button>
                     <Button
                       size="small"
                       onClick={() => {
-                        console.info('Action!');
+                        // console.info('Action!');
                         toast.dismiss('defaultId');
                       }}
                     >
@@ -117,13 +117,13 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="info" size="small" onClick={() => console.info('Action!')}>
+                    <Button color="info" size="small" onClick={() => // console.info('Action!')}>
                       Action
                     </Button>
                     <Button
                       size="small"
                       onClick={() => {
-                        console.info('Action!');
+                        // console.info('Action!');
                         toast.dismiss('infoId');
                       }}
                     >
@@ -146,13 +146,13 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="success" size="small" onClick={() => console.info('Action!')}>
+                    <Button color="success" size="small" onClick={() => // console.info('Action!')}>
                       Action
                     </Button>
                     <Button
                       size="small"
                       onClick={() => {
-                        console.info('Action!');
+                        // console.info('Action!');
                         toast.dismiss('successId');
                       }}
                     >
@@ -175,13 +175,13 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="warning" size="small" onClick={() => console.info('Action!')}>
+                    <Button color="warning" size="small" onClick={() => // console.info('Action!')}>
                       Action
                     </Button>
                     <Button
                       size="small"
                       onClick={() => {
-                        console.info('Action!');
+                        // console.info('Action!');
                         toast.dismiss('warningId');
                       }}
                     >
@@ -205,13 +205,13 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="error" size="small" onClick={() => console.info('Action!')}>
+                    <Button color="error" size="small" onClick={() => // console.info('Action!')}>
                       Action
                     </Button>
                     <Button
                       size="small"
                       onClick={() => {
-                        console.info('Action!');
+                        // console.info('Action!');
                         toast.dismiss('errorId');
                       }}
                     >

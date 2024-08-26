@@ -271,7 +271,7 @@ type ApplyFilterProps = {
 
 function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) {
   const { id, webhookName } = filters;
-  console.log(inputData);
+  // console.log(inputData);
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
   stabilizedThis.sort((a, b) => {

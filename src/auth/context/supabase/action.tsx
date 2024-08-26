@@ -52,7 +52,7 @@ export const signInWithPassword = async ({
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    console.error(error);
+    // console.error(error);
     throw error;
   }
 
@@ -78,7 +78,7 @@ export const signUp = async ({
   });
 
   if (error) {
-    console.error(error);
+    // console.error(error);
     throw error;
   }
 
@@ -98,7 +98,7 @@ export const signOut = async (): Promise<{
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    console.error(error);
+    // console.error(error);
     throw error;
   }
 
@@ -116,7 +116,7 @@ export const resetPassword = async ({
   });
 
   if (error) {
-    console.error(error);
+    // console.error(error);
     throw error;
   }
 
@@ -130,7 +130,7 @@ export const updatePassword = async ({ password }: UpdatePasswordParams): Promis
   const { data, error } = await supabase.auth.updateUser({ password });
 
   if (error) {
-    console.error(error);
+    // console.error(error);
     throw error;
   }
 

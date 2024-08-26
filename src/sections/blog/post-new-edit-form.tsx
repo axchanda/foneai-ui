@@ -99,9 +99,9 @@ export function PostNewEditForm({ currentPost }: Props) {
       preview.onFalse();
       toast.success(currentPost ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.post.root);
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

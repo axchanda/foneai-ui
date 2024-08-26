@@ -53,7 +53,7 @@ export type NewBotSchemaType = zod.infer<typeof NewBotSchema>;
 export const NewBotSchema = zod.object({
   botName: zod.string().min(1, { message: 'Bot name is required!' }),
   botIntroduction: zod.string().min(1, { message: 'Bot Introduction is required!' }),
-  botInstructions: zod.string(),
+  botInstructions: zod.string().min(1, { message: 'Bot Instructions is required!' }),
   botVoiceId: zod.string().min(1, { message: 'Voice ID is required!' }),
   botIsInterruptable: zod.boolean(),
   botKnowledgeBase: zod.string(),
@@ -141,18 +141,18 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
     }
   }, [currentBot, defaultValues, reset]);
 
-  console.log(values.botVoiceId);
+  // console.log(values.botVoiceId);
 
   useEffect(() => {
     getData();
   }, [getData]);
 
   // values.botLanguage = values.botLanguage || 'en';
-  console.log(values.botLanguage);
+  // console.log(values.botLanguage);
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
+    // console.log(data);
     try {
-      console.log(data);
+      // console.log(data);
       const url = currentBot ? `/bots/${currentBot._id}` : '/bots/create';
       const method = currentBot ? API.put : API.post;
       await method(url, {
@@ -171,7 +171,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
       toast.success(currentBot ? 'Update success!' : 'Create success!');
       router.push('/bots');
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -382,14 +382,13 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
 
             {renderKnowledgeBase}
 
-            {renderMisc}
-
             <InvokeFunction
               functions={functions}
               botInstructions={values.botInstructions}
               invocations={invocations}
               setInvocations={setInvocations}
             />
+            {renderMisc}
 
             <Box
               display="flex"
@@ -1072,6 +1071,7 @@ const VoiceDialog: React.FC<{
         <Button
           onClick={() => {
             if (selected) {
+              setCurrentlyPlaying(null);
               onSelect(selected);
             }
           }}
@@ -1137,7 +1137,7 @@ const VoicesTableRow: React.FC<{
             icon={voice.provider === 'AWS' ? 'skill-icons:aws-dark' : 'skill-icons:gcp-dark'}
             width="2.5rem"
           />
-          {/* <Typography variant="caption">{voice.provider}</Typography> */}
+          <Typography variant="subtitle2">{voice.provider}</Typography>
         </Stack>
       </TableCell>
       <TableCell>
@@ -1146,18 +1146,24 @@ const VoicesTableRow: React.FC<{
             icon={voice.gender === 'M' ? 'noto:male-sign' : 'noto:female-sign'}
             width="2.5rem"
           />
-          {/* <Typography variant="caption" textAlign="center">
-        {voice.gender}
-      </Typography> */}
+          <Typography variant="subtitle2" textAlign="center">
+            {voice.gender === 'F' ? 'Female' : 'Male'}
+          </Typography>
         </Stack>
       </TableCell>
       <TableCell>
         <Stack justifyContent="center" alignItems="center">
           <Iconify
-            icon={voice.accent === 'us' ? 'twemoji:flag-united-states' : 'twemoji:flag-australia'}
-            width="1.5rem"
+            icon={
+              voice.accent === 'us'
+                ? 'twemoji:flag-united-states'
+                : voice.accent === 'au'
+                  ? 'twemoji:flag-australia'
+                  : 'twemoji:flag-mexico'
+            }
+            width="2.5rem"
           />
-          <Typography variant="caption">{voice.accent}</Typography>
+          <Typography variant="subtitle2">{voice.accent}</Typography>
         </Stack>
       </TableCell>
       <TableCell>
@@ -1183,7 +1189,7 @@ const VoicesTableRow: React.FC<{
           }}
         >
           <Iconify
-            icon={currentlyPlaying !== voice.voice ? 'gravity-ui:play-fill' : 'solar:pause-bold'}
+            icon={currentlyPlaying !== voice.file ? 'gravity-ui:play-fill' : 'solar:pause-bold'}
           />
         </IconButton>
       </TableCell>

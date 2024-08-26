@@ -84,12 +84,12 @@ function FriendCard({ item }: FriendCardProps) {
 
   const handleDelete = () => {
     popover.onClose();
-    console.info('DELETE', item.name);
+    // console.info('DELETE', item.name);
   };
 
   const handleEdit = () => {
     popover.onClose();
-    console.info('EDIT', item.name);
+    // console.info('EDIT', item.name);
   };
 
   return (

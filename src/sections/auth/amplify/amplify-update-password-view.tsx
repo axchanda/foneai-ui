@@ -92,7 +92,7 @@ export function AmplifyUpdatePasswordView() {
 
       router.push(paths.auth.amplify.signIn);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -101,7 +101,7 @@ export function AmplifyUpdatePasswordView() {
       startCountdown();
       await resetPassword({ username: values.email });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [startCountdown, values.email]);
 

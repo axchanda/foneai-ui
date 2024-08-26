@@ -21,7 +21,7 @@ export function jwtDecode(token: string) {
 
     return decoded;
   } catch (error) {
-    console.error('Error decoding token:', error);
+    // console.error('Error decoding token:', error);
     throw error;
   }
 }
@@ -44,7 +44,7 @@ export function isValidToken(accessToken: string) {
 
     return decoded.exp > currentTime;
   } catch (error) {
-    console.error('Error during token validation:', error);
+    // console.error('Error during token validation:', error);
     return false;
   }
 }
@@ -61,7 +61,7 @@ export function tokenExpired(exp: number) {
       sessionStorage.removeItem(STORAGE_KEY);
       window.location.href = paths.auth.jwt.signIn;
     } catch (error) {
-      console.error('Error during token expiration:', error);
+      // console.error('Error during token expiration:', error);
       throw error;
     }
   }, timeLeft);
@@ -88,7 +88,7 @@ export async function setSession(accessToken: string | null) {
       delete axios.defaults.headers.common.Authorization;
     }
   } catch (error) {
-    console.error('Error during set session:', error);
+    // console.error('Error during set session:', error);
     throw error;
   }
 }

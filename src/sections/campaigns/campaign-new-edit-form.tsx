@@ -91,13 +91,13 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
       reset();
       toast.success(currentCampaign ? 'Update success!' : 'Create success!');
       router.push('/campaigns');
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
-  console.log({ defaultValues });
+  // console.log({ defaultValues });
 
   return (
     <>
@@ -132,7 +132,7 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
                   autoHighlight
                   options={bots}
                   onChange={(event, newValue) => {
-                    console.log('newValue', newValue);
+                    // console.log('newValue', newValue);
                     setValue('linkedBot', newValue.value);
                   }}
                   value={bots.find((bot) => bot.value === values.linkedBot)?.label}

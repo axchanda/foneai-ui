@@ -73,22 +73,22 @@ function Item({ item, checked, onChange, sx, ...other }: ItemProps) {
 
   const handleMarkComplete = () => {
     popover.onClose();
-    console.info('MARK COMPLETE', item.id);
+    // console.info('MARK COMPLETE', item.id);
   };
 
   const handleShare = () => {
     popover.onClose();
-    console.info('SHARE', item.id);
+    // console.info('SHARE', item.id);
   };
 
   const handleEdit = () => {
     popover.onClose();
-    console.info('EDIT', item.id);
+    // console.info('EDIT', item.id);
   };
 
   const handleDelete = () => {
     popover.onClose();
-    console.info('DELETE', item.id);
+    // console.info('DELETE', item.id);
   };
 
   return (

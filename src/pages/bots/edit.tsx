@@ -34,7 +34,7 @@ function BotEdit({ job }: Props) {
       },
     ] = await Promise.all([botPromise, usedPromise]);
     setBot(data);
-    console.log(count);
+    // console.log(count);
     setIsUsedInCampaigns(count > 0);
     setLoading(false);
   }, [id]);

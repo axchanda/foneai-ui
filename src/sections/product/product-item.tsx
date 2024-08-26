@@ -47,7 +47,7 @@ export function ProductItem({ product }: Props) {
     try {
       checkout.onAddToCart(newProduct);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 

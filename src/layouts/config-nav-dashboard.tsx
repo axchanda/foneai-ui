@@ -32,6 +32,7 @@ const ICONS = {
   ecommerce: icon('ic-ecommerce'),
   analytics: icon('ic-analytics'),
   parameter: icon('ic-parameter'),
+  billing: icon('entypo:credit'),
 };
 
 // ----------------------------------------------------------------------
@@ -89,6 +90,11 @@ export const navData = [
         title: 'Setup',
         path: '/setup',
         icon: ICONS.setup,
+      },
+      {
+        title: 'Billing',
+        path: '/billing',
+        icon: ICONS.billing,
       },
     ],
   },

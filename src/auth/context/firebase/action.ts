@@ -44,7 +44,7 @@ export const signInWithPassword = async ({ email, password }: SignInParams): Pro
       throw new Error('Email not verified!');
     }
   } catch (error) {
-    console.error('Error during sign in with password:', error);
+    // console.error('Error during sign in with password:', error);
     throw error;
   }
 };
@@ -90,7 +90,7 @@ export const signUp = async ({
       displayName: `${firstName} ${lastName}`,
     });
   } catch (error) {
-    console.error('Error during sign up:', error);
+    // console.error('Error during sign up:', error);
     throw error;
   }
 };

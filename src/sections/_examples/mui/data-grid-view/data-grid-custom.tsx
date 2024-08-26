@@ -179,19 +179,19 @@ const baseColumns: GridColDef[] = [
         showInMenu
         icon={<Iconify icon="solar:eye-bold" />}
         label="View"
-        onClick={() => console.info('VIEW', params.row.id)}
+        onClick={() => // console.info('VIEW', params.row.id)}
       />,
       <GridActionsCellItem
         showInMenu
         icon={<Iconify icon="solar:pen-bold" />}
         label="Edit"
-        onClick={() => console.info('EDIT', params.row.id)}
+        onClick={() => // console.info('EDIT', params.row.id)}
       />,
       <GridActionsCellItem
         showInMenu
         icon={<Iconify icon="solar:trash-bin-trash-bold" />}
         label="Delete"
-        onClick={() => console.info('DELETE', params.row.id)}
+        onClick={() => // console.info('DELETE', params.row.id)}
         sx={{ color: 'error.main' }}
       />,
     ],
@@ -243,7 +243,7 @@ export function DataGridCustom({ data: rows }: Props) {
 
   const selected = rows.filter((row) => selectedRows.includes(row.id)).map((_row) => _row.id);
 
-  console.info('SELECTED ROWS', selected);
+  // console.info('SELECTED ROWS', selected);
 
   return (
     <DataGrid

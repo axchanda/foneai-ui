@@ -15,7 +15,7 @@ import { fData } from 'src/utils/format-number';
 import { toast } from 'src/components/snackbar';
 import { Form, Field, schemaHelper } from 'src/components/hook-form';
 
-import { useMockedUser } from 'src/auth/hooks';
+import { useAuth } from 'src/auth/context/jwt/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -40,20 +40,20 @@ export const UpdateUserSchema = zod.object({
 });
 
 export function AccountGeneral() {
-  const { user } = useMockedUser();
+  const { user } = useAuth();
 
   const defaultValues = {
-    displayName: user?.displayName || '',
+    displayName: user?.firstName || '',
     email: user?.email || '',
-    photoURL: user?.photoURL || null,
-    phoneNumber: user?.phoneNumber || '',
-    country: user?.country || '',
-    address: user?.address || '',
-    state: user?.state || '',
-    city: user?.city || '',
-    zipCode: user?.zipCode || '',
-    about: user?.about || '',
-    isPublic: user?.isPublic || false,
+    photoURL: user?.avatar || null,
+    phoneNumber: '',
+    country: '',
+    address: '',
+    state: '',
+    city: '',
+    zipCode: '',
+    about: '',
+    isPublic: false,
     username: user?.username,
   };
 
@@ -72,9 +72,9 @@ export function AccountGeneral() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 500));
       toast.success('Update success!');
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

@@ -54,7 +54,7 @@ export function SupabaseResetPasswordView() {
 
       router.push(paths.auth.supabase.verify);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 

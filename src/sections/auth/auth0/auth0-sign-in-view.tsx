@@ -23,7 +23,7 @@ export function Auth0SignInView() {
     try {
       await loginWithPopup();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [loginWithPopup]);
 
@@ -31,7 +31,7 @@ export function Auth0SignInView() {
     try {
       await loginWithPopup({ authorizationParams: { screen_hint: 'signup' } });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [loginWithPopup]);
 
@@ -39,7 +39,7 @@ export function Auth0SignInView() {
     try {
       await loginWithRedirect({ appState: { returnTo: returnTo || CONFIG.auth.redirectPath } });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [loginWithRedirect, returnTo]);
 
@@ -50,7 +50,7 @@ export function Auth0SignInView() {
         authorizationParams: { screen_hint: 'signup' },
       });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [loginWithRedirect, returnTo]);
 

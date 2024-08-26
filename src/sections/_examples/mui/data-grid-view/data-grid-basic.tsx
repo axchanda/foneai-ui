@@ -52,19 +52,19 @@ const columns: GridColDef[] = [
         showInMenu
         icon={<Iconify icon="solar:eye-bold" />}
         label="View"
-        onClick={() => console.info('VIEW', params.row.id)}
+        onClick={() => // console.info('VIEW', params.row.id)}
       />,
       <GridActionsCellItem
         showInMenu
         icon={<Iconify icon="solar:pen-bold" />}
         label="Edit"
-        onClick={() => console.info('EDIT', params.row.id)}
+        onClick={() => // console.info('EDIT', params.row.id)}
       />,
       <GridActionsCellItem
         showInMenu
         icon={<Iconify icon="solar:trash-bin-trash-bold" />}
         label="Delete"
-        onClick={() => console.info('DELETE', params.row.id)}
+        onClick={() => // console.info('DELETE', params.row.id)}
         sx={{ color: 'error.main' }}
       />,
     ],

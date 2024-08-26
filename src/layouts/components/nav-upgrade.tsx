@@ -22,7 +22,7 @@ import { useAuth } from 'src/auth/context/jwt/hooks';
 
 export function NavUpgrade({ sx, ...other }: StackProps) {
   const { user } = useAuth();
-  console.log({ user });
+  // console.log({ user });
   return (
     <Stack sx={{ px: 2, py: 5, textAlign: 'center', ...sx }} {...other}>
       <Stack alignItems="center">
@@ -65,7 +65,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
             noWrap
             sx={{ color: 'var(--layout-nav-text-disabled-color)' }}
           >
-            {user?.username}
+            {user?.firstName} {user?.lastName}
           </Typography>
         </Stack>
 

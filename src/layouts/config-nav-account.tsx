@@ -1,5 +1,3 @@
-import SvgIcon from '@mui/material/SvgIcon';
-
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -12,11 +10,8 @@ export const _account = [
   },
   {
     label: 'Billing',
-    href: '/account?tab=billing',
-    icon: (
-      <Iconify icon="fluent:payment-16-filled" />
-
-    ),
+    href: '/billing',
+    icon: <Iconify icon="fluent:payment-16-filled" />,
   },
   {
     label: 'Security',
@@ -29,11 +24,9 @@ export const _account = [
     icon: <Iconify icon="material-symbols:account-circle" />,
   },
   {
-    label: "Invoices",
+    label: 'Invoices',
 
     href: '/invoices',
-    icon: (
-      <Iconify icon={"hugeicons:invoice"} />
-    ),
-  }
+    icon: <Iconify icon="hugeicons:invoice" />,
+  },
 ];

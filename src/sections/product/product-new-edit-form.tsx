@@ -126,9 +126,9 @@ export function ProductNewEditForm({ currentProduct }: Props) {
       reset();
       toast.success(currentProduct ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.product.root);
-      console.info('DATA', data);
+      // console.info('DATA', data);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -173,7 +173,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
             maxSize={3145728}
             onRemove={handleRemoveFile}
             onRemoveAll={handleRemoveAllFiles}
-            onUpload={() => console.info('ON UPLOAD')}
+            onUpload={() => // console.info('ON UPLOAD')}
           />
         </Stack>
       </Stack>

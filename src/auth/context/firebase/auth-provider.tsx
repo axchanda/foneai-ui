@@ -54,7 +54,7 @@ export function AuthProvider({ children }: Props) {
         }
       });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setState({ user: null, loading: false });
     }
   }, [setState]);

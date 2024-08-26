@@ -15,8 +15,8 @@ export type SignUpParams = {
   password: string;
   firstName: string;
   lastName: string;
-  username: string
-  confirmPassword: string
+  username: string;
+  confirmPassword: string;
 };
 
 /** **************************************
@@ -27,8 +27,8 @@ export const signInWithPassword = async ({ username, password }: SignInParams): 
     const params = { username, password };
 
     const res = await axios.post(endpoints.auth.signIn, params);
-    console.clear()
-    console.log(res.data)
+    // console.clear()
+    // console.log(res.data)
     const { token } = res.data;
 
     if (!token) {
@@ -37,7 +37,7 @@ export const signInWithPassword = async ({ username, password }: SignInParams): 
 
     setSession(token);
   } catch (error) {
-    console.error('Error during sign in:', error);
+    // console.error('Error during sign in:', error);
     throw error.errors;
   }
 };
@@ -51,7 +51,7 @@ export const signUp = async ({
   firstName,
   lastName,
   username,
-  confirmPassword
+  confirmPassword,
 }: SignUpParams): Promise<void> => {
   const params = {
     email,
@@ -61,7 +61,7 @@ export const signUp = async ({
     username,
     role: 'PBX',
     profileLanguage: 'en',
-    confirmPassword
+    confirmPassword,
   };
 
   try {
@@ -75,7 +75,7 @@ export const signUp = async ({
 
     sessionStorage.setItem(STORAGE_KEY, accessToken);
   } catch (error) {
-    console.error('Error during sign up:', error);
+    // console.error('Error during sign up:', error);
     throw error;
   }
 };
@@ -87,7 +87,7 @@ export const signOut = async (): Promise<void> => {
   try {
     await setSession(null);
   } catch (error) {
-    console.error('Error during sign out:', error);
+    // console.error('Error during sign out:', error);
     throw error;
   }
 };

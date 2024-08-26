@@ -186,7 +186,7 @@ export function FileManagerGridView({ table, dataFiltered, onDeleteItem, onOpenC
         onCreate={() => {
           newFolder.onFalse();
           setFolderName('');
-          console.info('CREATE NEW FOLDER', folderName);
+          // console.info('CREATE NEW FOLDER', folderName);
         }}
         folderName={folderName}
         onChangeFolderName={handleChangeFolderName}

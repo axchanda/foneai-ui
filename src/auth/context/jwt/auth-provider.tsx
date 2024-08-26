@@ -51,7 +51,7 @@ export function AuthProvider({ children }: Props) {
         setState({ user: null, loading: false, authenticated: false });
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       setState({ user: null, loading: false, authenticated: false });
     }
   }, [setState]);

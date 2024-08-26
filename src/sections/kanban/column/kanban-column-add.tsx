@@ -37,7 +37,7 @@ export function KanbanColumnAdd({ sx, ...other }: BoxProps) {
 
       openAddColumn.onFalse();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   }, [columnName, openAddColumn]);
 

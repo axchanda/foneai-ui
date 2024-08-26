@@ -61,7 +61,7 @@ export function BookingCustomerReviews({ title, subheader, list, ...other }: Pro
           fullWidth
           color="error"
           variant="soft"
-          onClick={() => console.info('ACCEPT', customerInfo?.id)}
+          onClick={() => // console.info('ACCEPT', customerInfo?.id)}
         >
           Reject
         </Button>
@@ -70,7 +70,7 @@ export function BookingCustomerReviews({ title, subheader, list, ...other }: Pro
           fullWidth
           color="inherit"
           variant="contained"
-          onClick={() => console.info('REJECT', customerInfo?.id)}
+          onClick={() => // console.info('REJECT', customerInfo?.id)}
         >
           Accept
         </Button>

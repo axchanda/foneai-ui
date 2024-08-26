@@ -124,9 +124,9 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
   // values.botLanguage = values.botLanguage || 'en';
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
+    // console.log(data);
     try {
-      console.log(data);
+      // console.log(data);
       const url = currentFunction ? `/functions/${currentFunction._id}` : '/functions/create';
       const method = currentFunction ? API.put : API.post;
       await method(url, {
@@ -139,7 +139,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
       toast.success(currentFunction ? 'Update success!' : 'Create success!');
       router.push('/functions');
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   });
 
@@ -309,7 +309,7 @@ const ParametersCard: React.FC<{
 
   const shouldShowParameterForm = useBoolean(false);
 
-  console.log({ parameters });
+  // console.log({ parameters });
 
   return (
     <Card>
@@ -360,7 +360,7 @@ const ParametersCard: React.FC<{
                           value={parameter.parameterIsRequired}
                           onChange={(e) => {
                             //@ts-ignore
-                            console.log(e.target.checked);
+                            // console.log(e.target.checked);
                             setParameter((prev) => ({
                               ...prev,
                               //@ts-ignore
@@ -463,7 +463,7 @@ const ParametersCard: React.FC<{
                               }
 
                               if (!isError) {
-                                console.log({ parameter });
+                                // console.log({ parameter });
                                 setParameters((prev) => [...prev, parameter]);
                                 setParameter({
                                   parameterDescription: '',
@@ -514,7 +514,7 @@ const ParametersCard: React.FC<{
                     </TableRow>
                   )}
                   {parameters.map((param, index) => {
-                    console.log(param);
+                    // console.log(param);
                     return (
                       <ParameterTableRow
                         param={param}
@@ -551,7 +551,7 @@ const ParametersCard: React.FC<{
                           setParameters((prev) => prev.filter((_, i) => i !== index));
                         }}
                         updateParameter={(params: IFunctionParameterType) => {
-                          console.log(params);
+                          // console.log(params);
                           setParameters((prev) => {
                             const newParams = [...prev];
                             newParams[index] = params;
