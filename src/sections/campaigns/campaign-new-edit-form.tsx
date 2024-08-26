@@ -105,7 +105,10 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
         <LoadingScreen />
       ) : (
         <Form methods={methods} onSubmit={onSubmit}>
-          <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: 880 } }}>
+          <Stack
+            spacing={{ xs: 3, md: 5 }}
+            sx={{ mx: 'auto', maxWidth: { xs: 720, xl: '1100px' } }}
+          >
             <Card sx={{ p: 3 }}>
               <Box
                 rowGap={3}

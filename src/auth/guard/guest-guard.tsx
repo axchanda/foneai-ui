@@ -7,7 +7,7 @@ import { CONFIG } from 'src/config-global';
 import { SplashScreen } from 'src/components/loading-screen';
 
 import axios from 'axios';
-import { useAuthContext } from '../hooks';
+import { useAuth } from '../context/jwt/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ export function GuestGuard({ children }: Props) {
 
   const searchParams = useSearchParams();
 
-  const { loading, authenticated } = useAuthContext();
+  const { loading, authenticated } = useAuth();
 
   const [isChecking, setIsChecking] = useState<boolean>(true);
 
