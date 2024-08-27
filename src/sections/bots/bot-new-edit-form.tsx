@@ -1009,7 +1009,7 @@ const voiceTableHead = [
   { id: 'provider', label: 'Provider', width: 100 },
   { id: 'gender', label: 'Gender', width: 100 },
   { id: 'accent', label: 'Accent', width: 100 },
-  { id: 'voiceId', label: 'Voice ID', width: 200 },
+  { id: 'voiceId', label: 'Voice ID', width: 200, align: 'center' },
   { id: 'price', label: 'Price', width: 120 },
   { id: 'preview', label: 'Preview', width: 150 },
   { id: '', width: 80 },
@@ -1200,15 +1200,16 @@ const VoicesTableRow: React.FC<{
       </TableCell>
       <TableCell>
         <Stack spacing={1.5}>
-          <Typography
-            sx={{
-              textTransform: 'capitalize',
-            }}
-            height="40px"
-          >
-            {voice.price}
-          </Typography>
-          <Typography variant="subtitle2">{voice.price !== 'free' && '+ $0.012/min'}</Typography>
+          <Stack height="40px" justifyContent="center">
+            <Typography
+              sx={{
+                textTransform: 'capitalize',
+              }}
+            >
+              {voice.price}
+            </Typography>
+          </Stack>
+          {voice.price !== 'free' && <Typography variant="subtitle2">+ $0.012/min</Typography>}
         </Stack>
       </TableCell>
       <TableCell>
