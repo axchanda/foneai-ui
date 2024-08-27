@@ -164,6 +164,7 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
               onClose();
               openConfirmationDialog.onTrue();
             }}
+            disabled={!apiKeyName}
           >
             Create key
           </Button>
@@ -279,16 +280,6 @@ const SetupConfirmationDialog = ({
         </>
       </DialogContent>
       <DialogActions>
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={() => {
-            setAgreed(false);
-            onClose();
-          }}
-        >
-          Cancel
-        </Button>
         <Button
           disabled={!agreed}
           variant="contained"

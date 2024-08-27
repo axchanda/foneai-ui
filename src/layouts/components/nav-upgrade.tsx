@@ -36,7 +36,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
           </Avatar>
 
           <Label
-            color="success"
+            color="primary"
             variant="filled"
             sx={{
               top: -6,

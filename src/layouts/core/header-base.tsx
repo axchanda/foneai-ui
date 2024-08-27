@@ -15,7 +15,7 @@ import type { HeaderSectionProps } from './header-section';
 import type { AccountDrawerProps } from '../components/account-drawer';
 import type { ContactsPopoverProps } from '../components/contacts-popover';
 import type { LanguagePopoverProps } from '../components/language-popover';
-import { WorkspacesPopover, type WorkspacesPopoverProps } from '../components/workspaces-popover';
+import { type WorkspacesPopoverProps } from '../components/workspaces-popover';
 import type { NotificationsDrawerProps } from '../components/notifications-drawer';
 
 // ----------------------------------------------------------------------
@@ -129,7 +129,7 @@ export function HeaderBase({
             {/* <StyledDivider data-slot="divider" /> */}
 
             {/* -- Workspace popover -- */}
-            {workspaces && <WorkspacesPopover data-slot="workspaces" data={data?.workspaces} />}
+            {/* {workspaces && <WorkspacesPopover data-slot="workspaces" data={data?.workspaces} />} */}
 
             {/* {slots?.leftAreaEnd} */}
           </>
