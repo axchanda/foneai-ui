@@ -87,7 +87,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     }
   }, [currentKb, defaultValues, reset]);
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file: File, knowledgeBaseName: string) => {
     try {
       const {
         data: { url, key },
@@ -96,6 +96,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         key: string;
       }>('/knowledgeBases/getUploadLink', {
         fileName: file.name,
+        knowledgeBaseName,
       });
       await axios.put(url, file, {
         headers: { 'Content-Type': 'application/pdf', withCredentials: true },
@@ -106,6 +107,10 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       return fileURL;
     } catch (error) {
       // console.error(error);
+      const messages = Object.values(error.response.data.errors || {}) as string[];
+      messages.forEach((m: string) => {
+        toast.error(m);
+      });
       toast.error('Failed to upload file');
       throw new Error('Failed to upload file');
     }
@@ -120,7 +125,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         setError('knowledgeBaseFiles', { message: 'File is required' });
       }
       if (isNewFileUploaded) {
-        fileURL = await uploadFile(files[0]);
+        fileURL = await uploadFile(files[0], data.knowledgeBaseName);
         fileName = files[0].name;
         fileToArchive = (currentKb?.knowledgeBaseFiles || [{ fileName: undefined }])[0].fileURL;
       } else {
@@ -148,6 +153,10 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       );
       router.push('/knowledge-bases');
     } catch (error) {
+      const messages = Object.values(error.response.data.errors || {}) as string[];
+      messages.forEach((m: string) => {
+        toast.error(m);
+      });
       // console.error(error);
     }
   });

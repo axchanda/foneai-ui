@@ -106,9 +106,9 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
               label: bot.botVoiceId,
               icon: <Iconify width={16} icon="iconoir:voice-circle" sx={{ flexShrink: 0 }} />,
             },
-          ].map((item) => (
+          ].map((item, index) => (
             <Stack
-              key={item.label}
+              key={index}
               spacing={0.5}
               flexShrink={0}
               direction="row"

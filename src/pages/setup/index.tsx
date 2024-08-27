@@ -55,7 +55,11 @@ const SetupPage: React.FC = () => {
       <Helmet>
         <title>Fone AI</title>
       </Helmet>
-      <DashboardContent>
+      <DashboardContent
+        sx={{
+          pt: 8,
+        }}
+      >
         <Grid container spacing={12}>
           <Grid item xs={12} md={4}>
             <Typography variant="h4" sx={{ whiteSpace: 'pre-line', mb: 1 }}>
@@ -208,7 +212,7 @@ const SetupConfirmationDialog = ({
   };
 
   return (
-    <Dialog fullWidth maxWidth="xs" open={open} onClose={handleClose}>
+    <Dialog disableEscapeKeyDown fullWidth maxWidth="xs" open={open} onClose={handleClose}>
       <DialogTitle sx={{ pb: 2 }}>Your New API Key</DialogTitle>
       <DialogContent sx={{ typography: 'body2' }}>
         <>

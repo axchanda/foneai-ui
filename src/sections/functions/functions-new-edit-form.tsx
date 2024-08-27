@@ -140,6 +140,10 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
       router.push('/functions');
     } catch (error) {
       // console.error(error);
+      const messages = Object.values(error.response.data.errors || {}) as string[];
+      messages.forEach((m: string) => {
+        toast.error(m);
+      });
     }
   });
 

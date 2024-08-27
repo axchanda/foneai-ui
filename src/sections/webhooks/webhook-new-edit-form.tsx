@@ -119,7 +119,10 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
       toast.success(currentWebhook ? 'Update Webhook success!' : 'Create Webhook success!');
       router.push('/webhooks');
     } catch (error) {
-      // console.error(error);
+      const messages = Object.values(error.response.data.errors || {}) as string[];
+      messages.forEach((m: string) => {
+        toast.error(m);
+      });
     }
   });
 

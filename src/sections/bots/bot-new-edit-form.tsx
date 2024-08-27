@@ -172,6 +172,10 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
       router.push('/bots');
     } catch (error) {
       // console.error(error);
+      const messages = Object.values(error.response.data.errors || {}) as string[];
+      messages.forEach((m: string) => {
+        toast.error(m);
+      });
     }
   });
 
@@ -227,7 +231,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Voice</Typography>
           <Stack spacing={1.5} direction="row" sx={{ gap: 4, width: '100%' }}>
-            <Grid container spacing={1.5}>
+            <Grid container spacing={6}>
               <Grid item xs={12} sm={6}>
                 <Stack spacing={1}>
                   <Typography variant="subtitle2">Language</Typography>
@@ -279,40 +283,44 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
             </Grid>
           </Stack>
         </Stack>
-
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Interruptable</Typography>
-          <Field.Switch
-            name="botIsInterruptable"
-            label={
-              values.botIsInterruptable
-                ? 'The bot stops speaking when the user interrupts the bot'
-                : 'The bot continues to speak even when the user interrupts the bot'
-            }
-          />
-        </Stack>
-
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Endpointing</Typography>
-          <Field.Text
-            name="endpointing"
-            placeholder="Enter endpointing value"
-            type="number"
-            sx={{
-              width: {
-                xs: '100%',
-                sm: 200,
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>ms</Box>
-                </InputAdornment>
-              ),
-            }}
-          />
-        </Stack>
+        <Grid container spacing={6}>
+          <Grid item xs={12} sm={6}>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Interruptable</Typography>
+              <Field.Switch
+                name="botIsInterruptable"
+                label={
+                  values.botIsInterruptable
+                    ? 'The bot stops speaking when the user interrupts the bot'
+                    : 'The bot continues to speak even when the user interrupts the bot'
+                }
+              />
+            </Stack>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Endpointing</Typography>
+              <Field.Text
+                name="endpointing"
+                placeholder="Enter endpointing value"
+                type="number"
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: 200,
+                  },
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>ms</Box>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Stack>
+          </Grid>
+        </Grid>
       </Stack>
     </Card>
   );
@@ -355,17 +363,20 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
 
       <Divider />
 
-      <Stack spacing={3} sx={{ p: 3 }}>
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Timezone</Typography>
-          <Field.TimezoneSelect name="botTimezone" placeholder="Select a timezone" />
-        </Stack>
-
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Daylight Savings</Typography>
-          <Field.Switch name="daylightSavings" label="Daylight Savings" />
-        </Stack>
-      </Stack>
+      <Grid spacing={6} container sx={{ p: 3 }}>
+        <Grid item xs={12} sm={6}>
+          <Stack spacing={1.5}>
+            <Typography variant="subtitle2">Timezone</Typography>
+            <Field.TimezoneSelect name="botTimezone" placeholder="Select a timezone" />
+          </Stack>
+        </Grid>
+        <Grid alignSelf="center" item xs={12} sm={6}>
+          <Stack spacing={1.5}>
+            <Typography variant="subtitle2">Daylight Savings</Typography>
+            <Field.Switch name="daylightSavings" label="Daylight Savings" />
+          </Stack>
+        </Grid>
+      </Grid>
     </Card>
   );
 
@@ -995,12 +1006,12 @@ const voicesEs: {
 ];
 
 const voiceTableHead = [
-  { id: 'provider', label: 'Provider', width: 80 },
-  { id: 'gender', label: 'Gender', width: 80 },
-  { id: 'accent', label: 'Accent', width: 80 },
-  { id: 'voice', label: 'Voice ID', width: 180 },
+  { id: 'provider', label: 'Provider', width: 100 },
+  { id: 'gender', label: 'Gender', width: 100 },
+  { id: 'accent', label: 'Accent', width: 100 },
+  { id: 'voiceId', label: 'Voice ID', width: 200 },
   { id: 'price', label: 'Price', width: 120 },
-  { id: 'file', label: 'File', width: 180 },
+  { id: 'preview', label: 'Preview', width: 150 },
   { id: '', width: 80 },
 ];
 const VoiceDialog: React.FC<{
@@ -1024,8 +1035,16 @@ const VoiceDialog: React.FC<{
 
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
 
+  const handleClose = (event: {}, reason: string) => {
+    if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
+      setSelected(selectedVoice);
+    }
+    setCurrentlyPlaying(null);
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog maxWidth="md" open={open} onClose={handleClose}>
       <DialogTitle>Select Voice</DialogTitle>
       <Divider />
       <DialogContent>
@@ -1060,7 +1079,8 @@ const VoiceDialog: React.FC<{
       <DialogActions>
         <Button
           onClick={() => {
-            setCurrentlyPlaying(null);
+            setSelectedVoice(null);
+            setSelected(selectedVoice);
             onClose();
           }}
           variant="outlined"
@@ -1116,8 +1136,11 @@ const VoicesTableRow: React.FC<{
   return (
     <TableRow
       sx={{
+        backgroundColor: selected === voice.voice ? 'var(--palette-primary-main)' : 'transparent',
+        color: selected === voice.voice ? 'white' : 'inherit',
         '&:hover': {
-          backgroundColor: 'background.neutral',
+          backgroundColor:
+            selected === voice.voice ? 'var(--palette-primary-light)' : 'background.neutral',
         },
         cursor: 'pointer',
       }}
@@ -1152,7 +1175,7 @@ const VoicesTableRow: React.FC<{
         </Stack>
       </TableCell>
       <TableCell>
-        <Stack justifyContent="center" alignItems="center">
+        <Stack spacing={1.5} justifyContent="center" alignItems="center">
           <Iconify
             icon={
               voice.accent === 'us'
@@ -1163,23 +1186,29 @@ const VoicesTableRow: React.FC<{
             }
             width="2.5rem"
           />
-          <Typography variant="subtitle2">{voice.accent}</Typography>
+          <Typography variant="subtitle2">
+            {voice.accent === 'us' ? 'American' : voice.accent === 'au' ? 'Australian' : 'Mexican'}
+          </Typography>
         </Stack>
       </TableCell>
       <TableCell>
         <Stack>
-          <Typography>{voice.voice}</Typography>
+          <Typography fontWeight="bold" textAlign="center">
+            {voice.voice}
+          </Typography>
         </Stack>
       </TableCell>
       <TableCell>
-        <Stack>
+        <Stack spacing={1.5}>
           <Typography
             sx={{
               textTransform: 'capitalize',
             }}
+            height="40px"
           >
             {voice.price}
           </Typography>
+          <Typography variant="subtitle2">{voice.price !== 'free' && '+ $0.012/min'}</Typography>
         </Stack>
       </TableCell>
       <TableCell>

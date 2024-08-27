@@ -10,13 +10,12 @@ import { HeaderSection } from './header-section';
 import { MenuButton } from '../components/menu-button';
 import { SignInButton } from '../components/sign-in-button';
 import { AccountDrawer } from '../components/account-drawer';
-import { SettingsButton } from '../components/settings-button';
 
 import type { HeaderSectionProps } from './header-section';
 import type { AccountDrawerProps } from '../components/account-drawer';
 import type { ContactsPopoverProps } from '../components/contacts-popover';
 import type { LanguagePopoverProps } from '../components/language-popover';
-import type { WorkspacesPopoverProps } from '../components/workspaces-popover';
+import { WorkspacesPopover, type WorkspacesPopoverProps } from '../components/workspaces-popover';
 import type { NotificationsDrawerProps } from '../components/notifications-drawer';
 
 // ----------------------------------------------------------------------
@@ -130,7 +129,7 @@ export function HeaderBase({
             {/* <StyledDivider data-slot="divider" /> */}
 
             {/* -- Workspace popover -- */}
-            {/* {workspaces && <WorkspacesPopover data-slot="workspaces" data={data?.workspaces} />} */}
+            {workspaces && <WorkspacesPopover data-slot="workspaces" data={data?.workspaces} />}
 
             {/* {slots?.leftAreaEnd} */}
           </>
@@ -175,7 +174,7 @@ export function HeaderBase({
               {/* {contacts && <ContactsPopover data-slot="contacts" data={data?.contacts} />} */}
 
               {/* -- Settings button -- */}
-              {settings && <SettingsButton data-slot="settings" />}
+              {/* {settings && <SettingsButton data-slot="settings" />} */}
 
               {/* -- Account drawer -- */}
               {account && <AccountDrawer data-slot="account" data={data?.account} />}

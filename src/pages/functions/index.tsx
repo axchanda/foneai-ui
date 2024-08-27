@@ -24,6 +24,7 @@ import { useCallback, useEffect, useState } from 'react';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useRouter } from 'src/routes/hooks';
+import { deleteFunction } from 'src/utils/api/functions';
 
 const TABLE_HEAD = [
   // { id: 'checkbox', width: '' },
@@ -82,7 +83,6 @@ function Functions() {
   const confirm = useBoolean();
   const router = useRouter();
 
-  const handleDeleteRow = (id: string) => {};
   const handleEditRow = useCallback(
     (id: string) => {
       router.push(`/functions/${id}`);
@@ -104,6 +104,17 @@ function Functions() {
   useEffect(() => {
     getFunctions();
   }, [getFunctions]);
+
+  const handleDeleteRow = useCallback(
+    async (id: string) => {
+      await deleteFunction(id, () => {
+        const deleteRow = functions.filter((row) => row._id !== id);
+        setFunctions(deleteRow);
+        table.onUpdatePageDeleteRow(functions.length);
+      });
+    },
+    [functions, table]
+  );
 
   return (
     <DashboardContent>

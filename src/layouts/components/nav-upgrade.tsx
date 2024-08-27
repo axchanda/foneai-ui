@@ -57,7 +57,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
             noWrap
             sx={{ color: 'var(--layout-nav-text-primary-color)' }}
           >
-            {user?.username}
+            {user?.firstName} {user?.lastName}
           </Typography>
 
           <Typography
@@ -65,7 +65,7 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
             noWrap
             sx={{ color: 'var(--layout-nav-text-disabled-color)' }}
           >
-            {user?.firstName} {user?.lastName}
+            {user?.username}
           </Typography>
         </Stack>
 

@@ -1,24 +1,21 @@
 import { Box, Button, Divider, MenuItem, Select, Stack, Switch, Typography } from '@mui/material';
 import React from 'react';
 import { Iconify } from 'src/components/iconify';
-import { Image } from 'src/components/image';
 
 const Credit: React.FC = () => {
   const [autoCharge, setAutoCharge] = React.useState(false);
 
   return (
     <Stack>
-      <Stack alignItems="center" justifyContent="space-between" direction="row">
+      {/* <Stack alignItems="center" justifyContent="space-between" direction="row">
         <Typography variant="h4">Credit</Typography>
-        <Button variant="contained" color="primary">
-          Purchase Credit
-        </Button>
+        
       </Stack>
       <Divider
         sx={{
           my: 2,
         }}
-      />
+      /> */}
       <Stack
         py={2}
         px={3}
@@ -35,7 +32,10 @@ const Credit: React.FC = () => {
             incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
           </Typography>
         </Stack>
-        <Image src="/wallet.png" width={120} height={120} />
+        {/* <Image src="/wallet.png" width={120} height={120} /> */}
+        <Button variant="contained" color="primary">
+          Purchase Credit
+        </Button>
       </Stack>
       <Stack spacing={3} mt={6}>
         <Stack direction="row" spacing={2.5}>

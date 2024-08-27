@@ -3,13 +3,10 @@ import type { IInvoice, IInvoiceTableFilters } from 'src/types/invoice';
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import TableBody from '@mui/material/TableBody';
 import { useTheme } from '@mui/material/styles';
@@ -24,10 +21,8 @@ import { useSetState } from 'src/hooks/use-set-state';
 import { sumBy } from 'src/utils/helper';
 import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
-import { varAlpha } from 'src/theme/styles';
-import { _invoices, INVOICE_SERVICE_OPTIONS } from 'src/_mock';
+import { _invoices } from 'src/_mock';
 
-import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -44,9 +39,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import { InvoiceAnalytic } from 'src/sections/invoice/invoice-analytic';
 import { InvoiceTableRow } from 'src/sections/invoice/invoice-table-row';
-import { InvoiceTableToolbar } from 'src/sections/invoice/invoice-table-toolbar';
 import { InvoiceTableFiltersResult } from 'src/sections/invoice/invoice-table-filters-result';
 
 // ----------------------------------------------------------------------
@@ -197,7 +190,7 @@ export function BillingInvoices() {
   return (
     <>
       <>
-        <Card sx={{ mb: { xs: 3, md: 5 } }}>
+        {/* <Card sx={{ mb: { xs: 3, md: 5 } }}>
           <Scrollbar sx={{ minHeight: 108 }}>
             <Stack
               direction="row"
@@ -250,10 +243,10 @@ export function BillingInvoices() {
               />
             </Stack>
           </Scrollbar>
-        </Card>
+        </Card> */}
 
         <Card>
-          <Tabs
+          {/* <Tabs
             value={filters.state.status}
             onChange={handleFilterStatus}
             sx={{
@@ -280,14 +273,14 @@ export function BillingInvoices() {
                 }
               />
             ))}
-          </Tabs>
+          </Tabs> */}
 
-          <InvoiceTableToolbar
+          {/* <InvoiceTableToolbar
             filters={filters}
             dateError={dateError}
             onResetPage={table.onResetPage}
             options={{ services: INVOICE_SERVICE_OPTIONS.map((option) => option.name) }}
-          />
+          /> */}
 
           {canReset && (
             <InvoiceTableFiltersResult

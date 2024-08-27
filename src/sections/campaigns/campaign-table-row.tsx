@@ -1,4 +1,3 @@
-import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import MenuList from '@mui/material/MenuList';
@@ -45,7 +44,7 @@ export function CampaignTableRow({
     successDuration: 3000,
   });
 
-  const linkedBot = bots.find((bot) => bot._id === row.linkedBot)?.name || row.linkedBot;
+  const linkedBot = bots.find((bot) => bot._id === row.linkedBot)?.botName || row.linkedBot;
 
   return (
     <>
@@ -63,10 +62,9 @@ export function CampaignTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.campaignName}</TableCell>
         <TableCell>
           <Stack spacing={2} direction="row" alignItems="center">
-            <Typography>
-              {row.campaignId}
-            </Typography>
-            <IconButton sx={{ cursor: 'pointer' }}
+            <Typography>{row.campaignId}</Typography>
+            <IconButton
+              sx={{ cursor: 'pointer' }}
               onClick={() => {
                 if (!isCopied) {
                   setCopied();

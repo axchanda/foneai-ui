@@ -94,6 +94,10 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
       // console.info('DATA', data);
     } catch (error) {
       // console.error(error);
+      const messages = Object.values(error.response.data.errors || {}) as string[];
+      messages.forEach((m: string) => {
+        toast.error(m);
+      });
     }
   });
 
