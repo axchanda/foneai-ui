@@ -1010,7 +1010,7 @@ const voiceTableHead = [
   { id: 'gender', label: 'Gender', width: 100 },
   { id: 'accent', label: 'Accent', width: 100 },
   { id: 'voiceId', label: 'Voice ID', width: 200, align: 'center' },
-  { id: 'price', label: 'Price', width: 120 },
+  { id: 'price', label: 'Price', width: 120, align: 'center' },
   { id: 'preview', label: 'Preview', width: 150 },
   { id: '', width: 80 },
 ];
@@ -1138,10 +1138,10 @@ const VoicesTableRow: React.FC<{
       sx={{
         backgroundColor: selected === voice.voice ? 'var(--palette-primary-main)' : 'transparent',
         color: selected === voice.voice ? 'white' : 'inherit',
-        '&:hover': {
-          backgroundColor:
-            selected === voice.voice ? 'var(--palette-primary-light)' : 'background.neutral',
-        },
+        // '&:hover': {
+        //   backgroundColor:
+        //     selected === voice.voice ? 'var(--palette-primary-light)' : 'background.neutral',
+        // },
         cursor: 'pointer',
       }}
       onClick={() => {
@@ -1198,12 +1198,13 @@ const VoicesTableRow: React.FC<{
           </Typography>
         </Stack>
       </TableCell>
-      <TableCell>
+      <TableCell align="center">
         <Stack spacing={1.5}>
           <Stack height="40px" justifyContent="center">
             <Typography
               sx={{
                 textTransform: 'capitalize',
+                transform: voice.price !== 'free' ? 'translateY(16px)' : '',
               }}
             >
               {voice.price}

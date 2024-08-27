@@ -105,7 +105,7 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
         </IconButton>
 
         <Scrollbar>
-          <Stack alignItems="center" sx={{ pt: 8 }}>
+          <Stack alignItems="center" mb={4} sx={{ pt: 8 }}>
             {renderAvatar}
 
             <Typography variant="subtitle1" noWrap sx={{ mt: 2 }}>
