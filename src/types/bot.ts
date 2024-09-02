@@ -4,13 +4,21 @@ export type IBotType = {
   botName: string;
   botIntroduction: string;
   botLanguage: 'en' | 'es';
-  endpointing: number;
-  daylightSavings: boolean;
+  botEndpointing: number;
+  botDaylightSavings: boolean;
   botIsInterruptable: boolean;
   botInstructions: string;
   botTimezone: string;
-  botKnowledgeBase: string;
+  botKnowledgeBaseId: string;
   createdAt: string;
   updatedAt: string;
-  botVoiceId: string;
+  // botVoiceId: string;
+  botVoice: {
+    voiceProvider: string;
+    voiceId: string;
+  };
+  botFunctions: {
+    functionId: string;
+    triggerLine: string;
+  }[];
 };

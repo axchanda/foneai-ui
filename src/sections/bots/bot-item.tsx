@@ -103,7 +103,7 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
               ),
             },
             {
-              label: bot.botVoiceId,
+              label: bot.botVoice.voiceId,
               icon: <Iconify width={16} icon="iconoir:voice-circle" sx={{ flexShrink: 0 }} />,
             },
           ].map((item, index) => (

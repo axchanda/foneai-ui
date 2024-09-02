@@ -75,19 +75,19 @@ type Props = {
 export function BotNewEditForm({ currentBot, isUsed }: Props) {
   const router = useRouter();
   const alertDialog = useBoolean();
-  const actionDialog = useBoolean();
+  // const actionDialog = useBoolean();
   const defaultValues = useMemo(
     () => ({
       botName: currentBot?.botName || '',
       botIntroduction: currentBot?.botIntroduction || '',
       botInstructions: currentBot?.botInstructions || '',
       botLanguage: currentBot?.botLanguage || 'en',
-      botVoiceId: currentBot?.botVoiceId || '',
+      botVoiceId: currentBot?.botVoice.voiceId || '',
       botIsInterruptable: currentBot?.botIsInterruptable || false,
-      endpointing: currentBot?.endpointing || 20,
-      botKnowledgeBase: currentBot?.botKnowledgeBase || '',
+      endpointing: currentBot?.botEndpointing || 20,
+      botKnowledgeBase: currentBot?.botKnowledgeBaseId || '',
       botTimezone: currentBot?.botTimezone || 'UTC-05:00',
-      daylightSavings: currentBot?.daylightSavings || false,
+      daylightSavings: currentBot?.botDaylightSavings || false,
     }),
     [currentBot]
   );
@@ -101,7 +101,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     resetField,
     setValue,
     watch,
@@ -112,8 +112,12 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
   const [loaded, setLoaded] = useState(false);
   const [kbs, setKbs] = useState<{ label: string; value: string }[]>([]);
   const [functions, setFunctions] = useState<IFunctionItem[]>([]);
-  const [invocations, setInvocations] = useState<{ function: string; trigger: string }[]>([]);
-  const [selectedVoice, setSelectedVoice] = useState<string | null>(currentBot?.botVoiceId || null);
+  const [invocations, setInvocations] = useState<{ functionId: string; triggerLine: string }[]>(
+    currentBot?.botFunctions || []
+  );
+  const [selectedVoice, setSelectedVoice] = useState<string | null>(
+    currentBot?.botVoice.voiceId || null
+  );
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
 
   const getData = useCallback(async () => {
@@ -150,7 +154,6 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
   // values.botLanguage = values.botLanguage || 'en';
   // console.log(values.botLanguage);
   const onSubmit = handleSubmit(async (data) => {
-    // console.log(data);
     try {
       // console.log(data);
       const url = currentBot ? `/bots/${currentBot._id}` : '/bots/create';
@@ -161,11 +164,12 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
         botInstructions: data.botInstructions,
         botLanguage: 'en',
         botVoiceId: data.botVoiceId,
-        botKnowledgeBase: data.botKnowledgeBase,
+        botKnowledgeBaseId: data.botKnowledgeBase,
         botIsInterruptable: data.botIsInterruptable,
         endpointing: data.endpointing,
         botTimezone: data.botTimezone,
         daylightSavings: data.daylightSavings,
+        botFunctions: invocations,
       });
       reset();
       toast.success(currentBot ? 'Update success!' : 'Create success!');
@@ -557,10 +561,12 @@ const InvokeFunction: React.FC<{
   functions: IFunctionItem[];
   botInstructions: string;
   invocations: {
-    function: string;
-    trigger: string;
+    functionId: string;
+    triggerLine: string;
   }[];
-  setInvocations: React.Dispatch<React.SetStateAction<{ function: string; trigger: string }[]>>;
+  setInvocations: React.Dispatch<
+    React.SetStateAction<{ functionId: string; triggerLine: string }[]>
+  >;
 }> = ({ botInstructions, functions, invocations, setInvocations }) => {
   const shouldShowForm = useBoolean();
   const table = useTable();
@@ -679,7 +685,13 @@ const InvokeFunction: React.FC<{
                               }
 
                               if (!isError) {
-                                setInvocations((prev) => [...prev, invocation]);
+                                setInvocations((prev) => [
+                                  ...prev,
+                                  {
+                                    functionId: invocation.function,
+                                    triggerLine: invocation.trigger,
+                                  },
+                                ]);
                                 setInvocation({
                                   function: '',
                                   trigger: '',
@@ -724,7 +736,10 @@ const InvokeFunction: React.FC<{
                     return (
                       <InvocationsTableRow
                         key={JSON.stringify(i) + index}
-                        currentInvocation={i}
+                        currentInvocation={{
+                          function: i.functionId,
+                          trigger: i.triggerLine,
+                        }}
                         removeInvocation={() => {
                           setInvocations((prev) => {
                             const newInvocations = [...prev];
@@ -735,7 +750,10 @@ const InvokeFunction: React.FC<{
                         updateInvocation={(newInvocation) => {
                           setInvocations((prev) => {
                             const newInvocations = [...prev];
-                            newInvocations[index] = newInvocation;
+                            newInvocations[index] = {
+                              functionId: newInvocation.function,
+                              triggerLine: newInvocation.trigger,
+                            };
                             return newInvocations;
                           });
                         }}

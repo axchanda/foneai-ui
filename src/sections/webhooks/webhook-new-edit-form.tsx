@@ -131,7 +131,7 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Webhook Name</Typography>
-          <Field.Text label="Name" name="webhookName" />
+          <Field.Text label="" name="webhookName" />
         </Stack>
 
         <Stack sx={{ px: 1 }}>
@@ -151,21 +151,21 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Webhook URI</Typography>
 
-          <Field.Text label="Webhook URI" name="webhookURI" />
+          <Field.Text label="" name="webhookURI" />
         </Stack>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Webhook Description</Typography>
 
-          <Field.Text fullWidth label="description" multiline rows={4} name="webhookDescription" />
+          <Field.Text fullWidth label="" multiline rows={4} name="webhookDescription" />
         </Stack>
         <Stack spacing={4} direction="row">
           <Stack flex={1} spacing={1.5}>
             <Typography variant="subtitle2">Webhook Timeout</Typography>
-            <Field.Text type="number" label="Timeout" name="webhookTimeout" />
+            <Field.Text type="number" label="" name="webhookTimeout" />
           </Stack>
           <Stack flex={1} spacing={1.5}>
             <Typography variant="subtitle2">Requests Per Minute</Typography>
-            <Field.Text type="number" label="RPS" name="webhookRequestsPerMinute" />
+            <Field.Text type="number" label="" name="webhookRequestsPerMinute" />
           </Stack>
         </Stack>
       </Stack>
