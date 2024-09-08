@@ -19,6 +19,7 @@ export type IFunctionAction =
       data: {
         linkedWebhook: string;
         slug: string;
+        responseInstructions: string;
       };
     }
   | {

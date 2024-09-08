@@ -126,7 +126,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     // console.log(data);
     try {
-      // console.log(data);
+      console.log(action);
       const url = currentFunction ? `/functions/${currentFunction._id}` : '/functions/create';
       const method = currentFunction ? API.put : API.post;
       await method(url, {
@@ -159,7 +159,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
           <Field.Text name="functionName" placeholder="Ex: Function 1..." />
         </Stack>
 
-        <Stack spacing={1.5}>
+        {/* <Stack spacing={1.5}>
           <Typography variant="subtitle2">Function Description</Typography>
           <Field.Text
             name="functionDescription"
@@ -167,7 +167,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
             multiline
             rows={4}
           />
-        </Stack>
+        </Stack> */}
       </Stack>
     </Card>
   );
@@ -188,6 +188,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
                 data: {
                   linkedWebhook: '',
                   slug: '',
+                  responseInstructions: '',
                 },
                 type,
               });
@@ -207,11 +208,10 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
           </Stack>
         </RadioGroup>
         {action.type === 'webhook' && (
-          <Box display="grid" gridTemplateColumns="auto 1fr" gap={4}>
+          <Box display="grid" gridTemplateColumns="0.5fr 1fr"
+          gap={4}>
             <Typography alignSelf="center">Webhook</Typography>
             <Field.Select capitalize={false} name="webhook" placeholder="Select webhook">
-              {/* <MenuItem value="1">Webhook 1</MenuItem>
-              <MenuItem value="2">Webhook 2</MenuItem> */}
               {webhooks.map((webhook) => (
                 <MenuItem key={webhook._id} value={webhook._id}>
                   {webhook.webhookName}
@@ -220,6 +220,8 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
             </Field.Select>
             <Typography alignSelf="center">Slug</Typography>
             <Field.Text name="slug" placeholder="Slug" />
+            <Typography alignSelf="center">Response Instructions</Typography>
+            <Field.Text name="responseInstruction" rows={2} minRows={2} multiline placeholder="Instructions to speak the response" />
           </Box>
         )}
       </Stack>
