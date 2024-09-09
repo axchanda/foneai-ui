@@ -1,21 +1,45 @@
-import { Box, Button, Divider, MenuItem, Select, Stack, Switch, Typography } from '@mui/material';
-import React from 'react';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  MenuItem,
+  Select,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
+} from '@mui/material';
+import React, { useCallback, useEffect } from 'react';
+import { toast } from 'sonner';
 import { Iconify } from 'src/components/iconify';
+import { useBoolean } from 'src/hooks/use-boolean';
+import type { ICreditType } from 'src/types/credit';
+import API from 'src/utils/API';
 
 const Credit: React.FC = () => {
   const [autoCharge, setAutoCharge] = React.useState(false);
+  const [credit, setCredit] = React.useState<ICreditType | null>(null);
+  const [loading, setLoading] = React.useState(false);
+
+  const openPayment = useBoolean();
+
+  const getCredits = useCallback(async () => {
+    setLoading(true);
+    const { data } = await API.get<ICreditType>('/credits');
+    setCredit(data);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    getCredits();
+  }, [getCredits]);
 
   return (
     <Stack>
-      {/* <Stack alignItems="center" justifyContent="space-between" direction="row">
-        <Typography variant="h4">Credit</Typography>
-        
-      </Stack>
-      <Divider
-        sx={{
-          my: 2,
-        }}
-      /> */}
       <Stack
         py={2}
         px={3}
@@ -26,14 +50,22 @@ const Credit: React.FC = () => {
         direction="row"
       >
         <Stack maxWidth="60%" spacing={1.5}>
-          <Typography variant="h4">Credit - $5.30</Typography>
+          <Typography variant="h4">Credit - ${credit?.available || 0}</Typography>
           <Typography variant="subtitle2">
             lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
             incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
           </Typography>
         </Stack>
         {/* <Image src="/wallet.png" width={120} height={120} /> */}
-        <Button variant="contained" color="primary">
+        <Button
+          disabled={loading}
+          onClick={() => {
+            if (loading) return;
+            openPayment.onTrue();
+          }}
+          variant="contained"
+          color="primary"
+        >
           Purchase Credit
         </Button>
       </Stack>
@@ -108,7 +140,102 @@ const Credit: React.FC = () => {
           </Box>
         </Stack>
       )}
+      <PurchaseCreditDialog open={openPayment.value} onClose={openPayment.onFalse} />
     </Stack>
+  );
+};
+
+interface Window {
+  Razorpay: any;
+}
+
+declare const window: Window;
+
+const displayRazorpay = async (amount: number) => {
+  const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
+
+  if (!res) {
+    alert('Razorpay SDK failed to load. Are you online?');
+    return;
+  }
+
+  const { data } = await API.post('/createOrder', { amount, currency: 'INR' });
+
+  const options = {
+    key: 'rzp_test_BF90O6fh2Tq8gf',
+    currency: data.currency,
+    amount: data.amount.toString(),
+    order_id: data.id,
+    name: 'Minutes',
+    description: 'Thank you for purchase',
+    image: 'http://localhost:8080/logo512.png',
+  };
+
+  const paymentObject = new window.Razorpay(options);
+  paymentObject.open();
+};
+
+function loadScript(src: string) {
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
+    document.body.appendChild(script);
+  });
+}
+
+const PurchaseCreditDialog: React.FC<{ open: boolean; onClose: () => void }> = ({
+  open,
+  onClose,
+}) => {
+  const [amount, setAmount] = React.useState(0);
+  return (
+    <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
+      <DialogTitle sx={{ pb: 2 }}>Specify Amount</DialogTitle>
+      <Divider />
+      <DialogContent
+        sx={{
+          my: 2,
+        }}
+      >
+        <Typography mb={1} variant="body2">
+          Amount:
+        </Typography>
+        <TextField
+          fullWidth
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+          variant="outlined"
+          type="number"
+          name="amount"
+        />
+      </DialogContent>
+      <Divider />
+      <DialogActions>
+        <Button
+          onClick={() => {
+            if (!amount || amount < 0) {
+              toast.error('Please enter a valid amount');
+            } else {
+              displayRazorpay(amount);
+            }
+          }}
+          variant="contained"
+          color="primary"
+        >
+          Purchase
+        </Button>
+
+        <Button variant="outlined" color="inherit" onClick={onClose}>
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

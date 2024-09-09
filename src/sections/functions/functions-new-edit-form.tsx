@@ -55,7 +55,6 @@ export type NewFunctionSchemaType = zod.infer<typeof NewFunctionSchema>;
 
 export const NewFunctionSchema = zod.object({
   functionName: zod.string().min(1, 'Function name is required'),
-  functionDescription: zod.string().min(1, 'Function description is required'),
 });
 
 type Props = {
@@ -83,7 +82,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
   const {
     reset,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
 
   const [parameters, setParameters] = useState<IFunctionItem['parameters']>(
@@ -91,12 +90,14 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
   );
   const [loaded, setLoaded] = useState(false);
   const [webhooks, setWebhooks] = useState<IWebhookItem[]>([]);
+
   const [action, setAction] = useState<IFunctionAction>(
     currentFunction?.functionAction || {
       type: 'hangup',
       data: null,
     }
   );
+  const [actionErrors, setActionErrors] = useState<Record<string, string>>({});
 
   const getWebhooks = useCallback(async () => {
     const webhookPromise = API.get<{
@@ -125,13 +126,35 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     // console.log(data);
+    if (action.type === 'webhook') {
+      if (!action.data?.linkedWebhook) {
+        setActionErrors({
+          ...actionErrors,
+          linkedWebhook: 'Webhook is required',
+        });
+        return;
+      }
+      if (!action.data?.slug) {
+        setActionErrors({
+          ...actionErrors,
+          slug: 'Slug is required',
+        });
+        return;
+      }
+      if (!action.data?.responseInstructions) {
+        setActionErrors({
+          ...actionErrors,
+          responseInstructions: 'Response instructions are required',
+        });
+        return;
+      }
+    }
     try {
-      console.log(action);
       const url = currentFunction ? `/functions/${currentFunction._id}` : '/functions/create';
       const method = currentFunction ? API.put : API.post;
       await method(url, {
         functionName: data.functionName,
-        functionDescription: data.functionDescription,
+        // functionDescription: data.functionDescription,
         functionAction: action,
         parameters,
       });
@@ -186,9 +209,9 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
             if (type === 'webhook') {
               setAction({
                 data: {
-                  linkedWebhook: '',
-                  slug: '',
-                  responseInstructions: '',
+                  linkedWebhook: action.data?.linkedWebhook || '',
+                  slug: action.data?.slug || '',
+                  responseInstructions: action.data?.responseInstructions || '',
                 },
                 type,
               });
@@ -208,20 +231,97 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
           </Stack>
         </RadioGroup>
         {action.type === 'webhook' && (
-          <Box display="grid" gridTemplateColumns="0.5fr 1fr"
-          gap={4}>
+          <Box display="grid" gridTemplateColumns="0.5fr 1fr" gap={4}>
             <Typography alignSelf="center">Webhook</Typography>
-            <Field.Select capitalize={false} name="webhook" placeholder="Select webhook">
+            <Field.Select
+              error={Boolean(actionErrors.linkedWebhook)}
+              key={action.data?.linkedWebhook}
+              value={action.data?.linkedWebhook}
+              onChange={(e) => {
+                setAction((pre) => ({
+                  type: 'webhook',
+                  data: {
+                    linkedWebhook: e.target.value,
+                    responseInstructions: pre.data!.responseInstructions,
+                    slug: pre.data!.slug,
+                  },
+                }));
+              }}
+              capitalize={false}
+              name="webhook"
+              placeholder="Select webhook"
+            >
               {webhooks.map((webhook) => (
                 <MenuItem key={webhook._id} value={webhook._id}>
                   {webhook.webhookName}
                 </MenuItem>
               ))}
             </Field.Select>
+
             <Typography alignSelf="center">Slug</Typography>
-            <Field.Text name="slug" placeholder="Slug" />
+            <Box
+              border="1px solid"
+              borderColor="var(--palette-background-neutral)"
+              borderRadius="var(--shape-borderRadius)"
+              sx={{
+                ':hover': {
+                  borderColor: 'var(--palette-background-main)',
+                },
+              }}
+              position="relative"
+            >
+              <Box
+                sx={{
+                  position: 'absolute',
+                  height: '100%',
+                  width: '100%',
+                  borderRadius: 'var(--shape-borderRadius)',
+                  padding: '16.5px 14px',
+                }}
+              >
+                <Typography>{action.data?.slug || ''}</Typography>
+              </Box>
+              <Field.Text
+                sx={{
+                  opacity: 0,
+                }}
+                value={action.data?.slug}
+                onChange={(e) => {
+                  setAction((pre) => ({
+                    type: 'webhook',
+                    data: {
+                      linkedWebhook: pre.data!.linkedWebhook,
+                      responseInstructions: pre.data!.responseInstructions,
+                      slug: e.target.value,
+                    },
+                  }));
+                }}
+                name="slug"
+                placeholder="Slug"
+                error={Boolean(actionErrors.slug)}
+              />
+            </Box>
+
             <Typography alignSelf="center">Response Instructions</Typography>
-            <Field.Text name="responseInstruction" rows={2} minRows={2} multiline placeholder="Instructions to speak the response" />
+            <Field.Text
+              error={Boolean(actionErrors.responseInstructions)}
+              value={action.data?.responseInstructions}
+              name="responseInstruction"
+              rows={2}
+              minRows={2}
+              multiline
+              placeholder="Instructions to speak the response"
+              onChange={(e) => {
+                setAction((pre) => ({
+                  type: 'webhook',
+                  data: {
+                    linkedWebhook: pre.data!.linkedWebhook,
+                    responseInstructions: e.target.value,
+                    slug: pre.data!.slug,
+                  },
+                }));
+              }}
+            />
           </Box>
         )}
       </Stack>

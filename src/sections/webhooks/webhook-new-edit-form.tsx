@@ -25,6 +25,7 @@ import {
   Typography,
   MenuItem,
   IconButton,
+  InputAdornment,
 } from '@mui/material';
 import type { IWebhookHeaders, IWebhookItem } from 'src/types/webhook';
 import API from 'src/utils/API';
@@ -161,7 +162,30 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
         <Stack spacing={4} direction="row">
           <Stack flex={1} spacing={1.5}>
             <Typography variant="subtitle2">Webhook Timeout</Typography>
-            <Field.Text type="number" label="" name="webhookTimeout" />
+            <Field.Text
+              sx={{
+                '.MuiInputBase-root': {
+                  flexDirection: 'row-reverse',
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment
+                    sx={{
+                      flex: 1,
+                      padding: '8px',
+                      height: '100%',
+                    }}
+                    position="end"
+                  >
+                    seconds
+                  </InputAdornment>
+                ),
+              }}
+              type="number"
+              label=""
+              name="webhookTimeout"
+            />
           </Stack>
           <Stack flex={1} spacing={1.5}>
             <Typography variant="subtitle2">Requests Per Minute</Typography>

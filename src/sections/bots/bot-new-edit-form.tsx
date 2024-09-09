@@ -32,6 +32,7 @@ import {
   TableCell,
   TableRow,
   MenuList,
+  TextField,
 } from '@mui/material';
 import { deleteBot } from 'src/utils/api/bots';
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -486,49 +487,141 @@ const ActionTriggerDialog: React.FC<{
   botInstrunctions: string;
   onSubmit: (action: string) => void;
 }> = ({ open, onClose, botInstrunctions, onSubmit }) => {
+  const [selected, setSelected] = useState<string | null>(null);
   const actions = botInstrunctions.split('.').filter((line) => line.trim().length > 0);
   const [selectedAction, setSelectedAction] = useState<string | undefined>(undefined);
+  const [tab, setTab] = useState(1);
+
+  const renderTrigger = (
+    <Box>
+      <Button
+        sx={{
+          mt: 2,
+        }}
+        fullWidth={false}
+        variant="outlined"
+        color="info"
+        onClick={() => {
+          setTab(1);
+        }}
+      >
+        Go Back
+      </Button>
+      <Box
+        my={2}
+        minWidth={400}
+        border="2px solid"
+        borderRadius="12px"
+        borderColor="background.neutral"
+        sx={{
+          '#action': {
+            cursor: 'pointer',
+            ':hover': {
+              backgroundColor: 'primary.main',
+            },
+            '&.selected': {
+              backgroundColor: 'primary.main',
+            },
+          },
+        }}
+        p={2}
+      >
+        <Typography variant="subtitle1">
+          {actions.map((action, index) => (
+            <Fragment key={index}>
+              <Typography
+                component="span"
+                id="action"
+                className={selectedAction === action ? 'selected' : ''}
+                onClick={() => setSelectedAction((prev) => (prev === action ? undefined : action))}
+              >
+                {action}
+              </Typography>
+              <Typography component="span"> . </Typography>
+            </Fragment>
+          ))}
+        </Typography>
+      </Box>
+    </Box>
+  );
+
+  const renderDescription = (
+    <Box minWidth={400}>
+      <Button
+        sx={{
+          mt: 2,
+          display: 'block',
+        }}
+        fullWidth={false}
+        variant="outlined"
+        color="info"
+        onClick={() => {
+          setSelectedAction(undefined);
+          setTab(1);
+        }}
+      >
+        Go Back
+      </Button>
+      <TextField
+        sx={{
+          my: 2,
+        }}
+        multiline
+        rows={10}
+        fullWidth
+        placeholder="Write description to trigger the function"
+        onChange={(e) => setSelectedAction(e.target.value)}
+      />
+    </Box>
+  );
+
+  const renderRadios = (
+    <Box py={2} display="grid" gridTemplateColumns="1fr 1fr" gap={4}>
+      <Card
+        sx={{
+          border: '1px solid',
+          borderColor: selected === 'description' ? 'primary.main' : 'background.neutral',
+        }}
+      >
+        <Box
+          sx={{
+            cursor: 'pointer',
+          }}
+          onClick={() => setSelected('description')}
+          px={2}
+          py={4}
+        >
+          <Typography>Invoke Function by description</Typography>
+        </Box>
+      </Card>
+      <Card
+        sx={{
+          border: '1px solid',
+          borderColor: selected === 'trigger' ? 'primary.main' : 'background.neutral',
+        }}
+      >
+        <Box
+          sx={{
+            cursor: 'pointer',
+          }}
+          onClick={() => setSelected('trigger')}
+          px={2}
+          py={4}
+        >
+          <Typography>Invoke Function by trigger</Typography>
+        </Box>
+      </Card>
+    </Box>
+  );
+
+  const isDisabled = tab === 1 ? !selected : !selectedAction;
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Select trigger</DialogTitle>
       <Divider />
       <DialogContent>
-        <Box
-          my={2}
-          border="2px solid"
-          borderRadius="12px"
-          borderColor="background.neutral"
-          sx={{
-            '#action': {
-              cursor: 'pointer',
-              ':hover': {
-                backgroundColor: 'primary.main',
-              },
-              '&.selected': {
-                backgroundColor: 'primary.main',
-              },
-            },
-          }}
-          p={2}
-        >
-          <Typography variant="subtitle1">
-            {actions.map((action, index) => (
-              <Fragment key={index}>
-                <Typography
-                  component="span"
-                  id="action"
-                  className={selectedAction === action ? 'selected' : ''}
-                  onClick={() =>
-                    setSelectedAction((prev) => (prev === action ? undefined : action))
-                  }
-                >
-                  {action}
-                </Typography>
-                <Typography component="span"> . </Typography>
-              </Fragment>
-            ))}
-          </Typography>
-        </Box>
+        {tab === 1 ? renderRadios : selected === 'trigger' ? renderTrigger : renderDescription}
       </DialogContent>
       <Divider />
       <DialogActions>
@@ -536,14 +629,21 @@ const ActionTriggerDialog: React.FC<{
           Close
         </Button>
         <Button
-          disabled={!selectedAction}
+          disabled={isDisabled}
           onClick={() => {
-            if (!selectedAction) return;
-            onSubmit(selectedAction);
+            if (tab === 1) {
+              setTab(2);
+            } else {
+              if (!selectedAction) return;
+              const sa = selectedAction;
+              setTab(1);
+              setSelectedAction(undefined);
+              onSubmit(sa);
+            }
           }}
           variant="contained"
         >
-          Submit
+          {tab === 1 ? 'Next' : 'Submit'}
         </Button>
       </DialogActions>
     </Dialog>
