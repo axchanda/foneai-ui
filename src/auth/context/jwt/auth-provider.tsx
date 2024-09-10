@@ -24,6 +24,7 @@ export const AuthContext = createContext<IAuthContext>({
   user: null,
   loading: true,
   authenticated: false,
+  permissions: [],
 });
 
 export function AuthProvider({ children }: Props) {
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: Props) {
     user: null,
     loading: true,
     authenticated: false,
+    permissions: [],
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     async checkUserSession() {},
   });
@@ -42,17 +44,15 @@ export function AuthProvider({ children }: Props) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
         const { data } = await API.get<IUser>(`/profile`);
-        // const res = await axios.get(endpoints.auth.me);
+        const { data: permissions } = await API.get<string[]>(`/users/getPermissions`);
 
-        // const { user } = res.data;
-
-        setState({ user: { ...data }, loading: false, authenticated: true });
+        setState({ user: { ...data }, loading: false, permissions, authenticated: true });
       } else {
         setState({ user: null, loading: false, authenticated: false });
       }
     } catch (error) {
       // console.error(error);
-      setState({ user: null, loading: false, authenticated: false });
+      setState({ user: null, loading: true, authenticated: false });
     }
   }, [setState]);
 
@@ -60,6 +60,16 @@ export function AuthProvider({ children }: Props) {
     checkUserSession();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // const getPermissions = useCallback(async () => {
+  //   const { data } = await API.get<string[]>(`/users/getPermissions`);
+  //   setState({ permissions: data });
+  // }, [setState]);
+
+  // useEffect(() => {
+  //   if (!state.user) return;
+  //   getPermissions();
+  // }, [state.user, getPermissions]);
 
   // ----------------------------------------------------------------------
 
@@ -79,9 +89,9 @@ export function AuthProvider({ children }: Props) {
       loading: status === 'loading',
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
+      permissions: state.permissions || [],
     }),
-    [checkUserSession, state.user, status]
+    [checkUserSession, state, status]
   );
-
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;
 }

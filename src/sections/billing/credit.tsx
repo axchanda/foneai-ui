@@ -145,11 +145,12 @@ const Credit: React.FC = () => {
   );
 };
 
-interface Window {
-  Razorpay: any;
-}
+// interface Window {
+//   Razorpay: any;rzp_test_BF90O6fh2Tq8gf
+//   location: any;
+// }
 
-declare const window: Window;
+// declare const window: Window;
 
 const displayRazorpay = async (amount: number) => {
   const res = await loadScript('https://checkout.razorpay.com/v1/checkout.js');
@@ -162,15 +163,18 @@ const displayRazorpay = async (amount: number) => {
   const { data } = await API.post('/createOrder', { amount, currency: 'INR' });
 
   const options = {
-    key: 'rzp_test_BF90O6fh2Tq8gf',
+    key: '',
     currency: data.currency,
     amount: data.amount.toString(),
     order_id: data.id,
-    name: 'Minutes',
+    name: 'Charge',
     description: 'Thank you for purchase',
     image: 'http://localhost:8080/logo512.png',
+    handler(response: any) {
+      window.location.reload();
+    },
   };
-
+  // @ts-ignore
   const paymentObject = new window.Razorpay(options);
   paymentObject.open();
 };

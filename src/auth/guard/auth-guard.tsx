@@ -53,7 +53,6 @@ export function AuthGuard({ children }: Props) {
     if (loading) {
       return;
     }
-
     if (!authenticated) {
       const { method } = CONFIG.auth;
 

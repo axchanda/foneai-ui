@@ -15,6 +15,7 @@ export type UserType = IUser | null;
 
 export type IAuthContext = {
   user: UserType;
+  permissions: string[];
   loading: boolean;
   authenticated: boolean;
   checkUserSession?: () => Promise<void>;

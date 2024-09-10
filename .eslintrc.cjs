@@ -71,5 +71,6 @@ module.exports = {
     'perfectionist/sort-imports': 'off',
     'react/prop-types': 'off',
     'no-console': 'error',
+    'react/no-unused-prop-types': 'off',
   },
 };

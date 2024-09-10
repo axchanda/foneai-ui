@@ -7,6 +7,7 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 
 import { AuthGuard } from 'src/auth/guard';
+import PermissionGuard from 'src/auth/guard/permission-guard';
 
 const IndexPage = lazy(() => import('src/pages/billing'));
 
@@ -21,7 +22,13 @@ const layoutContent = (
 export const billingRoutes = [
   {
     path: 'billing',
-    element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
+    element: CONFIG.auth.skip ? (
+      <>{layoutContent}</>
+    ) : (
+      <AuthGuard>
+        <PermissionGuard permission="VIEW_BILLING">{layoutContent}</PermissionGuard>
+      </AuthGuard>
+    ),
     children: [{ element: <IndexPage />, index: true }],
   },
 ];

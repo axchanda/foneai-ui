@@ -52,6 +52,7 @@ const TABLE_HEAD = [
 ];
 
 export type NewFunctionSchemaType = zod.infer<typeof NewFunctionSchema>;
+const REGEX = /\{[^{}]*\}/g;
 
 export const NewFunctionSchema = zod.object({
   functionName: zod.string().min(1, 'Function name is required'),
@@ -195,6 +196,8 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
     </Card>
   );
 
+  // console.log((action.data?.slug || '').split(REGEX));
+
   const renderActions = (
     <Card>
       <CardHeader title="Action" subheader="Function action settings" sx={{ mb: 3 }} />
@@ -279,7 +282,18 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
                   padding: '16.5px 14px',
                 }}
               >
-                <Typography>{action.data?.slug || ''}</Typography>
+                <Typography>
+                  {(action.data?.slug || '').split(REGEX).map((word, i) => {
+                    if (word.match(REGEX) !== null) {
+                      return (
+                        <span key={i} className="header-variables">
+                          {word}
+                        </span>
+                      );
+                    }
+                    return <span key={i}>{word}</span>;
+                  })}
+                </Typography>
               </Box>
               <Field.Text
                 sx={{
