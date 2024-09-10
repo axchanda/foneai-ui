@@ -24,7 +24,6 @@ export const AuthContext = createContext<IAuthContext>({
   user: null,
   loading: true,
   authenticated: false,
-  permissions: [],
 });
 
 export function AuthProvider({ children }: Props) {
@@ -32,7 +31,6 @@ export function AuthProvider({ children }: Props) {
     user: null,
     loading: true,
     authenticated: false,
-    permissions: [],
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     async checkUserSession() {},
   });
@@ -44,9 +42,8 @@ export function AuthProvider({ children }: Props) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
         const { data } = await API.get<IUser>(`/profile`);
-        const { data: permissions } = await API.get<string[]>(`/users/getPermissions`);
 
-        setState({ user: { ...data }, loading: false, permissions, authenticated: true });
+        setState({ user: { ...data }, loading: false, authenticated: true });
       } else {
         setState({ user: null, loading: false, authenticated: false });
       }
@@ -89,7 +86,6 @@ export function AuthProvider({ children }: Props) {
       loading: status === 'loading',
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
-      permissions: state.permissions || [],
     }),
     [checkUserSession, state, status]
   );

@@ -8,6 +8,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import { AuthGuard } from 'src/auth/guard';
 import { Helmet } from 'react-helmet-async';
+import PermissionGuard from 'src/auth/guard/permission-guard';
 
 // ----------------------------------------------------------------------
 
@@ -39,7 +40,9 @@ export const botsRoutes = [
             <Helmet>
               <title> {`${CONFIG.site.name}`}</title>
             </Helmet>
-            <BotsPages.BotsPage />
+            <PermissionGuard permission="bots.view">
+              <BotsPages.BotsPage />
+            </PermissionGuard>
           </>
         ),
         index: true,
@@ -51,7 +54,9 @@ export const botsRoutes = [
             <Helmet>
               <title> {`${CONFIG.site.name}`}</title>
             </Helmet>
-            <BotsPages.BotCreatePage />
+            <PermissionGuard permission="bots.create">
+              <BotsPages.BotCreatePage />
+            </PermissionGuard>
           </>
         ),
       },
@@ -62,7 +67,9 @@ export const botsRoutes = [
             <Helmet>
               <title> {`${CONFIG.site.name}`}</title>
             </Helmet>
-            <BotsPages.BotEditPage />
+            <PermissionGuard permission="bots.edit">
+              <BotsPages.BotEditPage />
+            </PermissionGuard>
           </>
         ),
       },

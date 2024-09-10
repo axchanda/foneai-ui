@@ -111,6 +111,7 @@ input[type="number"]::-webkit-inner-spin-button {
   border-color: rgba(225, 225, 225, 0.4);
 }
 
-.header-variables {
-  background-color: red;
+.header-variable {
+  background-color: var(--palette-primary-dark);
+  color: white;
 }

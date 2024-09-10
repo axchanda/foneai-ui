@@ -40,6 +40,7 @@ const ICONS = {
 export const navData = [
   {
     subheader: 'Dashboard',
+    permission: 'dashboard.view',
     items: [
       {
         title: 'Dashboard',
@@ -95,6 +96,7 @@ export const navData = [
         title: 'Billing',
         path: '/billing',
         icon: ICONS.billing,
+        permission: 'billing.view',
       },
     ],
   },

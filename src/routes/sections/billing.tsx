@@ -26,7 +26,7 @@ export const billingRoutes = [
       <>{layoutContent}</>
     ) : (
       <AuthGuard>
-        <PermissionGuard permission="VIEW_BILLING">{layoutContent}</PermissionGuard>
+        <PermissionGuard permission="billing.view">{layoutContent}</PermissionGuard>
       </AuthGuard>
     ),
     children: [{ element: <IndexPage />, index: true }],

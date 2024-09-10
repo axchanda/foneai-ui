@@ -9,7 +9,7 @@ interface Props {
 }
 
 const PermissionGuard: React.FC<Props> = ({ children, permission }) => {
-  const { authenticated, permissions, loading } = useAuth();
+  const { authenticated, user, loading } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
   const router = useRouter();
 
@@ -19,17 +19,17 @@ const PermissionGuard: React.FC<Props> = ({ children, permission }) => {
       return;
     }
 
-    if (!authenticated) {
+    if (!user) {
       setIsChecking(false);
       return;
     }
 
-    if (permissions.includes(permission)) {
+    if ((user.permissions as string[]).includes(permission)) {
       setIsChecking(false);
     } else {
       router.replace('/403');
     }
-  }, [authenticated, permissions, loading, permission, router]);
+  }, [authenticated, user, loading, permission, router]);
 
   return <>{isChecking ? <SplashScreen /> : children}</>;
 };

@@ -9,13 +9,13 @@ export type IUser = {
   organization: string;
   organizationRole: string;
   profileLanguage: string;
+  permissions: [];
 };
 
 export type UserType = IUser | null;
 
 export type IAuthContext = {
   user: UserType;
-  permissions: string[];
   loading: boolean;
   authenticated: boolean;
   checkUserSession?: () => Promise<void>;

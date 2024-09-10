@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable react/prop-types */
 /* eslint-disable spaced-comment */
 import { z as zod } from 'zod';
@@ -54,6 +55,31 @@ const TABLE_HEAD = [
 export type NewFunctionSchemaType = zod.infer<typeof NewFunctionSchema>;
 const REGEX = /\{[^{}]*\}/g;
 
+const processStringToJSX = (input: string) => {
+  const regex = /\{[^{}]*\}/g;
+
+  const parts = input.split(regex);
+
+  const matches = input.match(regex) || [];
+
+  const combined: any[] = [];
+  let matchIndex = 0;
+
+  parts.forEach((part, index) => {
+    if (part) {
+      combined.push(<span key={`text-${index}`}>{part}</span>);
+    }
+    if (matchIndex < matches.length) {
+      combined.push(
+        <span className="header-variable" key={`variable-${index}`}>
+          {matches[matchIndex]}
+        </span>
+      );
+      matchIndex++;
+    }
+  });
+  return <>{combined}</>;
+};
 export const NewFunctionSchema = zod.object({
   functionName: zod.string().min(1, 'Function name is required'),
 });
@@ -139,13 +165,6 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
         setActionErrors({
           ...actionErrors,
           slug: 'Slug is required',
-        });
-        return;
-      }
-      if (!action.data?.responseInstructions) {
-        setActionErrors({
-          ...actionErrors,
-          responseInstructions: 'Response instructions are required',
         });
         return;
       }
@@ -264,11 +283,17 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
             <Typography alignSelf="center">Slug</Typography>
             <Box
               border="1px solid"
-              borderColor="var(--palette-background-neutral)"
+              borderColor={
+                actionErrors.slug
+                  ? 'var(--palette-error-main)'
+                  : 'var(--palette-background-neutral)'
+              }
               borderRadius="var(--shape-borderRadius)"
               sx={{
                 ':hover': {
-                  borderColor: 'var(--palette-background-main)',
+                  borderColor: actionErrors.slug
+                    ? 'var(--palette-error-main)'
+                    : 'var(--palette-background-main)',
                 },
               }}
               position="relative"
@@ -283,16 +308,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
                 }}
               >
                 <Typography>
-                  {(action.data?.slug || '').split(REGEX).map((word, i) => {
-                    if (word.match(REGEX) !== null) {
-                      return (
-                        <span key={i} className="header-variables">
-                          {word}
-                        </span>
-                      );
-                    }
-                    return <span key={i}>{word}</span>;
-                  })}
+                  {processStringToJSX(action.data?.slug || '').props.children}
                 </Typography>
               </Box>
               <Field.Text
