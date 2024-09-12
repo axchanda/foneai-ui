@@ -49,15 +49,15 @@ export const SetupTable = () => {
       expiresOn: _mock.time(2),
       status: 'active',
     },
-    {
-      id: _mock.id(1),
-      comment: 'lorem ipsum',
-      secret: new Array(24).fill('*').join(''),
-      createdAt: _mock.time(4),
-      updatedAt: _mock.time(5),
-      expiresOn: _mock.time(6),
-      status: 'expired',
-    },
+    // {
+    //   id: _mock.id(1),
+    //   comment: 'lorem ipsum',
+    //   secret: new Array(24).fill('*').join(''),
+    //   createdAt: _mock.time(4),
+    //   updatedAt: _mock.time(5),
+    //   expiresOn: _mock.time(6),
+    //   status: 'expired',
+    // },
   ]);
 
   const handleDeleteRow = (id: string) => {};

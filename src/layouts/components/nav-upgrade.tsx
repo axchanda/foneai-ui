@@ -69,9 +69,9 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
           </Typography>
         </Stack>
 
-        <Button variant="contained" href={paths.minimalStore} target="_blank" rel="noopener">
+        {/* <Button variant="contained" target="_blank" rel="noopener">
           Upgrade to Pro
-        </Button>
+        </Button> */}
       </Stack>
     </Stack>
   );

@@ -9,6 +9,7 @@ import { useTheme } from '@mui/material/styles';
 import { RouterLink } from 'src/routes/components';
 
 import { logoClasses } from './classes';
+import { useAuth } from 'src/auth/context/jwt/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -18,8 +19,9 @@ export type LogoProps = BoxProps & {
 };
 
 export const Logo = forwardRef<HTMLDivElement, LogoProps>(
-  ({ width = 40, height = 40, disableLink = false, className, href = '/', sx, ...other }, ref) => {
+  ({ width = 120, height = 40, disableLink = false, className, href = '/', sx, ...other }, ref) => {
     const theme = useTheme();
+    const { user } = useAuth();
 
     const gradientId = useId();
 
@@ -98,7 +100,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
           }}
           {...other}
         >
-          <img src='/logo512.png' alt='fone-ai' />
+          {user?.username !== 'JANTHONY' ? <img src='/logo512.png' alt='fone-ai' /> : <img src='/APBwhite.svg' alt='aiphonebot' />}
         </Box>
       </NoSsr>
     );

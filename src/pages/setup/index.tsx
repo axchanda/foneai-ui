@@ -15,6 +15,7 @@ import {
   FormControlLabel,
   FormGroup,
   Checkbox,
+  Divider,
 } from '@mui/material';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -63,7 +64,8 @@ const SetupPage: React.FC = () => {
         <Grid container spacing={12}>
           <Grid item xs={12} md={4}>
             <Typography variant="h4" sx={{ whiteSpace: 'pre-line', mb: 1 }}>
-              Download the app
+              
+              Download Asterisk Client
             </Typography>
             <Typography mb={4} mt={2} variant="subtitle2">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. In scelerisque eget ipsum ac
@@ -71,7 +73,9 @@ const SetupPage: React.FC = () => {
               elementum.
             </Typography>
             <Button size="large" variant="contained" color="primary">
-              Download the app
+              <Iconify icon="bx:bx-download" mr={2} />
+              <Divider orientation="vertical" color="white"/>
+              <Typography ml={2} variant="subtitle1">Download the client app</Typography>
             </Button>
           </Grid>
           <Grid item xs={12} md={8}>

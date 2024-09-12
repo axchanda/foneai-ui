@@ -92,12 +92,12 @@ export const navData = [
         path: '/setup',
         icon: ICONS.setup,
       },
-      {
-        title: 'Billing',
-        path: '/billing',
-        icon: ICONS.billing,
-        permission: 'billing.view',
-      },
+      // {
+      //   title: 'Billing',
+      //   path: '/billing',
+      //   icon: ICONS.billing,
+      //   permission: 'billing.view',
+      // },
     ],
   },
 ];

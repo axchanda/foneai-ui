@@ -8,11 +8,11 @@ export const _account = [
     href: '/',
     icon: <Iconify icon="ic-dashboard" />,
   },
-  {
-    label: 'Billing',
-    href: '/billing',
-    icon: <Iconify icon="fluent:payment-16-filled" />,
-  },
+  // {
+  //   label: 'Billing',
+  //   href: '/billing',
+  //   icon: <Iconify icon="fluent:payment-16-filled" />,
+  // },
   {
     label: 'Security',
     href: '/account?tab=security',
@@ -23,10 +23,9 @@ export const _account = [
     href: '/account?tab=general',
     icon: <Iconify icon="material-symbols:account-circle" />,
   },
-  {
-    label: 'Invoices',
-
-    href: '/invoices',
-    icon: <Iconify icon="hugeicons:invoice" />,
-  },
+  // {
+  //   label: 'Invoices',
+  //   href: '/invoices',
+  //   icon: <Iconify icon="hugeicons:invoice" />,
+  // },
 ];

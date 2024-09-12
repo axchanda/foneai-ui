@@ -24,7 +24,7 @@ type Props = CardProps & {
 export function MinutesUsed({ total, chart, ...other }: Props) {
   const theme = useTheme();
 
-  const [selectedSeries, setSelectedSeries] = useState('jul');
+  const [selectedSeries, setSelectedSeries] = useState('Jul');
 
   const chartColors = chart.colors ?? [theme.palette.primary.main, theme.palette.primary.light];
 

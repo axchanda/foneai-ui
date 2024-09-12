@@ -96,7 +96,7 @@ export function OverviewAppView() {
               ],
             }}
           /> */}
-          <MinutesUsed total={120} chart={{ series: { jul: 46, aug: 51, sep: 65 } }} />
+          <MinutesUsed total={120} chart={{ series: { Jul: 46, Aug: 51, Sep: 65 } }} />
         </Grid>
 
         <Grid alignSelf="stretch" xs={12} md={6} lg={8}>
