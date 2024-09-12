@@ -1,10 +1,11 @@
 import { Helmet } from 'react-helmet-async';
+import { CONFIG } from 'src/config-global';
 
 import { View500 } from 'src/sections/error';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Fone AI` };
+const metadata = { title: CONFIG.site.name };
 
 export default function Page() {
   return (

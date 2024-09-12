@@ -5,10 +5,11 @@ import { useParams } from 'src/routes/hooks';
 import { _userList } from 'src/_mock/_user';
 
 import { UserEditView } from 'src/sections/user/view';
+import { CONFIG } from 'src/config-global';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Fone AI` };
+const metadata = { title: CONFIG.site.name };
 
 export default function Page() {
   const { id = '' } = useParams();

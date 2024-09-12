@@ -16,36 +16,38 @@ import {
   FormGroup,
   Checkbox,
   Divider,
+  Tooltip,
 } from '@mui/material';
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import useClipboard from 'react-use-clipboard';
 import { _mock } from 'src/_mock';
 import { Iconify } from 'src/components/iconify';
+import { CONFIG } from 'src/config-global';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { SetupTable } from 'src/sections/setup/table';
 
 const faqs = [
   {
-    question: 'faq 1',
+    question: 'What is the basic requirement to run the client app?',
     answer:
-      'lorem ipsum dolor sit amet consectetur adipiscing elit in scelerisque eget ipsum ac scelerisque sed euismod molestie condimentum vivamus non augue vitae lorem venenatis elementum',
+      'The client app is a standalone executable application that can run on any Linux machine. The app requires an active internet connection to communicate with the Fone AI server and Asterisk server. The app also requires the Asterisk server to have a version above 16.6 and have the ARI (Asterisk REST Interface) module enabled and configured.',
   },
   {
-    question: 'faq 2',
+    question: 'How do I enable the ARI module and other requirements on my Asterisk server?',
     answer:
-      'lorem ipsum dolor sit amet consectetur adipiscing elit in scelerisque eget ipsum ac scelerisque sed euismod molestie condimentum vivamus non augue vitae lorem venenatis elementum',
+      'Enabling the ARI module and other requirements on your Asterisk server is a simple process. You can follow the official Asterisk documentation to enable the ARI module, create an user and configure the required settings. If you need help, you can contact our support team for assistance.',
   },
   {
-    question: 'faq 3',
+    question: 'How do I configure the client app to work with my Asterisk server?',
     answer:
-      'lorem ipsum dolor sit amet consectetur adipiscing elit in scelerisque eget ipsum ac scelerisque sed euismod molestie condimentum vivamus non augue vitae lorem venenatis elementum',
+      'The client app requires the Asterisk server IP address, port, username and password to connect to the Asterisk server. You can configure these settings in the config.json file that is provided with the executable. Once the settings are configured, the client app will connect to the Asterisk server and start processing audio streams in real time.',
   },
   {
-    question: 'faq 4',
+    question: 'Does the client app support other PBX systems such as FreeSWITCH, Cisco or Avaya?',
     answer:
-      'lorem ipsum dolor sit amet consectetur adipiscing elit in scelerisque eget ipsum ac scelerisque sed euismod molestie condimentum vivamus non augue vitae lorem venenatis elementum',
+      'At present, the client app only supports Asterisk PBX systems. However, we are working on adding support for other PBX systems such as FreeSWITCH, Cisco and Avaya in the future. If you have a specific requirement, you can contact our support team for more information.',
   },
 ];
 
@@ -54,7 +56,9 @@ const SetupPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Fone AI</title>
+        <title>
+          {CONFIG.site.name}
+        </title>
       </Helmet>
       <DashboardContent
         sx={{
@@ -67,10 +71,11 @@ const SetupPage: React.FC = () => {
               
               Download Asterisk Client
             </Typography>
-            <Typography mb={4} mt={2} variant="subtitle2">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. In scelerisque eget ipsum ac
-              scelerisque. Sed euismod molestie condimentum. Vivamus non augue vitae lorem venenatis
-              elementum.
+            <Typography mb={4} mt={2} variant="subtitle2"
+              textAlign={"justify"}
+            >
+              This executable application integrates Asterisk with Fone AI for real-time audio processing.
+              The application relies on Asterisk's ARI (Asterisk REST Interface) feature to control and manage audio streams dynamically, facilitating advanced call handling and external audio processing in real time.
             </Typography>
             <Button size="large" variant="contained" color="primary">
               <Iconify icon="bx:bx-download" mr={2} />
@@ -132,8 +137,7 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
               autoComplete: 'off',
             }}
             name="comment"
-            label="Comment"
-            placeholder="MY_KEY"
+            placeholder="e.g. My API key"
             value={apiKeyName}
             onChange={(e) => setApiKeyName(e.target.value)}
           />
@@ -284,17 +288,27 @@ const SetupConfirmationDialog = ({
         </>
       </DialogContent>
       <DialogActions>
-        <Button
-          disabled={!agreed}
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            setAgreed(false);
-            onConfirm();
-          }}
-        >
-          Create key
-        </Button>
+        {!agreed ? <Tooltip title="Click on the 'I have copied the key' checkbox">
+          <span>
+          <Button
+            disabled={true}
+            variant="contained"
+            color="primary"
+          >
+            OK, got it
+          </Button>
+          </span>
+        </Tooltip> : 
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setAgreed(false);
+              onConfirm();
+            }}
+          >
+            OK, got it
+        </Button>}
       </DialogActions>
     </Dialog>
   );

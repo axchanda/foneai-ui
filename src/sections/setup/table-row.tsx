@@ -42,13 +42,13 @@ export function SetupTableRow({ row, selected, onSelectRow, onDeleteRow }: Props
         <Typography variant="body2">{fDate(row.createdAt)}</Typography>
       </TableCell>
 
-      <TableCell align="center">
+      {/* <TableCell align="center">
         <Typography variant="body2">{fDate(row.updatedAt)}</Typography>
       </TableCell>
 
       <TableCell align="center">
         <Typography variant="body2">{fDate(row.expiresOn)}</Typography>
-      </TableCell>
+      </TableCell> */}
 
       <TableCell>
         <Label
@@ -83,11 +83,11 @@ export function SetupTableRow({ row, selected, onSelectRow, onDeleteRow }: Props
             <Iconify icon="hugeicons:refresh" />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Delete key">
+        {/* <Tooltip title="Delete key">
           <IconButton color="error" onClick={popover.onOpen}>
             <Iconify icon="weui:delete-filled" />
           </IconButton>
-        </Tooltip>
+        </Tooltip> */}
       </TableCell>
     </TableRow>
   );

@@ -3,7 +3,7 @@ export type ISetupItem = {
   comment: string;
   secret: string;
   createdAt: string;
-  updatedAt: string;
-  expiresOn: string;
+  updatedAt?: string;
+  expiresOn?: string;
   status: 'active' | 'expired';
 };

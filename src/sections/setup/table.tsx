@@ -21,18 +21,18 @@ const TABLE_HEAD = [
     width: 110,
     align: 'center',
   },
-  {
-    id: 'updatedAt',
-    label: 'Updated At',
-    width: 110,
-    align: 'center',
-  },
-  {
-    id: 'expiresOn',
-    label: 'Expires On',
-    width: 110,
-    align: 'center',
-  },
+  // {
+  //   id: 'updatedAt',
+  //   label: 'Updated At',
+  //   width: 110,
+  //   align: 'center',
+  // },
+  // {
+  //   id: 'expiresOn',
+  //   label: 'Expires On',
+  //   width: 110,
+  //   align: 'center',
+  // },
   { id: 'status', label: 'Status', width: 110 },
   { id: '', width: 50 },
 ];
@@ -42,11 +42,11 @@ export const SetupTable = () => {
   const [data, setData] = useState<ISetupItem[]>([
     {
       id: _mock.id(0),
-      comment: 'lorem ipsum',
-      secret: new Array(24).fill('*').join(''),
-      createdAt: _mock.time(0),
-      updatedAt: _mock.time(1),
-      expiresOn: _mock.time(2),
+      comment: 'my_api_key',
+      secret: new Array(48).fill('*').join(''),
+      createdAt: _mock.time(2),
+      // updatedAt: _mock.time(1),
+      // expiresOn: _mock.time(0),
       status: 'active',
     },
     // {
