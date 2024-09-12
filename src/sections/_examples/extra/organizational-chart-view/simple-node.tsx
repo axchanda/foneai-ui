@@ -13,7 +13,7 @@ export function SimpleNode({ name, role, sx }: NodeProps) {
       gap={0.5}
       display="inline-flex"
       flexDirection="column"
-      onClick={() => // console.info(name)}
+      onClick={() => console.info(name)}
       sx={{
         p: 2,
         borderRadius: 1.5,

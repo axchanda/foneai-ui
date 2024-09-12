@@ -299,7 +299,7 @@ export function ReactHookForm({ debug }: Props) {
                   )
                 }
                 onRemoveAll={() => setValue('multiUpload', [], { shouldValidate: true })}
-                onUpload={() => // console.info('ON UPLOAD')}
+                onUpload={() => console.info('ON UPLOAD')}
               />
             </Block>
 

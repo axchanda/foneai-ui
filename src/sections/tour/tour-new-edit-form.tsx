@@ -160,7 +160,7 @@ export function TourNewEditForm({ currentTour }: Props) {
             maxSize={3145728}
             onRemove={handleRemoveFile}
             onRemoveAll={handleRemoveAllFiles}
-            onUpload={() => // console.info('ON UPLOAD')}
+            onUpload={() => console.info('ON UPLOAD')}
           />
         </Stack>
       </Stack>

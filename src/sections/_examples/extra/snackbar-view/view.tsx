@@ -88,7 +88,7 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="primary" size="small" onClick={() => // console.info('Action!')}>
+                    <Button color="primary" size="small" onClick={() => console.info('Action!')}>
                       Action
                     </Button>
                     <Button
@@ -117,7 +117,7 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="info" size="small" onClick={() => // console.info('Action!')}>
+                    <Button color="info" size="small" onClick={() => console.info('Action!')}>
                       Action
                     </Button>
                     <Button
@@ -146,7 +146,7 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="success" size="small" onClick={() => // console.info('Action!')}>
+                    <Button color="success" size="small" onClick={() => console.info('Action!')}>
                       Action
                     </Button>
                     <Button
@@ -175,7 +175,7 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="warning" size="small" onClick={() => // console.info('Action!')}>
+                    <Button color="warning" size="small" onClick={() => console.info('Action!')}>
                       Action
                     </Button>
                     <Button
@@ -205,7 +205,7 @@ export function SnackbarView() {
                 closeButton: false,
                 action: (
                   <div>
-                    <Button color="error" size="small" onClick={() => // console.info('Action!')}>
+                    <Button color="error" size="small" onClick={() => console.info('Action!')}>
                       Action
                     </Button>
                     <Button

@@ -69,7 +69,7 @@ export function FileManagerTableRow({ row, selected, onSelectRow, onDeleteRow }:
     click: () => {
       details.onTrue();
     },
-    doubleClick: () => // console.info('DOUBLE CLICK'),
+    doubleClick: () => console.info('DOUBLE CLICK'),
   });
 
   const handleCopy = useCallback(() => {
@@ -113,7 +113,7 @@ export function FileManagerTableRow({ row, selected, onSelectRow, onDeleteRow }:
         <TableCell padding="checkbox">
           <Checkbox
             checked={selected}
-            onDoubleClick={() => // console.info('ON DOUBLE CLICK')}
+            onDoubleClick={() => console.info('ON DOUBLE CLICK')}
             onClick={onSelectRow}
             inputProps={{ id: `row-checkbox-${row.id}`, 'aria-label': `row-checkbox` }}
           />

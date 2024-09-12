@@ -173,7 +173,7 @@ export function ProductNewEditForm({ currentProduct }: Props) {
             maxSize={3145728}
             onRemove={handleRemoveFile}
             onRemoveAll={handleRemoveAllFiles}
-            onUpload={() => // console.info('ON UPLOAD')}
+            onUpload={() => console.info('ON UPLOAD')}
           />
         </Stack>
       </Stack>
