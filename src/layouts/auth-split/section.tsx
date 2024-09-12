@@ -34,7 +34,7 @@ export function Section({
   methods,
   title = 'Manage the job',
   imgUrl = `${CONFIG.site.basePath}/assets/illustrations/illustration-dashboard.webp`,
-  subtitle = 'More effectively with optimized workflows.',
+  subtitle = 'Create voicebots like a PRO without coding.',
   ...other
 }: SectionProps) {
   const theme = useTheme();

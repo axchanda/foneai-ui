@@ -115,7 +115,7 @@ export function SplitSignInView() {
         type="submit"
         variant="contained"
         loading={isSubmitting}
-        loadingIndicator="Sign in..."
+        loadingIndicator="Signing in..."
       >
         Sign in
       </LoadingButton>
