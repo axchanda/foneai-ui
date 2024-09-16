@@ -42,6 +42,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { TableHeadCustom, useTable } from 'src/components/table';
 import { Iconify } from 'src/components/iconify';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { i } from 'vite/dist/node/types.d-aGj9QkWt';
 
 // ----------------------------------------------------------------------
 const voiceIDs: Record<string, string[]> = {
@@ -152,6 +153,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
     getData();
   }, [getData]);
 
+
   // values.botLanguage = values.botLanguage || 'en';
   // console.log(values.botLanguage);
   const onSubmit = handleSubmit(async (data) => {
@@ -252,6 +254,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
                   >
                     <MenuItem value="en">English</MenuItem>
                     <MenuItem value="es">Spanish</MenuItem>
+                    <MenuItem value="ru">Russian</MenuItem>
                   </Field.Select>
                 </Stack>
               </Grid>
@@ -1082,26 +1085,26 @@ const voicesEn: {
   {
     provider: 'AWS',
     gender: 'F',
-    accent: 'us',
+    accent: 'US',
     voice: 'Joanna',
     price: 'free',
-    file: '/voices/female_american.mp3',
-  },
-  {
-    provider: 'GCP',
-    gender: 'M',
-    accent: 'us',
-    voice: 'Mark',
-    price: 'free',
-    file: '/voices/male_american.mp3',
+    file: '/voices/joanna.mp3',
   },
   {
     provider: 'AWS',
-    gender: 'F',
-    accent: 'au',
-    voice: 'Nicole',
+    gender: 'M',
+    accent: 'US',
+    voice: 'Joey',
+    price: 'free',
+    file: '/voices/joey.mp3',
+  },
+  {
+    provider: 'AWS',
+    gender: 'M',
+    accent: 'US',
+    voice: 'Matthew',
     price: 'paid',
-    file: '/voices/female_australian.mp3',
+    file: '/voices/matthew.mp3',
   },
 ];
 
@@ -1114,14 +1117,57 @@ const voicesEs: {
   file: string;
 }[] = [
   {
-    provider: 'GCP',
+    provider: 'AWS',
     gender: 'M',
-    accent: 'mx',
+    accent: 'US',
     voice: 'Miguel',
     price: 'free',
-    file: '/voices/male_spanish.mp3',
+    file: '/voices/miguel.mp3',
   },
+  {
+    provider: 'AWS',
+    gender: 'M',
+    accent: 'MX',
+    voice: 'Mia',
+    price: 'free',
+    file: '/voices/mia.mp3',
+  },
+  {
+    provider: 'AWS',
+    gender: 'F',
+    accent: 'ES',
+    voice: 'Lucia',
+    price: 'free',
+    file: '/voices/lucia.mp3'
+  }
 ];
+
+const voicesRu: {
+  provider: 'AWS' | 'GCP' | 'Azure';
+  gender: 'M' | 'F';
+  accent: string;
+  voice: string;
+  price: 'free' | 'paid';
+  file: string;
+}[] = [
+  {
+    provider: 'AWS',
+    gender: 'F',
+    accent: 'RU',
+    voice: 'Tatyana',
+    price: 'free',
+    file: '/voices/tatyana.mp3'
+  },
+  {
+    provider: 'AWS',
+    gender: 'M',
+    accent: 'RU',
+    voice: 'Maxim',
+    price: 'free',
+    file: '/voices/maxim.mp3'
+  }
+];
+
 
 const voiceTableHead = [
   { id: 'provider', label: 'Provider', width: 100 },
@@ -1145,10 +1191,16 @@ const VoiceDialog: React.FC<{
   const table = useTable();
   const [selected, setSelected] = useState<string | null>(selectedVoice);
   const voices = useMemo(() => {
-    if (language === 'en') {
-      return voicesEn;
+    switch (language) {
+      case 'en':
+        return voicesEn;
+      case 'es':
+        return voicesEs;
+      case 'ru':
+        return voicesRu;
+      default:
+        return voicesEn;
     }
-    return voicesEs;
   }, [language]);
 
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
@@ -1242,6 +1294,27 @@ const VoicesTableRow: React.FC<{
     return new Audio(voice.file);
   }, [voice.file]);
 
+  const iconMap = {
+    US: 'twemoji:flag-united-states',
+    UK: 'twemoji:flag-united-kingdom',
+    ES: 'twemoji:flag-spain',
+    AU: 'twemoji:flag-australia',
+    RU: 'twemoji:flag-russia',
+    MX: 'twemoji:flag-mexico',
+  };
+
+  const AccentNamesMap = {
+    US: 'American',
+    UK: 'British',
+    ES: 'Castilian',
+    AU: 'Australian',
+    RU: 'Russian',
+    MX: 'Mexican',
+  };
+
+  // Narrow the type of accent to only valid keys
+  type Accent = keyof typeof iconMap;
+
   useEffect(() => {
     if (currentlyPlaying === voice.file) {
       audio.play();
@@ -1295,17 +1368,11 @@ const VoicesTableRow: React.FC<{
       <TableCell>
         <Stack spacing={1.5} justifyContent="center" alignItems="center">
           <Iconify
-            icon={
-              voice.accent === 'us'
-                ? 'twemoji:flag-united-states'
-                : voice.accent === 'au'
-                  ? 'twemoji:flag-australia'
-                  : 'twemoji:flag-mexico'
-            }
+            icon={iconMap[voice.accent as Accent] || 'twemoji:flag-world'} // Fallback
             width="2.5rem"
           />
           <Typography variant="subtitle2">
-            {voice.accent === 'us' ? 'American' : voice.accent === 'au' ? 'Australian' : 'Mexican'}
+            {AccentNamesMap[voice.accent as Accent] || 'English'}{' '}
           </Typography>
         </Stack>
       </TableCell>
