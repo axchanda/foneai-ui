@@ -11,11 +11,13 @@ import { dashboardRoutes } from './dashboard';
 import { userRoutes } from './user';
 import { campaignsRoutes } from './campaigns';
 import { mainRoutes } from './main';
-import { setupRoutes } from './setup';
+import { setupRoutes } from './asterisk-setup';
 import { webhooksRoutes } from './webhooks';
 import { knowledgeBasesRoutes } from './knowledge-base';
 import { functionsRoutes } from './functions';
 import { billingRoutes } from './billing';
+import { plansRoutes } from './plans';
+import { subscribersRoutes } from './subscribers';
 
 export function Router() {
   return useRoutes([
@@ -59,6 +61,8 @@ export function Router() {
 
     ...functionsRoutes,
     ...billingRoutes,
+    ...plansRoutes,
+    ...subscribersRoutes,
     // No match
     { path: '*', element: <Navigate to="/page-not-found" replace /> },
   ]);

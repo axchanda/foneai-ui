@@ -7,29 +7,28 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { PasswordIcon } from 'src/assets/icons';
 
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
+import API from 'src/utils/API';
+import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
 export type ResetPasswordSchemaType = zod.infer<typeof ResetPasswordSchema>;
 
 export const ResetPasswordSchema = zod.object({
-  email: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
+  username: zod.string().min(1, { message: 'Email is required!' }),
+  // .email({ message: 'Email must be a valid email address!' }),
 });
 
 // ----------------------------------------------------------------------
 
 export function SplitResetPasswordView() {
-  const defaultValues = { email: '' };
+  const defaultValues = { username: '' };
 
   const methods = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(ResetPasswordSchema),
@@ -39,14 +38,19 @@ export function SplitResetPasswordView() {
   const {
     handleSubmit,
     formState: { isSubmitting },
+    reset,
   } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      // console.info('DATA', data);
+      await API.post('/users/forgotPassword', {
+        username: data.username,
+      });
+      toast.success('An email has been sent to you');
+      reset();
     } catch (error) {
       // console.error(error);
+      toast.error('Something went wrong');
     }
   });
 
@@ -68,9 +72,9 @@ export function SplitResetPasswordView() {
     <Stack spacing={3}>
       <Field.Text
         autoFocus
-        name="email"
-        label="Email address"
-        placeholder="example@gmail.com"
+        name="username"
+        label="Username"
+        placeholder="USER1"
         InputLabelProps={{ shrink: true }}
       />
 
@@ -87,7 +91,7 @@ export function SplitResetPasswordView() {
 
       <Link
         component={RouterLink}
-        href={paths.authDemo.split.signIn}
+        href="/auth/login"
         color="inherit"
         variant="subtitle2"
         sx={{ mx: 'auto', alignItems: 'center', display: 'inline-flex' }}

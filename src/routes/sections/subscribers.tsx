@@ -1,14 +1,15 @@
+import { Outlet } from 'react-router';
 import { lazy, Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
 
 import { CONFIG } from 'src/config-global';
 import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { LoadingScreen } from 'src/components/loading-screen';
-
 import { AuthGuard } from 'src/auth/guard';
 
-const IndexPage = lazy(() => import('src/pages/setup/index'));
+const SubscribersPages = {
+  CreatePage: lazy(() => import('src/pages/subscribers/create')),
+};
 
 const layoutContent = (
   <DashboardLayout>
@@ -18,10 +19,13 @@ const layoutContent = (
   </DashboardLayout>
 );
 
-export const setupRoutes = [
+export const subscribersRoutes = [
   {
-    path: 'setup',
+    path: 'subscribers/create',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
-    children: [{ element: <IndexPage />, index: true }],
+    children: [
+      // { element: <Navigate to={'account'} replace />, index: true },
+      { index: true, element: <SubscribersPages.CreatePage /> },
+    ],
   },
 ];

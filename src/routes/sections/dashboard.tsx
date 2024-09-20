@@ -8,6 +8,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import { AuthGuard } from 'src/auth/guard';
 import PermissionGuard from 'src/auth/guard/permission-guard';
+import { UsageContextProvider } from 'src/context/usage.context';
 
 // ----------------------------------------------------------------------
 
@@ -42,7 +43,9 @@ export const dashboardRoutes = [
       <>{layoutContent}</>
     ) : (
       <AuthGuard>
-        <PermissionGuard permission="dashboard.view">{layoutContent}</PermissionGuard>
+        <PermissionGuard permission="dashboard.view">
+          <UsageContextProvider>{layoutContent}</UsageContextProvider>
+        </PermissionGuard>
       </AuthGuard>
     ),
     children: [{ element: <IndexPage />, index: true }],

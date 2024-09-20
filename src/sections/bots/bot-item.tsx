@@ -24,6 +24,12 @@ import type { IBotType } from 'src/types/bot';
 
 // ----------------------------------------------------------------------
 
+const languages = {
+  en: 'English',
+  ru: 'Russian',
+  es: 'Spanish',
+};
+
 type Props = {
   bot: IBotType;
   onView: () => void;
@@ -85,7 +91,7 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
             {
               // label: the first character of the bot's language is capitalized, the rest are lowercase
               // label: bot.botLanguage.charAt(0).toUpperCase() + bot.botLanguage.slice(1).toLowerCase(a,
-              label: 'English',
+              label: languages[bot.botLanguage],
               icon: <Iconify width={16} icon="ion:language" sx={{ flexShrink: 0 }} />,
             },
             {

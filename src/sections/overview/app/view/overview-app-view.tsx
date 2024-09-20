@@ -3,8 +3,8 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import { useMockedUser } from 'src/auth/hooks';
-
+import { useUsage } from 'src/context/usage.context';
+import { SplashScreen } from 'src/components/loading-screen';
 import { MinutesUsed } from '../MinutesUsed';
 import { AppMinutesUsed } from '../app-minutes-used';
 import { AppWidgetSummary } from '../app-widget-summary';
@@ -12,14 +12,19 @@ import { AppWidgetSummary } from '../app-widget-summary';
 // ----------------------------------------------------------------------
 
 export function OverviewAppView() {
-  const { user } = useMockedUser();
+  const { channels, costPerMinute, credits, loading } = useUsage();
+
+  const totalAvailableMinutes = Math.floor(credits.available * costPerMinute);
 
   const theme = useTheme();
 
   return (
     <DashboardContent maxWidth="xl">
-      <Grid container spacing={3}>
-        {/* <Grid xs={12} md={8}>
+      {loading ? (
+        <SplashScreen />
+      ) : (
+        <Grid container spacing={3}>
+          {/* <Grid xs={12} md={8}>
           <AppWelcome
             title={`Welcome back 👋 \n ${user?.displayName}`}
             description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
@@ -36,46 +41,46 @@ export function OverviewAppView() {
           <AppFeatured list={_appFeatured} />
         </Grid> */}
 
-        <Grid xs={12} md={4}>
-          <AppWidgetSummary
-            title="Total active users"
-            percent={2.6}
-            total={18765}
-            chart={{
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [15, 18, 12, 51, 68, 11, 39, 37],
-            }}
-          />
-        </Grid>
+          <Grid xs={12} md={4}>
+            <AppWidgetSummary
+              title="Total available minutes"
+              percent={2.6}
+              total={totalAvailableMinutes}
+              chart={{
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                series: [15, 18, 12, 51, 68, 11, 39, 37],
+              }}
+            />
+          </Grid>
 
-        <Grid xs={12} md={4}>
-          <AppWidgetSummary
-            title="Total installed"
-            percent={0.2}
-            total={4876}
-            chart={{
-              colors: [theme.vars.palette.info.main],
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [20, 41, 63, 33, 28, 35, 50, 46],
-            }}
-          />
-        </Grid>
+          <Grid xs={12} md={4}>
+            <AppWidgetSummary
+              title="Total Channels"
+              percent={0.2}
+              total={channels}
+              chart={{
+                colors: [theme.vars.palette.info.main],
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                series: [20, 41, 63, 33, 28, 35, 50, 46],
+              }}
+            />
+          </Grid>
 
-        <Grid xs={12} md={4}>
-          <AppWidgetSummary
-            title="Total downloads"
-            percent={-0.1}
-            total={678}
-            chart={{
-              colors: [theme.vars.palette.error.main],
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [18, 19, 31, 8, 16, 37, 12, 33],
-            }}
-          />
-        </Grid>
+          <Grid xs={12} md={4}>
+            <AppWidgetSummary
+              title="Total users"
+              percent={-0.1}
+              total={12}
+              chart={{
+                colors: [theme.vars.palette.error.main],
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                series: [18, 19, 31, 8, 16, 37, 12, 33],
+              }}
+            />
+          </Grid>
 
-        <Grid xs={12} md={6} lg={4}>
-          {/* <AppCurrentDownload
+          <Grid xs={12} md={6} lg={4}>
+            {/* <AppCurrentDownload
             title="Current download"
             subheader="Downloaded by operating system"
             chart={{
@@ -87,7 +92,7 @@ export function OverviewAppView() {
               ],
             }}
           /> */}
-          {/* <BookingAvailable
+            {/* <BookingAvailable
             title="Minutes used"
             chart={{
               series: [
@@ -96,75 +101,78 @@ export function OverviewAppView() {
               ],
             }}
           /> */}
-          <MinutesUsed total={120} chart={{ series: { Jul: 46, Aug: 51, Sep: 65 } }} />
-        </Grid>
+            <MinutesUsed
+              total={120}
+              chart={{ series: { Jul: credits.used, Aug: credits.used, Sep: credits.used } }}
+            />
+          </Grid>
 
-        <Grid alignSelf="stretch" xs={12} md={6} lg={8}>
-          <AppMinutesUsed
-            title="Minutes used"
-            // subheader="(+43%) than last year"
-            chart={{
-              categories: [
-                '01',
-                '02',
-                '03',
-                '04',
-                '05',
-                '06',
-                '07',
-                '08',
-                '09',
-                '10',
-                '11',
-                '12',
-                '13',
-                '14',
-                '15',
-                '16',
-                '17',
-                '18',
-                '19',
-                '20',
-                '21',
-                '22',
-                '23',
-                '24',
-                '25',
-                '26',
-                '27',
-                '28',
-                '29',
-                '30',
-                // '',
-              ],
-              data: [
-                {
-                  name: 'Jul',
-                  data: Array.from(
-                    { length: 30 },
-                    () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
-                  ),
-                },
-                {
-                  name: 'Aug',
-                  data: Array.from(
-                    { length: 30 },
-                    () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
-                  ),
-                },
-                {
-                  name: 'Sep',
-                  data: Array.from(
-                    { length: 30 },
-                    () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
-                  ),
-                },
-              ],
-            }}
-          />
-        </Grid>
+          <Grid alignSelf="stretch" xs={12} md={6} lg={8}>
+            <AppMinutesUsed
+              title="Minutes used"
+              // subheader="(+43%) than last year"
+              chart={{
+                categories: [
+                  '01',
+                  '02',
+                  '03',
+                  '04',
+                  '05',
+                  '06',
+                  '07',
+                  '08',
+                  '09',
+                  '10',
+                  '11',
+                  '12',
+                  '13',
+                  '14',
+                  '15',
+                  '16',
+                  '17',
+                  '18',
+                  '19',
+                  '20',
+                  '21',
+                  '22',
+                  '23',
+                  '24',
+                  '25',
+                  '26',
+                  '27',
+                  '28',
+                  '29',
+                  '30',
+                  // '',
+                ],
+                data: [
+                  {
+                    name: 'Jul',
+                    data: Array.from(
+                      { length: 30 },
+                      () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
+                    ),
+                  },
+                  {
+                    name: 'Aug',
+                    data: Array.from(
+                      { length: 30 },
+                      () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
+                    ),
+                  },
+                  {
+                    name: 'Sep',
+                    data: Array.from(
+                      { length: 30 },
+                      () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
+                    ),
+                  },
+                ],
+              }}
+            />
+          </Grid>
 
-        {/* <Grid xs={12} lg={8}>
+          {/* <Grid xs={12} lg={8}>
           <AppNewInvoice
             title="New invoice"
             tableData={_appInvoices}
@@ -178,7 +186,7 @@ export function OverviewAppView() {
           />
         </Grid> */}
 
-        {/* <Grid xs={12} md={6} lg={4}>
+          {/* <Grid xs={12} md={6} lg={4}>
           <AppTopRelated title="Related applications" list={_appRelated} />
         </Grid>
 
@@ -211,7 +219,8 @@ export function OverviewAppView() {
             />
           </Box>
         </Grid> */}
-      </Grid>
+        </Grid>
+      )}
     </DashboardContent>
   );
 }

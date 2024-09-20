@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -18,6 +17,10 @@ import { SentIcon } from 'src/assets/icons';
 
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
+import { useSearchParams } from 'react-router-dom';
+import API from 'src/utils/API';
+import { toast } from 'sonner';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -25,14 +28,14 @@ export type UpdatePasswordSchemaType = zod.infer<typeof UpdatePasswordSchema>;
 
 export const UpdatePasswordSchema = zod
   .object({
-    code: zod
-      .string()
-      .min(1, { message: 'Code is required!' })
-      .min(6, { message: 'Code must be at least 6 characters!' }),
-    email: zod
-      .string()
-      .min(1, { message: 'Email is required!' })
-      .email({ message: 'Email must be a valid email address!' }),
+    // code: zod
+    //   .string()
+    //   .min(1, { message: 'Code is required!' })
+    //   .min(6, { message: 'Code must be at least 6 characters!' }),
+    // email: zod
+    //   .string()
+    //   .min(1, { message: 'Email is required!' })
+    //   .email({ message: 'Email must be a valid email address!' }),
     password: zod
       .string()
       .min(1, { message: 'Password is required!' })
@@ -48,10 +51,14 @@ export const UpdatePasswordSchema = zod
 
 export function SplitUpdatePasswordView() {
   const password = useBoolean();
+  const [searchParams] = useSearchParams();
+  const router = useRouter();
+
+  const token = searchParams.get('token');
 
   const defaultValues = {
-    code: '',
-    email: '',
+    // code: '',
+    // email: '',
     password: '',
     confirmPassword: '',
   };
@@ -68,10 +75,15 @@ export function SplitUpdatePasswordView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      // console.info('DATA', data);
+      await API.post('/users/resetPassword', {
+        token,
+        newPassword: data.password,
+      });
+      toast.success('Password reset success!');
+      router.push('/auth/login');
     } catch (error) {
       // console.error(error);
+      toast.error('Something went wrong');
     }
   });
 
@@ -91,14 +103,14 @@ export function SplitUpdatePasswordView() {
 
   const renderForm = (
     <Stack spacing={3}>
-      <Field.Text
+      {/* <Field.Text
         name="email"
         label="Email address"
         placeholder="example@gmail.com"
         InputLabelProps={{ shrink: true }}
       />
 
-      <Field.Code name="code" />
+      <Field.Code name="code" /> */}
 
       <Field.Text
         name="password"
@@ -140,20 +152,21 @@ export function SplitUpdatePasswordView() {
         variant="contained"
         loading={isSubmitting}
         loadingIndicator="Update password..."
+        disabled={!token}
       >
         Update password
       </LoadingButton>
 
-      <Typography variant="body2" sx={{ mx: 'auto' }}>
+      {/* <Typography variant="body2" sx={{ mx: 'auto' }}>
         {`Don’t have a code? `}
         <Link variant="subtitle2" sx={{ cursor: 'pointer' }}>
           Resend code
         </Link>
-      </Typography>
+      </Typography> */}
 
       <Link
         component={RouterLink}
-        href={paths.authDemo.split.signIn}
+        href="/auth/login"
         color="inherit"
         variant="subtitle2"
         sx={{ mx: 'auto', alignItems: 'center', display: 'inline-flex' }}

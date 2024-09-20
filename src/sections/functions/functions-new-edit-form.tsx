@@ -161,13 +161,13 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
         });
         return;
       }
-      if (!action.data?.slug) {
-        setActionErrors({
-          ...actionErrors,
-          slug: 'Slug is required',
-        });
-        return;
-      }
+      // if (!action.data?.slug) {
+      //   setActionErrors({
+      //     ...actionErrors,
+      //     slug: 'Slug is required',
+      //   });
+      //   return;
+      // }
     }
     try {
       const url = currentFunction ? `/functions/${currentFunction._id}` : '/functions/create';

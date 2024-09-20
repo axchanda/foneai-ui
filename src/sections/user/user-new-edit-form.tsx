@@ -27,6 +27,7 @@ import { Form, Field, schemaHelper } from 'src/components/hook-form';
 import { Tooltip } from '@mui/material';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useBoolean } from 'src/hooks/use-boolean';
+import API from 'src/utils/API';
 
 // ----------------------------------------------------------------------
 
@@ -37,39 +38,38 @@ const statusLabel: Record<string, string> = {
 
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
-export const NewUserSchema = zod
-  .object({
-    avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
-    name: zod.string().min(1, { message: 'Name is required!' }),
-    email: zod
-      .string()
-      .min(1, { message: 'Email is required!' })
-      .email({ message: 'Email must be a valid email address!' }),
-    phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
-    country: schemaHelper.objectOrNull<string | null>({
-      message: { required_error: 'Country is required!' },
-    }),
-    addressLine1: zod.string().min(1, { message: 'Address is required!' }),
-    addressLine2: zod.string(),
-    company: zod.string().min(1, { message: 'Company is required!' }),
-    state: zod.string().min(1, { message: 'State is required!' }),
-    city: zod.string().min(1, { message: 'City is required!' }),
-    role: zod.string().min(1, { message: 'Role is required!' }),
-    zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
-    // Not required
-    status: zod.string(),
-    isVerified: zod.boolean(),
-    password: zod
-      .string()
-      .min(1, { message: 'Password is required!' })
-      .min(8, { message: 'Password must be at least 8 characters!' }),
-    confirmPassword: zod.string(),
-    username: zod.string().min(1, { message: 'Username is required!' }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
+export const NewUserSchema = zod.object({
+  avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
+  name: zod.string().min(1, { message: 'Name is required!' }),
+  email: zod
+    .string()
+    .min(1, { message: 'Email is required!' })
+    .email({ message: 'Email must be a valid email address!' }),
+  phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
+  country: schemaHelper.objectOrNull<string | null>({
+    message: { required_error: 'Country is required!' },
+  }),
+  addressLine1: zod.string().min(1, { message: 'Address is required!' }),
+  addressLine2: zod.string(),
+  company: zod.string().min(1, { message: 'Company is required!' }),
+  state: zod.string().min(1, { message: 'State is required!' }),
+  city: zod.string().min(1, { message: 'City is required!' }),
+  role: zod.string().min(1, { message: 'Role is required!' }),
+  zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
+  // Not required
+  status: zod.string(),
+  isVerified: zod.boolean(),
+  password: zod
+    .string()
+    // .min(1, { message: 'Password is required!' })
+    .min(8, { message: 'Password must be at least 8 characters!' }),
+  confirmPassword: zod.string(),
+  username: zod.string().min(1, { message: 'Username is required!' }),
+});
+// .refine((data) => data.password === data.confirmPassword, {
+//   message: 'Passwords do not match',
+//   path: ['confirmPassword'],
+// });
 
 // ----------------------------------------------------------------------
 
@@ -120,13 +120,19 @@ export function UserNewEditForm({ currentUser }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const method = currentUser ? API.put : API.post;
+      const endpoint = currentUser
+        ? `/users/asteriskUser/${currentUser._id}`
+        : '/users/createAsteriskUser';
+      const { data: response } = await method(endpoint, data);
       reset();
       toast.success(currentUser ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.user.list);
       // console.info('DATA', data);
     } catch (error) {
       // console.error(error);
+      const messages = Object.values(error.response.data.errors || {}) as string[];
+      toast.error(messages[0]);
     }
   });
 

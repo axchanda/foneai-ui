@@ -8,6 +8,7 @@ import { Chart, ChartSelect, useChart } from 'src/components/chart';
 import { Box, CardHeader } from '@mui/material';
 import { varAlpha } from 'src/theme/styles';
 import { useCallback, useState } from 'react';
+import { useUsage } from 'src/context/usage.context';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +24,7 @@ type Props = CardProps & {
 
 export function MinutesUsed({ total, chart, ...other }: Props) {
   const theme = useTheme();
+  const { credits } = useUsage();
 
   const [selectedSeries, setSelectedSeries] = useState('Jul');
 
@@ -51,7 +53,7 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
           name: { offsetY: 8 },
           value: { offsetY: -36 },
           total: {
-            label: `Used ${chart.series[selectedSeries]} mins / ${total} mins`,
+            label: `Used ${credits.used} credits / ${credits.used + credits.available} `,
             color: theme.vars.palette.text.disabled,
             fontSize: theme.typography.caption.fontSize as string,
             fontWeight: theme.typography.caption.fontWeight,
@@ -76,14 +78,14 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
             onChange={handleChangeSeries}
           />
         }
-        title="Minutes Available"
+        title="Credits Available"
         subheader=""
         sx={{ mb: 5 }}
       />
 
       <Chart
         type="radialBar"
-        series={[chart.series[selectedSeries]]}
+        series={[Math.floor(100 - (credits.available + credits.used) / credits.used)]}
         options={chartOptions}
         width={240}
         height={240}
@@ -107,8 +109,8 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
               bgcolor: chartColors[1],
             }}
           />
-          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Used</Box>
-          {chart.series[selectedSeries]} minutes
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Available</Box>
+          {credits.available}
         </Box>
         <Box sx={{ gap: 1, display: 'flex', alignItems: 'center', typography: 'subtitle2' }}>
           <Box
@@ -120,8 +122,8 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
               // ...(item.label === 'Used' && ),
             }}
           />
-          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Available</Box>
-          {total - chart.series[selectedSeries]} minutes
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Used</Box>
+          {credits.used}
         </Box>
       </Box>
     </Card>

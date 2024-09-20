@@ -88,8 +88,8 @@ export const navData = [
         icon: ICONS.users,
       },
       {
-        title: 'Setup',
-        path: '/setup',
+        title: 'Asterisk Setup',
+        path: '/asterisk-setup',
         icon: ICONS.setup,
       },
       // {

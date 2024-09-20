@@ -56,9 +56,7 @@ const SetupPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>
-          {CONFIG.site.name}
-        </title>
+        <title>{CONFIG.site.name}</title>
       </Helmet>
       <DashboardContent
         sx={{
@@ -68,19 +66,20 @@ const SetupPage: React.FC = () => {
         <Grid container spacing={12}>
           <Grid item xs={12} md={4}>
             <Typography variant="h4" sx={{ whiteSpace: 'pre-line', mb: 1 }}>
-              
               Download Asterisk Client
             </Typography>
-            <Typography mb={4} mt={2} variant="subtitle2"
-              textAlign={"justify"}
-            >
-              This executable application integrates Asterisk with Fone AI for real-time audio processing.
-              The application relies on Asterisk's ARI (Asterisk REST Interface) feature to control and manage audio streams dynamically, facilitating advanced call handling and external audio processing in real time.
+            <Typography mb={4} mt={2} variant="subtitle2" textAlign="justify">
+              This executable application integrates Asterisk with Fone AI for real-time audio
+              processing. The application relies on Asterisk&apos;s ARI (Asterisk REST Interface)
+              feature to control and manage audio streams dynamically, facilitating advanced call
+              handling and external audio processing in real time.
             </Typography>
             <Button size="large" variant="contained" color="primary">
               <Iconify icon="bx:bx-download" mr={2} />
-              <Divider orientation="vertical" color="white"/>
-              <Typography ml={2} variant="subtitle1">Download the client app</Typography>
+              <Divider orientation="vertical" color="white" />
+              <Typography ml={2} variant="subtitle1">
+                Download the client app
+              </Typography>
             </Button>
           </Grid>
           <Grid item xs={12} md={8}>
@@ -238,13 +237,14 @@ const SetupConfirmationDialog = ({
             <Typography variant="subtitle2" mt={2} mb={1} color="#919EAB">
               Secret:
             </Typography>
-            <Box px={2} py={4} borderRadius="8px" position="relative" bgcolor="black">
+            <Box px={2} py={4} borderRadius="8px" position="relative" bgcolor="black" color="white">
               <Typography>{_mock.id(4)}</Typography>
               <IconButton
                 sx={{
                   position: 'absolute',
                   top: '5px',
                   right: '5px',
+                  color: 'white',
                   // color: isCopied ? 'green' : undefined,
                 }}
                 onClick={() => {
@@ -288,17 +288,15 @@ const SetupConfirmationDialog = ({
         </>
       </DialogContent>
       <DialogActions>
-        {!agreed ? <Tooltip title="Click on the 'I have copied the key' checkbox">
-          <span>
-          <Button
-            disabled={true}
-            variant="contained"
-            color="primary"
-          >
-            OK, got it
-          </Button>
-          </span>
-        </Tooltip> : 
+        {!agreed ? (
+          <Tooltip title="Click on the 'I have copied the key' checkbox">
+            <span>
+              <Button disabled variant="contained" color="primary">
+                OK, got it
+              </Button>
+            </span>
+          </Tooltip>
+        ) : (
           <Button
             variant="contained"
             color="primary"
@@ -308,7 +306,8 @@ const SetupConfirmationDialog = ({
             }}
           >
             OK, got it
-        </Button>}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

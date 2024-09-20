@@ -42,7 +42,6 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { TableHeadCustom, useTable } from 'src/components/table';
 import { Iconify } from 'src/components/iconify';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
-import { i } from 'vite/dist/node/types.d-aGj9QkWt';
 
 // ----------------------------------------------------------------------
 const voiceIDs: Record<string, string[]> = {
@@ -153,7 +152,6 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
     getData();
   }, [getData]);
 
-
   // values.botLanguage = values.botLanguage || 'en';
   // console.log(values.botLanguage);
   const onSubmit = handleSubmit(async (data) => {
@@ -165,7 +163,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
         botName: data.botName,
         botIntroduction: data.botIntroduction,
         botInstructions: data.botInstructions,
-        botLanguage: 'en',
+        botLanguage: data.botLanguage,
         botVoiceId: data.botVoiceId,
         botKnowledgeBaseId: data.botKnowledgeBase,
         botIsInterruptable: data.botIsInterruptable,
@@ -536,7 +534,9 @@ const ActionTriggerDialog: React.FC<{
                 component="span"
                 id="action"
                 className={selectedAction === action ? 'selected' : ''}
-                onClick={() => setSelectedAction((prev) => (prev === action ? undefined : action))}
+                onClick={() =>
+                  setSelectedAction((prev) => (prev === action ? undefined : action.trim()))
+                }
               >
                 {action}
               </Typography>
@@ -573,7 +573,7 @@ const ActionTriggerDialog: React.FC<{
         rows={10}
         fullWidth
         placeholder="Write description to trigger the function"
-        onChange={(e) => setSelectedAction(e.target.value)}
+        onChange={(e) => setSelectedAction(e.target.value.trim())}
       />
     </Box>
   );
@@ -1138,8 +1138,8 @@ const voicesEs: {
     accent: 'ES',
     voice: 'Lucia',
     price: 'free',
-    file: '/voices/lucia.mp3'
-  }
+    file: '/voices/lucia.mp3',
+  },
 ];
 
 const voicesRu: {
@@ -1156,7 +1156,7 @@ const voicesRu: {
     accent: 'RU',
     voice: 'Tatyana',
     price: 'free',
-    file: '/voices/tatyana.mp3'
+    file: '/voices/tatyana.mp3',
   },
   {
     provider: 'AWS',
@@ -1164,10 +1164,9 @@ const voicesRu: {
     accent: 'RU',
     voice: 'Maxim',
     price: 'free',
-    file: '/voices/maxim.mp3'
-  }
+    file: '/voices/maxim.mp3',
+  },
 ];
-
 
 const voiceTableHead = [
   { id: 'provider', label: 'Provider', width: 100 },
