@@ -41,7 +41,7 @@ export function FunctionTableRow({ row, selected, onEditRow, onSelectRow, onDele
           <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
         </TableCell>
         <TableCell>{row.functionName}</TableCell>
-        <TableCell>{row.functionDescription}</TableCell>
+        {/* <TableCell>{row.functionDescription}</TableCell> */}
         <TableCell>
           <Chip
             sx={{

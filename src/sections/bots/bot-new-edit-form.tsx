@@ -120,6 +120,7 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
     currentBot?.botVoice.voiceId || null
   );
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
+  const [selectedKb, setSelectedKb] = useState<string | null>(null);
 
   const getData = useCallback(async () => {
     const kbPromise = API.get<{
@@ -136,8 +137,13 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
 
     setFunctions(funcRes.data.functions);
     setKbs(kbOptions);
+    setSelectedKb(kbOptions.find((kb) => kb?.value === currentBot?.botKnowledgeBaseId)?.value || null);
     setLoaded(true);
   }, []);
+
+  useEffect(() => {
+    console.log('selectedKb', selectedKb);
+  }, [selectedKb]);
 
   useEffect(() => {
     if (currentBot) {
@@ -156,7 +162,8 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
   // console.log(values.botLanguage);
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // console.log(data);
+      console.log(selectedKb)
+      data.botKnowledgeBase = selectedKb || '';
       const url = currentBot ? `/bots/${currentBot._id}` : '/bots/create';
       const method = currentBot ? API.put : API.post;
       await method(url, {
@@ -336,28 +343,27 @@ export function BotNewEditForm({ currentBot, isUsed }: Props) {
       <CardHeader title="Knowledge Base" subheader="Knowledge base settings" sx={{ mb: 3 }} />
 
       <Divider />
-
       <Stack spacing={3} sx={{ p: 3 }}>
-        {/* when the switch is active then a select should be present with 'x', 'y', 'z' as options */}
+        {/* When the switch is active, a select should be present with 'x', 'y', 'z' as options */}
         <Stack spacing={1.5}>
-          {/* <Field.Autocomplete
+          <Field.Autocomplete
             name="botKnowledgeBase"
             autoHighlight
-            options={kbs.map((option) => option)}
-            getOptionLabel={(option) => option.label || ''}
+            options={kbs.filter(Boolean)}
+            value={kbs.find((option) => option.value === selectedKb)||null}
+            onChange={(e, value) => {
+              setSelectedKb(value ? value.value : null);
+            }}
+            getOptionLabel={(option) => (option ? option.label || '' : '')} // Handle null by returning an empty string
+            isOptionEqualToValue={(option, value) => option?.value === value?.value} // Compare properly in case of null
             renderOption={(props, option) => (
-              <li {...props} key={option.value}>
-                {option.label}
-              </li>
+              option ? ( // Only render if option is not null
+                <li {...props} key={String(option.value)}>
+                  {option.label}
+                </li>
+              ) : null // Render nothing for null
             )}
-          /> */}
-          <Field.Select name="botKnowledgeBase" label="Knowledge Base">
-            {kbs.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Field.Select>
+          />
         </Stack>
       </Stack>
     </Card>

@@ -167,6 +167,7 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
                 '.MuiInputBase-root': {
                   flexDirection: 'row-reverse',
                 },
+                width: '20%',
               }}
               InputProps={{
                 startAdornment: (
@@ -187,10 +188,10 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
               name="webhookTimeout"
             />
           </Stack>
-          <Stack flex={1} spacing={1.5}>
+          {/* <Stack flex={1} spacing={1.5}>
             <Typography variant="subtitle2">Requests Per Minute</Typography>
             <Field.Text type="number" label="" name="webhookRequestsPerMinute" />
-          </Stack>
+          </Stack> */}
         </Stack>
       </Stack>
     </Card>

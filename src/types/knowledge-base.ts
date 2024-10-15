@@ -12,6 +12,11 @@ export type IKnowledgeBaseItem = {
   }[];
 };
 
+export type IKnowledgeBaseQaPairType = {
+  question: string;
+  answer: string;
+};
+
 export type IKnowledgeBaseFilters = {
   id: string;
   knowledgeBaseName: string;

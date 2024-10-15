@@ -3,7 +3,7 @@ export type IFunctionItem = {
   functionName: string;
   functionDescription?: string;
   functionAction: IFunctionAction;
-  parameters: IFunctionParameterType[];
+  functionParameters: IFunctionParameterType[];
 };
 
 export type IFunctionParameterType = {
@@ -18,8 +18,9 @@ export type IFunctionAction =
       type: 'webhook';
       data: {
         linkedWebhook: string;
-        slug: string;
+        path: string;
         responseInstructions: string;
+        payloadData: any;
       };
     }
   | {

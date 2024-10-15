@@ -28,9 +28,9 @@ import { deleteFunction } from 'src/utils/api/functions';
 
 const TABLE_HEAD = [
   // { id: 'checkbox', width: '' },
-  { id: 'functionName', label: 'Function Name', width: 160 },
-  { id: 'functionDescription', label: 'Description', width: 220 },
-  { id: 'functionAction', label: 'Action', width: 250 },
+  { id: 'functionName', label: 'Function Name', width: 200 },
+  // { id: 'functionDescription', label: 'Description', width: 220 },
+  { id: 'functionAction', label: 'Action', width: 200 },
   // { id: 'webhookURI', label: 'URI', width: 250 },
   { id: '', width: 88 },
 ];

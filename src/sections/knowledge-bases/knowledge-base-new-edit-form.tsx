@@ -6,14 +6,16 @@ import { useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
+
+import { TableHeadCustom, useTable } from 'src/components/table';
 import LoadingButton from '@mui/lab/LoadingButton';
 
 import { useRouter } from 'src/routes/hooks';
 
 import { toast } from 'src/components/snackbar';
 import { Field, Form } from 'src/components/hook-form';
-import { Button, CardHeader, Divider, Typography } from '@mui/material';
-import type { IKnowledgeBaseItem } from 'src/types/knowledge-base';
+import { Button, CardHeader, Checkbox, Divider, Typography } from '@mui/material';
+import { IKnowledgeBaseQaPairType, type IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import API from 'src/utils/API';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -22,6 +24,19 @@ import { RejectionFiles } from 'src/components/upload';
 import { UploadPlaceholder } from 'src/components/upload/components/placeholder';
 import { KbFilePreview } from 'src/components/knowledge-bases/kb-file-preview';
 import axios from 'axios';
+import { Scrollbar } from 'src/components/scrollbar';
+import { Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { IconButton, MenuItem } from '@mui/material';
+import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { MenuList } from '@mui/material';
+import { Iconify } from 'src/components/iconify';
+
+
+const TABLE_HEAD = [
+  { id: 'question', label: 'Question', width: 200 },
+  { id: 'answer', label: 'Answer', width: 290 },
+  { id: '', width: 10  },
+];
 
 export type NewKbSchemaType = zod.infer<typeof NewKbSchema>;
 
@@ -42,9 +57,6 @@ export const NewKbSchema = zod.object({
   ),
 });
 
-// await axios.put(presignedUrl, file, {
-//   headers: { 'Content-Type': file.type },
-// });
 
 type Props = {
   currentKb?: IKnowledgeBaseItem;
@@ -55,6 +67,10 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
 
   const [isNewFileUploaded, setIsNewFileUploaded] = useState(false);
 
+  const [qaPairs, setQaPairs] = useState<IKnowledgeBaseItem['knowledgeBaseQaPairs']>(
+    currentKb?.knowledgeBaseQaPairs || []
+  );
+  
   const confirm = useBoolean();
   const defaultValues = useMemo(
     () => ({
@@ -87,8 +103,10 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     }
   }, [currentKb, defaultValues, reset]);
 
-  const uploadFile = async (file: File, knowledgeBaseName: string) => {
+  const uploadFile = async (file: File, knowledgeBaseName: string, knowledgeBaseId: string) => {
     try {
+      // knowledgeBaseId exists only when updating a knowledge base, so check in the backend
+      console.log('knowledgeBaseId', knowledgeBaseId);
       const {
         data: { url, key },
       } = await API.post<{
@@ -97,12 +115,16 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       }>('/knowledgeBases/getUploadLink', {
         fileName: file.name,
         knowledgeBaseName,
+        knowledgeBaseId
       });
+      console.log('url', url);
+      console.log('key', key);
       await axios.put(url, file, {
         headers: { 'Content-Type': 'application/pdf', withCredentials: true },
       });
 
-      const fileURL = `https://knowledge-base-files-test.s3.amazonaws.com/${key}`;
+      const fileURL = `https://foneai-knowledgebase-files.s3.us-east-1.amazonaws.com/${key}`;
+      
       toast.success('File uploaded successfully');
       return fileURL;
     } catch (error) {
@@ -120,39 +142,74 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     try {
       let fileURL = '';
       let fileName = '';
-      let fileToArchive: string | undefined;
-      if ((currentKb?.knowledgeBaseFiles || []).length <= 0 && files.length <= 0) {
-        setError('knowledgeBaseFiles', { message: 'File is required' });
-      }
-      if (isNewFileUploaded) {
-        fileURL = await uploadFile(files[0], data.knowledgeBaseName);
-        fileName = files[0].name;
-        fileToArchive = (currentKb?.knowledgeBaseFiles || [{ fileName: undefined }])[0].fileURL;
-      } else {
-        fileURL = currentKb!.knowledgeBaseFiles![0].fileURL!;
-        fileName = currentKb!.knowledgeBaseFiles![0].fileName!;
-      }
-      const url = currentKb ? `/knowledgeBases/${currentKb._id}` : '/knowledgeBases/create';
 
-      const method = currentKb ? API.put : API.post;
-      await method(url, {
-        knowledgeBaseName: data.knowledgeBaseName,
-        knowledgeBaseDescription: data.knowledgeBaseDescription,
-        knowledgeBaseQaPairs: data.knowledgeBaseQaPairs,
-        knowledgeBaseFiles: [
-          {
-            fileName,
-            fileURL,
-          },
-        ],
-        fileToArchive,
-      });
-      reset();
-      toast.success(
-        currentKb ? 'Update knowledge base success!' : 'Create knowledge base success!'
-      );
-      router.push('/knowledge-bases');
+      if (
+        // (currentKb?.knowledgeBaseFiles || []).length <= 0 && files.length <= 0 && // No files
+        (currentKb?.knowledgeBaseQaPairs || []).length <= 0 && (qaPairs || []).length <= 0 // No QA Pairs
+      ) {
+        // setError('knowledgeBaseFiles', { message: 'Upload atleast one file or input a QA Pair' });
+        setError('knowledgeBaseQaPairs', { message: 'Input atleast one QA Pair' });
+        return; // Exit the submission if the condition is not met
+      }
+
+      let creationFlag = false;
+      if(!currentKb || currentKb === undefined) {
+        // If creating a new knowledge base, create a kb and then updaate the kb with the file, just like how it is done in the updating KB
+        const { data: newKb } = await API.post('/knowledgeBases/create', {
+          knowledgeBaseName: data.knowledgeBaseName,
+          knowledgeBaseDescription: data.knowledgeBaseDescription,
+          knowledgeBaseQaPairs: qaPairs
+        });
+
+        toast.success('Create knowledge base success!');
+        router.push('/knowledge-bases');
+        return;
+      } else {
+        const url = `/knowledgeBases/${currentKb?._id}`;
+
+        // QA Pairs alone are different from the rest of the data, so directly assign it to the knowledgeBaseQaPairs
+        await API.put(url, {
+          knowledgeBaseName: data.knowledgeBaseName,
+          knowledgeBaseDescription: data.knowledgeBaseDescription,
+          knowledgeBaseQaPairs: qaPairs,
+        });
+        reset();
+  
+        toast.success('Update knowledge base success!');
+        router.push('/knowledge-bases');
+        return;
+        // if there is no file uploaded, then return
+      //   if(files.length <= 0) {
+      //     toast.success('Create knowledge base success!');
+      //     router.push('/knowledge-bases');
+      //     return;
+      //   } else {
+      //     creationFlag = true;
+      //     currentKb = newKb;
+      //   }
+      // }
+      
+
+      // if (isNewFileUploaded) {
+      //   console.log('Entered isNewFileUploaded');
+      //   fileURL = await uploadFile(files[0], data.knowledgeBaseName, currentKb?._id || '');
+      //   console.log('fileURL@179', fileURL);
+      //   fileName = files[0].name;
+      //   console.log('fileName@181', fileName);
+      // } else {
+      //   fileURL = currentKb!.knowledgeBaseFiles![0].fileURL!;
+      //   console.log('fileURL@183', fileURL);
+      //   fileName = currentKb!.knowledgeBaseFiles![0].fileName!;
+      //   console.log('fileName@186', fileName);
+      // }
+
+      // data.knowledgeBaseQaPairs = qaPairs || [];
+      console.log('qaPairs', qaPairs);
+      console.log('data', data);
+      console.log('currentKb@190', currentKb);
+    }
     } catch (error) {
+      console.error('error', error);
       const messages = Object.values(error.response.data.errors || {}) as string[];
       messages.forEach((m: string) => {
         toast.error(m);
@@ -216,7 +273,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         </Stack>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Knowledge Base Description</Typography>
-          <Field.Text fullWidth multiline rows={4} name="knowledgeBaseDescription" />
+          <Field.Text fullWidth multiline rows={2} name="knowledgeBaseDescription" />
         </Stack>
       </Stack>
     </Card>
@@ -249,7 +306,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
 
   const renderFiles = (
     <Card>
-      <CardHeader title="Files" subheader="Knowledge Base name and description" sx={{ mb: 3 }} />
+      <CardHeader title="Files" subheader="Upload PDF files to the knowledge bases" sx={{ mb: 3 }} />
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
@@ -299,7 +356,415 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     </Card>
   );
 
-  const renderActions = (
+  const QACard: React.FC<{
+    qaPairs: IKnowledgeBaseItem['knowledgeBaseQaPairs'];
+    setQaPairs: React.Dispatch<React.SetStateAction<IKnowledgeBaseItem['knowledgeBaseQaPairs']>>;
+    }> = ({ qaPairs, setQaPairs }) => {
+      const table = useTable();
+      const [qaPair, setQaPair] = useState<IKnowledgeBaseQaPairType>({
+        question: '',
+        answer: ''
+      });
+      const [qaPairErrors, setQaPairErrors] = useState<
+        Record<keyof IKnowledgeBaseQaPairType, boolean>
+      >({
+        question: false,
+        answer: false,
+      });
+
+      const shouldShowQaPairForm = useBoolean(false);
+
+
+      return (
+        <Card>
+          <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
+            <Stack>
+              <Typography variant="h6">Q&A Pairs</Typography>
+              <Typography mt="4px" color="var(--palette-text-secondary)" variant='body2'>
+                Knowledge Base Question and Answer Pairs
+              </Typography>
+            </Stack>
+            <Button
+              onClick={() => {
+                shouldShowQaPairForm.setValue(true);
+              }}
+              variant="contained"
+            >
+              Add New QA Pair
+            </Button>
+          </Stack>
+
+          <Divider />
+          <Box p={4}>
+            {Boolean(qaPairs?.length) || shouldShowQaPairForm.value ? (
+              <Card>
+                <Scrollbar>
+                  <Table>
+                    <TableHeadCustom
+                      order={table.order}
+                      orderBy={table.orderBy}
+                      headLabel={TABLE_HEAD}
+                      numSelected={table.selected.length}
+                    />
+                    <TableBody>
+                      {shouldShowQaPairForm.value && (
+                        <TableRow>
+                          <TableCell
+                            sx={{
+                              verticalAlign: 'top',
+                            }}
+                          >
+                            <Field.Text
+                              name="question"
+                              value={qaPair.question}
+                              onChange={(e) => {
+                                setQaPair((prev) => ({
+                                  ...prev,
+                                  question: e.target.value,
+                                }));
+                              }}
+                              placeholder="Question"
+                              error={qaPairErrors.question}
+                              multiline
+                              minRows={2}
+                              maxRows={4}
+                            />
+                          </TableCell>
+
+                          <TableCell
+                            sx={{
+                              verticalAlign: 'top',
+                            }}
+                          >
+                            <Field.Text
+                              name="answer"
+                              value={qaPair.answer}
+                              onChange={(e) => {
+                                setQaPair((prev) => ({
+                                  ...prev,
+                                  answer: e.target.value,
+                                }));
+                              }}
+                              placeholder="Answer"
+                              error={qaPairErrors.answer}
+                              multiline
+                              minRows={2}
+                              maxRows={4}
+                            />
+                          </TableCell>
+                          
+                          <TableCell>
+                            <Stack gap={2}>
+                              <Button
+                                variant="contained"
+                                onClick={() => {
+                                  // Reset errors first
+                                  setQaPairErrors({
+                                    question: false,
+                                    answer: false,
+                                  });
+
+                                  let isError = false;
+
+                                  // Validation for question
+                                  if (!qaPair.question || qaPair.question.trim().length < 1) {
+                                    setQaPairErrors((prev) => ({
+                                      ...prev,
+                                      question: true,
+                                    }));
+                                    isError = true;
+                                  }
+
+                                  // Validation for answer
+                                  if (!qaPair.answer || qaPair.answer.trim().length < 1) {
+                                    setQaPairErrors((prev) => ({
+                                      ...prev,
+                                      answer: true,
+                                    }));
+                                    isError = true;
+                                  }
+
+                                  // If no error, add the qaPair to the list
+                                  if (!isError) {
+                                    setQaPairs((prevQaPairs=[]) => [...prevQaPairs, qaPair]); // Functional update to prevent race condition
+
+                                    // Reset form state
+                                    setQaPair({
+                                      question: '',
+                                      answer: '',
+                                    });
+
+                                    // Reset error state
+                                    setQaPairErrors({
+                                      question: false,
+                                      answer: false,
+                                    });
+
+                                    // Hide the form
+                                    shouldShowQaPairForm.setValue(false);
+                                  }
+                                }}
+                                size="large"
+                                color="primary"
+                                startIcon={<Iconify icon="ic:round-check" />}
+                              >
+                                Submit
+                              </Button>
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                startIcon={<Iconify icon="ic:round-close" />}
+                                size="large"
+                                onClick={() => {
+                                  // Reset form and hide the form
+                                  setQaPair({
+                                    question: '',
+                                    answer: '',
+                                  });
+                                  setQaPairErrors({
+                                    question: false,
+                                    answer: false,
+                                  });
+                                  shouldShowQaPairForm.setValue(false);
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </Stack>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                      {qaPairs && qaPairs.map((qa, index) => {
+                        return (
+                          <QaPairTableRow
+                            key={index}
+                            qaPair={qa}
+                            changeQuestion={(val) => {
+                              setQaPairs((prevQaPairs=[]) => {
+                                const newQaPairs = [...prevQaPairs];
+                                newQaPairs[index].question = val;
+                                return newQaPairs;
+                              });
+                            }}
+                            changeAnswer={(val) => {
+                              setQaPairs((prevQaPairs=[]) => {
+                                const newQaPairs = [...prevQaPairs];
+                                newQaPairs[index].answer = val;
+                                return newQaPairs;
+                              });
+                            }}
+                            removeQaPair={() => {
+                              setQaPairs((prevQaPairs=[]) => {
+                                const newQaPairs = [...prevQaPairs];
+                                newQaPairs.splice(index, 1);
+                                return newQaPairs;
+                              });
+                            }}
+                            updateQaPair={(qaPair: IKnowledgeBaseQaPairType) => {
+                              setQaPairs((prevQaPairs=[]) => {
+                                const newQaPairs = [...prevQaPairs];
+                                newQaPairs[index] = qaPair;
+                                return newQaPairs;
+                              });
+                            }}
+                          />
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </Scrollbar>
+              </Card>
+            ) : (
+              <Stack>
+                <Typography variant="h5" align="center">
+                  No Qa Pairs
+                </Typography>
+              </Stack>
+            )}
+
+            <Typography variant="body2" color="error">
+              {errors.knowledgeBaseQaPairs?.message}
+            </Typography>
+          </Box>
+
+        </Card>
+      );
+  };
+
+  const QaPairTableRow: React.FC<{
+    qaPair: IKnowledgeBaseQaPairType;
+    changeQuestion: (val: string) => void;
+    changeAnswer: (val: string) => void;
+    removeQaPair: () => void;
+    updateQaPair: (updatedQaPair: IKnowledgeBaseQaPairType) => void;
+    }> = ({
+      qaPair,
+      changeQuestion,
+      changeAnswer,
+      removeQaPair,
+      updateQaPair,
+    }) => {
+
+      const handleUpdate = () => {
+        // Update the qaPair with the updated values
+        const newQaPair: IKnowledgeBaseQaPairType = { ...qaPair, question: 'new question' };
+        updateQaPair(newQaPair); // Use updatedQaPair instead of qaPair to avoid conflicts
+      };
+
+      const popover = usePopover();
+      const editing = useBoolean();
+      const [qaPairState, setQaPairState] = useState({ ...qaPair });
+      const [qaPairErrors, setQaPairErrors] = useState<
+        Record<keyof IKnowledgeBaseQaPairType, boolean>
+      >({
+        question: false,
+        answer: false,
+      });
+
+      return (
+        <>
+          <TableRow>
+            <TableCell
+              sx={{
+                verticalAlign: 'top',
+              }}
+            >
+              <Field.Text
+                name="name"
+                value={qaPairState.question}
+                onChange={(e) => {
+                  console.log('e.target.value', e.target.value);
+                  setQaPairState({ ...qaPairState, question: e.target.value });
+                }}
+                placeholder="Question"
+                disabled={!editing.value}
+                error={qaPairErrors.question}
+                multiline
+                minRows={2}
+                maxRows={6}
+              />
+            </TableCell>
+            
+            <TableCell
+              sx={{
+                verticalAlign: 'top',
+              }}
+            >
+              <Field.Text
+                value={qaPairState.answer}
+                onChange={(e) => {
+                  setQaPairState({ ...qaPairState, answer: e.target.value });
+                }}
+                name="answer"
+                placeholder="Answer"
+                disabled={!editing.value}
+                error={qaPairErrors.answer}
+                multiline
+                minRows={2}
+                maxRows={6}
+              />
+            </TableCell>
+            <TableCell align="right">
+              {editing.value ? (
+                <Stack gap={2}>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      let isError = false;
+                      if (!qaPairState.question || qaPairState.question.trim().length < 1) {
+                        setQaPairErrors((prev) => ({
+                          ...prev,
+                          question: true,
+                        }));
+                        isError = true;
+                      }
+                      if (
+                        !qaPairState.answer ||
+                        qaPairState.answer.trim().length < 1
+                      ) {
+                        setQaPairErrors((prev) => ({
+                          ...prev,
+                          answer: true,
+                        }));
+                        isError = true;
+                      }
+
+                      if (!isError) {
+                        updateQaPair(qaPairState);
+
+                        setQaPairErrors({
+                          question: false,
+                          answer: false
+                        });
+                        editing.setValue(false);
+                      }
+                    }}
+                    size="large"
+                    color="primary"
+                    startIcon={<Iconify icon="ic:round-check" />}
+                  >
+                    Update
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<Iconify icon="ic:round-close" />}
+                    size="large"
+                    onClick={() => {
+                      editing.setValue(false);
+                      setQaPairState({
+                        question: qaPairState.question,
+                        answer: qaPairState.answer,
+                      });
+                      setQaPairErrors({
+                        question: false,
+                        answer: false
+                      });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </Stack>
+              ) : (
+                <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
+                  <Iconify icon="eva:more-vertical-fill" />
+                </IconButton>
+              )}
+            </TableCell>
+          </TableRow>
+          <CustomPopover
+            open={popover.open}
+            anchorEl={popover.anchorEl}
+            onClose={popover.onClose}
+            slotProps={{ arrow: { placement: 'right-top' } }}
+          >
+            <MenuList>
+              <MenuItem
+                onClick={() => {
+                  editing.setValue(true);
+                  popover.onClose();
+                }}
+              >
+                <Iconify icon="solar:pen-bold" />
+                Edit
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  removeQaPair();
+                  popover.onClose();
+                }}
+                sx={{ color: 'error.main' }}
+              >
+                <Iconify icon="solar:trash-bin-trash-bold" />
+                Delete
+              </MenuItem>
+            </MenuList>
+          </CustomPopover>
+        </>
+      );
+  };
+  
+  const renderCTA = (
     <Box display="flex" alignItems="center" justifyContent="space-between" flexWrap="wrap">
       <LoadingButton
         type="submit"
@@ -308,9 +773,9 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         loading={isSubmitting}
         sx={{
           mr: 2,
-          // make the button to appear on the right side
           marginLeft: 'auto',
         }}
+        onClick={onSubmit}
       >
         {!currentKb ? 'Create Knowledge Base' : 'Update Knowledge Base'}
       </LoadingButton>
@@ -321,8 +786,9 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: '1100px' } }}>
         {renderDetails}
-        {renderFiles}
-        {renderActions}
+        {/* {renderFiles}  */}
+        <QACard qaPairs={qaPairs} setQaPairs={setQaPairs} />
+        {renderCTA}
       </Stack>
       <ConfirmDialog
         open={confirm.value}
