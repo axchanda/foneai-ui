@@ -29,6 +29,7 @@
     "**/*.ts",
     "**/*.tsx",
     "src/**/*",
+    "src/@types/**/*"
   ],
   "exclude": [
     "node_modules"

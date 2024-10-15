@@ -12,7 +12,7 @@ import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-const Editor = require('jsoneditor-react') as any;
+import { JsonEditor as Editor } from 'jsoneditor-react';
 import 'jsoneditor-react/es/editor.min.css';
 import { useRouter } from 'src/routes/hooks';
 import { toast } from 'src/components/snackbar';
