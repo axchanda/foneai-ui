@@ -75,7 +75,8 @@ export type IUserCard = {
 };
 
 export type IUserItem = {
-  _id: string;
+  // make _id as optional
+  _id?: string;
   id: string;
   name: string;
   city: string;

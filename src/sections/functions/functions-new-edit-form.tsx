@@ -12,7 +12,7 @@ import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
-import { JsonEditor as Editor } from 'jsoneditor-react';
+const Editor = require('jsoneditor-react') as any;
 import 'jsoneditor-react/es/editor.min.css';
 import { useRouter } from 'src/routes/hooks';
 import { toast } from 'src/components/snackbar';
@@ -919,7 +919,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
               <Editor 
                   ref={jsonEditorRef}
                   value={payloadJsonData} 
-                  onChange={(updatedJson) => {
+                  onChange={(updatedJson: any) => {
                     console.log('Updated JSON', updatedJson);
                     setPayloadJsonData(updatedJson);
                     setAction((pre) => ({

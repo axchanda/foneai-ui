@@ -9,7 +9,7 @@ import { UserNewEditForm } from '../user-new-edit-form';
 // ----------------------------------------------------------------------
 
 type Props = {
-  user?: IUserItem;
+  user?: IUserItem | any;
 };
 
 export function UserEditView({ user: currentUser }: Props) {
