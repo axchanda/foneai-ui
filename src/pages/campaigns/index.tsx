@@ -37,7 +37,7 @@ import type { ICampaignFilters, ICampaignType } from 'src/types/campaign';
 import { CampaignTableRow } from 'src/sections/campaigns/campaign-table-row';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
-import type { IBotType } from 'src/types/bot';
+import type { IBotListType } from 'src/types/bot';
 import { deleteCampaign } from 'src/utils/api/campaigns';
 
 // ----------------------------------------------------------------------
@@ -57,7 +57,7 @@ const TABLE_HEAD = [
 export default function CampaignListView() {
   const [loaded, setLoaded] = useState(false);
   const [campaigns, setCampaigns] = useState<ICampaignType[]>([]);
-  const [bots, setBots] = useState<IBotType[]>([]);
+  const [bots, setBots] = useState<IBotListType[]>([]);
 
   const table = useTable();
 
@@ -117,12 +117,12 @@ export default function CampaignListView() {
       campaigns: ICampaignType[];
       count: number;
     }>('/campaigns');
-    const botPromise = API.get<{
-      bots: IBotType[];
+    const botsListPromise = API.get<{
+      bots: IBotListType[];
       count: number;
-    }>('/bots');
+    }>('/botsList');
 
-    const [{ data }, { data: botsData }] = await Promise.all([campaignPromise, botPromise]);
+    const [{ data }, { data: botsData }] = await Promise.all([campaignPromise, botsListPromise]);
 
     setCampaigns(data.campaigns);
     setBots(botsData.bots);

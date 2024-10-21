@@ -12,9 +12,9 @@ import { userRoutes } from './user';
 import { campaignsRoutes } from './campaigns';
 import { mainRoutes } from './main';
 import { setupRoutes } from './asterisk-setup';
-import { webhooksRoutes } from './webhooks';
+import { apiEndpointsRoutes } from './api-endpoints';
 import { knowledgeBasesRoutes } from './knowledge-base';
-import { functionsRoutes } from './functions';
+import { zapsRoutes } from './zaps';
 import { billingRoutes } from './billing';
 import { plansRoutes } from './plans';
 import { subscribersRoutes } from './subscribers';
@@ -55,11 +55,11 @@ export function Router() {
 
     ...setupRoutes,
 
-    ...webhooksRoutes,
+    ...apiEndpointsRoutes,
 
     ...knowledgeBasesRoutes,
 
-    ...functionsRoutes,
+    ...zapsRoutes,
     ...billingRoutes,
     ...plansRoutes,
     ...subscribersRoutes,

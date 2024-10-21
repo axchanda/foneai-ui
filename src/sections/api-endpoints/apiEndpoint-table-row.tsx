@@ -8,22 +8,21 @@ import {
   TableCell,
   TableRow,
 } from '@mui/material';
-import React from 'react';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
+import type { IApiEndpointItem } from 'src/types/apiEndpoint';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import type { IFunctionItem } from 'src/types/function';
 
 type Props = {
-  row: IFunctionItem;
+  row: IApiEndpointItem;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
 };
 
-export function FunctionTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function ApiEndpointTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
@@ -40,19 +39,19 @@ export function FunctionTableRow({ row, selected, onEditRow, onSelectRow, onDele
         <TableCell padding="checkbox">
           <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
         </TableCell>
-        <TableCell>{row.functionName}</TableCell>
-        {/* <TableCell>{row.functionDescription}</TableCell> */}
+        <TableCell>{row.apiEndpointName}</TableCell>
+        <TableCell>{row.apiEndpointDescription}</TableCell>
         <TableCell>
           <Chip
             sx={{
               backgroundColor: 'primary.light',
             }}
             size="small"
-            label={row.functionAction.type}
+            label={row.apiEndpointMethod}
           />
-          {/* {row.webhookMethod} */}
+          {/* {row.apiEndpointMethod} */}
         </TableCell>
-        {/* <TableCell>{row.fun}</TableCell> */}
+        <TableCell>{row.apiEndpointURI}</TableCell>
         {/* <TableCell>{row.timeout}</TableCell>
         <TableCell>
           <Label color="primary">{row.restMethod}</Label>
@@ -95,8 +94,8 @@ export function FunctionTableRow({ row, selected, onEditRow, onSelectRow, onDele
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete function"
-        content={`Are you sure want to delete the function: ${row.functionName}?`}
+        title="Delete API Definition"
+        content={`Are you sure want to delete the apiEndpoint: ${row.apiEndpointName}?`}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete

@@ -15,12 +15,12 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import type { ICampaignType } from 'src/types/campaign';
 import { Checkbox, Typography } from '@mui/material';
 import useClipboard from 'react-use-clipboard';
-import type { IBotType } from 'src/types/bot';
+import type { IBotListType } from 'src/types/bot';
 // ----------------------------------------------------------------------
 
 type Props = {
   row: ICampaignType;
-  bots: IBotType[];
+  bots: IBotListType[];
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -43,6 +43,8 @@ export function CampaignTableRow({
   const [isCopied, setCopied] = useClipboard(row.campaignId, {
     successDuration: 3000,
   });
+
+  console.log('Bots CampaignTableRow 47: ', bots);
 
   const linkedBot = bots.find((bot) => bot._id === row.linkedBot)?.botName || row.linkedBot;
 

@@ -7,15 +7,16 @@ const icon = (name: string) => (
 );
 
 const ICONS = {
+  asterisk: icon('simple-icons:asterisk'),
   dashboard: icon('ic-dashboard'),
   bots: icon('file-icons:robots'),
   users: icon('heroicons:users-solid'),
   campaigns: icon('ic:round-campaign'),
   invoices: icon('hugeicons:invoice'),
   account: icon('material-symbols:account-circle'),
-  knowledgeBase: icon('simple-icons:knowledgebase'),
-  webhooks: icon('ph:webhooks-logo'),
-  functions: icon('pajamas:quick-actions'),
+  knowledgeBase: icon('simple-icons:docsdotrs'),
+  apiManager: icon('material-symbols:api'),
+  zaps: icon('token:zap'),
   setup: icon('mdi:spanner'),
   blank: icon('ic-blank'),
   kanban: icon('ic-kanban'),
@@ -50,7 +51,7 @@ export const navData = [
     ],
   },
   {
-    subheader: 'Voice bot',
+    subheader: 'App',
     items: [
       {
         title: 'Bots',
@@ -68,29 +69,24 @@ export const navData = [
         icon: ICONS.knowledgeBase,
       },
       {
-        title: 'Webhooks',
-        path: '/webhooks',
-        icon: ICONS.webhooks,
+        title: 'API Manager',
+        path: '/apiEndpoints',
+        icon: ICONS.apiManager,
       },
       {
-        title: 'Functions',
-        path: '/functions',
-        icon: ICONS.functions,
+        title: 'Zaps',
+        path: '/zaps',
+        icon: ICONS.zaps,
       },
     ],
   },
   {
-    subheader: 'Management',
+    subheader: 'Integrations',
     items: [
       {
-        title: 'Users',
-        path: '/users',
-        icon: ICONS.users,
-      },
-      {
-        title: 'Asterisk Setup',
-        path: '/asterisk-setup',
-        icon: ICONS.setup,
+        title: 'Asterisk',
+        path: '/integrations-asterisk',
+        icon: ICONS.asterisk,
       },
       // {
       //   title: 'Billing',

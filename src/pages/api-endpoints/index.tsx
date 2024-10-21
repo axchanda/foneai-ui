@@ -33,29 +33,28 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-// change all the campaign to webhook
-import type { IWebhookFilters, IWebhookItem } from 'src/types/webhook';
-import { WebhookTableRow } from 'src/sections/webhooks/webhook-table-row';
+import type { IApiEndpointFilters, IApiEndpointItem } from 'src/types/apiEndpoint';
+import { ApiEndpointTableRow } from 'src/sections/api-endpoints/apiEndpoint-table-row';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { deleteWebhook } from 'src/utils/api/webhooks';
+import { deleteApiEndpoint } from 'src/utils/api/apiEndpoints';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   // { id: 'checkbox', width: '' },
-  { id: 'webhookName', label: 'Webhook Name', width: 160 },
-  { id: 'webhookDescription', label: 'Description', width: 220 },
-  { id: 'webhookMethod', label: 'Method', width: 30 },
-  { id: 'webhookURI', label: 'URI', width: 250 },
+  { id: 'apiEndpointName', label: 'API Endpoint Name', width: 160 },
+  { id: 'apiEndpointDescription', label: 'Description', width: 220 },
+  { id: 'apiEndpointMethod', label: 'Method', width: 30 },
+  { id: 'apiEndpointURI', label: 'URI', width: 250 },
   { id: '', width: 88 },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function WebhookListView() {
+export default function ApiEndpointListView() {
   const [loaded, setLoaded] = useState(false);
-  const [webhooks, setWebhooks] = useState<IWebhookItem[]>([]);
+  const [apiEndpoints, setApiEndpoints] = useState<IApiEndpointItem[]>([]);
 
   const table = useTable();
 
@@ -63,9 +62,9 @@ export default function WebhookListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState<IWebhookItem[]>([]);
+  const [tableData, setTableData] = useState<IApiEndpointItem[]>([]);
 
-  const filters = useSetState<IWebhookFilters>({ id: '', webhookName: '' });
+  const filters = useSetState<IApiEndpointFilters>({ id: '', apiEndpointName: '' });
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -75,13 +74,13 @@ export default function WebhookListView() {
 
   const dataInPage = rowInPage(dataFiltered, table.page, table.rowsPerPage);
 
-  const canReset = !!filters.state.id || filters.state.webhookName.length > 0;
+  const canReset = !!filters.state.id || filters.state.apiEndpointName.length > 0;
 
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleDeleteRow = useCallback(
     async (id: string) => {
-      await deleteWebhook(id, () => {
+      await deleteApiEndpoint(id, () => {
         const deleteRow = tableData.filter((row) => row._id !== id);
         setTableData(deleteRow);
         table.onUpdatePageDeleteRow(dataInPage.length);
@@ -105,41 +104,41 @@ export default function WebhookListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(`/webhooks/${id}`);
+      router.push(`/apiEndpoints/${id}`);
     },
     [router]
   );
 
-  const getWebhooks = useCallback(async () => {
-    const webhookPromise = API.get<{
-      webhooks: IWebhookItem[];
+  const getApiEndpoints = useCallback(async () => {
+    const apiEndpointPromise = API.get<{
+      apiEndpoints: IApiEndpointItem[];
       count: number;
-    }>('/webhooks');
+    }>('/apiEndpoints');
 
-    const [{ data }] = await Promise.all([webhookPromise]);
+    const { data } = await apiEndpointPromise;
 
-    setWebhooks(data.webhooks);
-    setTableData(data.webhooks);
+    setApiEndpoints(data.apiEndpoints);
+    setTableData(data.apiEndpoints);
     setLoaded(true);
   }, []);
 
   useEffect(() => {
-    getWebhooks();
-  }, [getWebhooks]);
+    getApiEndpoints();
+  }, [getApiEndpoints]);
 
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Webhooks"
+          heading="API Manager"
           action={
             <Button
               component={RouterLink}
-              href="/webhooks/create"
+              href="/apiEndpoints/create"
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New webhook
+              Define a new API Endpoint
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -199,7 +198,7 @@ export default function WebhookListView() {
                         table.page * table.rowsPerPage + table.rowsPerPage
                       )
                       .map((row) => (
-                        <WebhookTableRow
+                        <ApiEndpointTableRow
                           key={row._id}
                           row={row}
                           selected={table.selected.includes(row._id)}
@@ -238,10 +237,10 @@ export default function WebhookListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete webhook"
+        title="Delete APi Endpoint"
         content={
           <>
-            Are you sure want to delete the webhook <strong> {table.selected.length} </strong> ?
+            Are you sure want to delete the API Endpoint <strong> {table.selected.length} </strong> ?
           </>
         }
         action={
@@ -264,13 +263,13 @@ export default function WebhookListView() {
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: IWebhookItem[];
-  filters: IWebhookFilters;
+  inputData: IApiEndpointItem[];
+  filters: IApiEndpointFilters;
   comparator: (a: any, b: any) => number;
 };
 
 function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) {
-  const { id, webhookName } = filters;
+  const { id, apiEndpointName } = filters;
   // console.log(inputData);
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -284,7 +283,7 @@ function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) 
 
   if (id) {
     inputData = inputData.filter(
-      (webhook) => webhook._id.toLowerCase().indexOf(id.toLowerCase()) !== -1
+      (apiEndpoint) => apiEndpoint._id.toLowerCase().indexOf(id.toLowerCase()) !== -1
     );
   }
 
@@ -292,8 +291,8 @@ function applyFilter({ inputData = [], comparator, filters }: ApplyFilterProps) 
   //     inputData = inputData.filter((user) => user.status === status);
   // }
 
-  if (webhookName.length) {
-    inputData = inputData.filter((webhook) => webhookName.includes(webhook.webhookName));
+  if (apiEndpointName.length) {
+    inputData = inputData.filter((apiEndpoint) => apiEndpointName.includes(apiEndpoint.apiEndpointName));
   }
 
   return inputData;

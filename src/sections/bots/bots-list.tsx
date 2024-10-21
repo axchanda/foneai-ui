@@ -6,7 +6,7 @@ import Pagination, { paginationClasses } from '@mui/material/Pagination';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import type { IBotType } from 'src/types/bot';
+import type { IBotListType } from 'src/types/bot';
 import { deleteBot } from 'src/utils/api/bots';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
@@ -15,12 +15,11 @@ import { BotItem } from './bot-item';
 // ----------------------------------------------------------------------
 
 type Props = {
-  bots: IBotType[];
-  setBots: Dispatch<SetStateAction<IBotType[]>>;
-  usedBots: string[];
+  bots: IBotListType[];
+  setBots: Dispatch<SetStateAction<IBotListType[]>>;
 };
 
-export function BotList({ bots, setBots, usedBots }: Props) {
+export function BotList({ bots, setBots }: Props) {
   const router = useRouter();
   const alertDialog = useBoolean();
 
@@ -40,15 +39,11 @@ export function BotList({ bots, setBots, usedBots }: Props) {
 
   const handleDelete = useCallback(
     (id: string) => {
-      if (usedBots.includes(id)) {
-        alertDialog.setValue(true);
-      } else {
         deleteBot(id, () => {
           setBots((prevBots) => prevBots.filter((bot) => bot._id !== id));
         });
-      }
-    },
-    [setBots, usedBots, alertDialog]
+      },
+    [setBots]
   );
 
   return (
@@ -78,16 +73,6 @@ export function BotList({ bots, setBots, usedBots }: Props) {
           }}
         />
       )}
-      <ConfirmDialog
-        title="Unable to delete bot"
-        content="This bot is currently being used in some campaign(s). Please remove it from the linked campaign(s) before deleting."
-        open={alertDialog.value}
-        action={<></>}
-        onClose={() => {
-          alertDialog.setValue(false);
-        }}
-        closeText="Close"
-      />
     </>
   );
 }

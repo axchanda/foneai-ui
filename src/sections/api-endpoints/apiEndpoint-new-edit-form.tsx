@@ -27,65 +27,61 @@ import {
   IconButton,
   InputAdornment,
 } from '@mui/material';
-import type { IWebhookHeaders, IWebhookItem } from 'src/types/webhook';
+import type { IApiEndpointHeaders, IApiEndpointItem } from 'src/types/apiEndpoint';
 import API from 'src/utils/API';
 import { TableHeadCustom, useTable } from 'src/components/table';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { Iconify } from 'src/components/iconify';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 
-export type NewWebhookSchemaType = zod.infer<typeof NewWebhookSchema>;
+export type NewApiEndpointSchemaType = zod.infer<typeof NewApiEndpointSchema>;
 
-export const NewWebhookSchema = zod.object({
-  webhookName: zod.string().min(1, { message: 'Webhook Name is required!' }),
-  webhookURI: zod.string().min(1, { message: 'Webhook URI is required!' }),
-  webhookDescription: zod.string(),
-  webhookMethod: zod.enum(['GET', 'POST', 'PUT', 'DELETE'], {
-    required_error: 'Webhook method is required!',
+export const NewApiEndpointSchema = zod.object({
+  apiEndpointName: zod.string().min(1, { message: 'Api Endpoint Name is required!' }),
+  apiEndpointURI: zod.string().min(1, { message: 'Api Endpoint URI is required!' })
+                  .regex(/^https?:\/\/[a-zA-Z0-9\-\.]+(:[0-9]+)?(\/[a-zA-Z0-9\-._~%!$&'()*+,;=:@]+)*(\/)?(\?[a-zA-Z0-9\-._~%!$&'()*+,;=:@\/?]*)?(#[a-zA-Z0-9\-._~%!$&'()*+,;=:@\/?]*)?$/, {
+                    message: 'Invalid URL format!',
+                  }),
+  apiEndpointDescription: zod.string(),
+  apiEndpointMethod: zod.enum(['GET', 'POST', 'PUT', 'DELETE'], {
+    required_error: 'Api Endpoint method is required!',
   }),
-  webhookTimeout: zod
+  apiEndpointTimeout: zod
     .number()
     .min(1, { message: 'timeout is required!' })
     .refine((value) => Number.isInteger(value), {
       message: 'Timeout must be a whole number!',
     }),
-  webhookRequestsPerMinute: zod
-    .number()
-    .min(1, { message: 'Requests per minute must be a positive number!' })
-    .refine((value) => Number.isInteger(value), {
-      message: 'Requests per minute must be a whole number!',
-    }),
   // TODO: HEADERS
 });
 
 type Props = {
-  currentWebhook?: IWebhookItem;
+  currentApiEndpoint?: IApiEndpointItem;
 };
 
-export function WebhookNewEditForm({ currentWebhook }: Props) {
+export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
   const router = useRouter();
   const [headers, setHeaders] = useState<
     {
       key: string;
       value: string;
     }[]
-  >(currentWebhook?.headers || []);
+  >(currentApiEndpoint?.apiEndpointHeaders || []);
 
   const defaultValues = useMemo(
     () => ({
-      webhookName: currentWebhook?.webhookName || '',
-      webhookURI: currentWebhook?.webhookURI || '',
-      webhookDescription: currentWebhook?.webhookDescription || '',
-      webhookMethod: currentWebhook?.webhookMethod || 'GET',
-      webhookTimeout: currentWebhook?.webhookTimeout || 60,
-      webhookRequestsPerMinute: currentWebhook?.webhookRequestsPerMinute || 10,
+      apiEndpointName: currentApiEndpoint?.apiEndpointName || '',
+      apiEndpointURI: currentApiEndpoint?.apiEndpointURI || '',
+      apiEndpointDescription: currentApiEndpoint?.apiEndpointDescription || '',
+      apiEndpointMethod: currentApiEndpoint?.apiEndpointMethod || 'POST',
+      apiEndpointTimeout: currentApiEndpoint?.apiEndpointTimeout || 60,
     }),
-    [currentWebhook]
+    [currentApiEndpoint]
   );
 
-  const methods = useForm<NewWebhookSchemaType>({
+  const methods = useForm<NewApiEndpointSchemaType>({
     mode: 'all',
-    resolver: zodResolver(NewWebhookSchema),
+    resolver: zodResolver(NewApiEndpointSchema),
     //@ts-ignore
     defaultValues,
   });
@@ -97,28 +93,27 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
   } = methods;
 
   useEffect(() => {
-    if (currentWebhook) {
+    if (currentApiEndpoint) {
       //@ts-ignore
       reset(defaultValues);
     }
-  }, [currentWebhook, defaultValues, reset]);
+  }, [currentApiEndpoint, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const url = currentWebhook ? `/webhooks/${currentWebhook._id}` : '/webhooks/create';
-      const method = currentWebhook ? API.put : API.post;
+      const url = currentApiEndpoint ? `/apiEndpoints/${currentApiEndpoint._id}` : '/apiEndpoints/create';
+      const method = currentApiEndpoint ? API.put : API.post;
       await method(url, {
-        webhookName: data.webhookName,
-        webhookURI: data.webhookURI,
-        webhookDescription: data.webhookDescription,
-        webhookMethod: data.webhookMethod,
-        webhookTimeout: data.webhookTimeout,
-        webhookRequestsPerMinute: data.webhookRequestsPerMinute,
-        headers,
+        apiEndpointName: data.apiEndpointName,
+        apiEndpointURI: data.apiEndpointURI,
+        apiEndpointDescription: data.apiEndpointDescription,
+        apiEndpointMethod: data.apiEndpointMethod,
+        apiEndpointTimeout: data.apiEndpointTimeout,
+        apiEndpointsHeaders : headers,
       });
       reset();
-      toast.success(currentWebhook ? 'Update Webhook success!' : 'Create Webhook success!');
-      router.push('/webhooks');
+      toast.success(currentApiEndpoint ? 'Updating API Definition success!' : 'Defining API Endpoint success!');
+      router.push('/apiEndpoints');
     } catch (error) {
       const messages = Object.values(error.response.data.errors || {}) as string[];
       messages.forEach((m: string) => {
@@ -131,15 +126,29 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
     <Card>
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Webhook Name</Typography>
-          <Field.Text label="" name="webhookName" />
+          <Typography variant="subtitle2">API Endpoint Name</Typography>
+          <Field.Text label="" name="apiEndpointName" />
         </Stack>
+
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle2">API Endpoint Description</Typography>
+
+          <Field.Text fullWidth label="" multiline rows={4} name="apiEndpointDescription" />
+        </Stack>
+      </Stack>
+    </Card>
+  );
+
+
+  const renderSpecs = (
+    <Card>
+      <Stack spacing={3} sx={{ p: 3 }}>
 
         <Stack sx={{ px: 1 }}>
           <Typography variant="subtitle2">Method</Typography>
 
           <Field.RadioGroup
-            name="webhookMethod"
+            name="apiEndpointMethod"
             sx={{ flexDirection: 'row' }} // Add this to make it horizontal
             options={[
               { label: 'GET', value: 'GET' },
@@ -150,18 +159,13 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
           />
         </Stack>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Webhook URI</Typography>
+          <Typography variant="subtitle2">API Endpoint URI</Typography>
 
-          <Field.Text label="" name="webhookURI" />
-        </Stack>
-        <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Webhook Description</Typography>
-
-          <Field.Text fullWidth label="" multiline rows={4} name="webhookDescription" />
+          <Field.Text label="" name="apiEndpointURI" />
         </Stack>
         <Stack spacing={4} direction="row">
           <Stack flex={1} spacing={1.5}>
-            <Typography variant="subtitle2">Webhook Timeout</Typography>
+            <Typography variant="subtitle2">Timeout</Typography>
             <Field.Text
               sx={{
                 '.MuiInputBase-root': {
@@ -185,13 +189,9 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
               }}
               type="number"
               label=""
-              name="webhookTimeout"
+              name="apiEndpointTimeout"
             />
           </Stack>
-          {/* <Stack flex={1} spacing={1.5}>
-            <Typography variant="subtitle2">Requests Per Minute</Typography>
-            <Field.Text type="number" label="" name="webhookRequestsPerMinute" />
-          </Stack> */}
         </Stack>
       </Stack>
     </Card>
@@ -210,7 +210,7 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
           marginLeft: 'auto',
         }}
       >
-        {!currentWebhook ? 'Create Webhook' : 'Update Webhook'}
+        {!currentApiEndpoint ? 'Create API Definition' : 'Update API Definition'}
       </LoadingButton>
     </Box>
   );
@@ -219,6 +219,7 @@ export function WebhookNewEditForm({ currentWebhook }: Props) {
     <Form methods={methods} onSubmit={onSubmit}>
       <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: '1100px' } }}>
         {renderDetails}
+        {renderSpecs}
         <HeadersForm headers={headers} setHeaders={setHeaders} />
 
         {renderActions}
@@ -235,7 +236,7 @@ const TABLE_HEAD = [
 ];
 
 const HeadersForm: React.FC<{
-  headers: IWebhookItem['headers'];
+  headers: IApiEndpointItem['apiEndpointHeaders'];
   setHeaders: React.Dispatch<
     React.SetStateAction<
       {
@@ -246,11 +247,11 @@ const HeadersForm: React.FC<{
   >;
 }> = ({ headers, setHeaders }) => {
   const table = useTable();
-  const [header, setHeader] = useState<IWebhookHeaders>({
+  const [header, setHeader] = useState<IApiEndpointHeaders>({
     key: '',
     value: '',
   });
-  const [headerErrors, setHeaderErrors] = useState<Record<keyof IWebhookHeaders, boolean>>({
+  const [headerErrors, setHeaderErrors] = useState<Record<keyof IApiEndpointHeaders, boolean>>({
     key: false,
     value: false,
   });
@@ -262,7 +263,7 @@ const HeadersForm: React.FC<{
     <Card>
       <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
         <Stack>
-          <Typography variant="h5">Webhook Headers</Typography>
+          <Typography variant="h5">API Headers</Typography>
           {/* <Typography mt="4px" color="var(--palette-text-secondary)" variant="subtitle2">
             Add parameters to the function. These parameters will be used to pass data to the
             function.
@@ -392,7 +393,7 @@ const HeadersForm: React.FC<{
                     </TableCell>
                   </TableRow>
                 )}
-                {headers.map((h, index) => {
+                {headers.map((h: IApiEndpointHeaders, index: number) => {
                   return (
                     <HeaderTableRow
                       key={JSON.stringify(h) + index}
@@ -400,7 +401,7 @@ const HeadersForm: React.FC<{
                       removeHeader={() => {
                         setHeaders((prev) => prev.filter((_, i) => i !== index));
                       }}
-                      updateHeader={(newHeader: IWebhookHeaders) => {
+                      updateHeader={(newHeader: IApiEndpointHeaders) => {
                         setHeaders((prev) => {
                           const newHeaders = [...prev];
                           newHeaders[index] = newHeader;
@@ -416,7 +417,7 @@ const HeadersForm: React.FC<{
         ) : (
           <Stack>
             <Typography variant="h5" align="center">
-              No Parameters
+              No API Headers
             </Typography>
           </Stack>
         )}
@@ -426,14 +427,14 @@ const HeadersForm: React.FC<{
 };
 
 const HeaderTableRow: React.FC<{
-  currentHeader: IWebhookHeaders;
+  currentHeader: IApiEndpointHeaders;
   removeHeader: () => void;
-  updateHeader: (header: IWebhookHeaders) => void;
+  updateHeader: (header: IApiEndpointHeaders) => void;
 }> = ({ currentHeader, removeHeader, updateHeader }) => {
   const popover = usePopover();
   const editing = useBoolean(false);
   const [header, setHeader] = useState({ ...currentHeader });
-  const [headerErrors, setHeaderErrors] = useState<Record<keyof IWebhookHeaders, boolean>>({
+  const [headerErrors, setHeaderErrors] = useState<Record<keyof IApiEndpointHeaders, boolean>>({
     key: false,
     value: false,
   });

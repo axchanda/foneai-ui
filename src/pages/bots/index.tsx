@@ -12,34 +12,20 @@ import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
 import { BotList } from 'src/sections/bots/bots-list';
 import API from 'src/utils/API';
-import type { IBotType } from 'src/types/bot';
+import { IBotListType } from 'src/types/bot';
 import { LoadingScreen } from 'src/components/loading-screen';
-import type { ICampaignType } from 'src/types/campaign';
 
 function Bots() {
-  const [notFound, setNotfound] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [bots, setBots] = useState<IBotType[]>([]);
-  const [usedBots, setUsedBots] = useState<string[]>([]);
+  const [bots, setBots] = useState<IBotListType[]>([]);
 
   const getData = useCallback(async () => {
     const botsPromise = API.get<{
-      bots: IBotType[];
+      bots: IBotListType[];
       count: number;
-    }>('/bots');
-    const campaignsPromise = API.get<{
-      campaigns: ICampaignType[];
-      count: number;
-    }>('/campaigns');
-    const [
-      { data },
-      {
-        data: { campaigns },
-      },
-    ] = await Promise.all([botsPromise, campaignsPromise]);
+    }>('/botsList');
+    const { data }= await botsPromise;
     setBots(data.bots);
-    const used = campaigns.map((campaign) => campaign.linkedBot);
-    setUsedBots(used);
     setLoaded(true);
   }, []);
 
@@ -65,8 +51,8 @@ function Bots() {
       />
       {loaded ? (
         <>
-          {notFound && <EmptyContent filled sx={{ py: 10 }} />}
-          <BotList bots={bots} setBots={setBots} usedBots={usedBots} />
+          {/* {notFound && <EmptyContent filled sx={{ py: 10 }} />} */}
+          <BotList bots={bots} setBots={setBots} />
         </>
       ) : (
         <LoadingScreen />

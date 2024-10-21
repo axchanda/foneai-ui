@@ -20,7 +20,7 @@ const layoutContent = (
 
 export const setupRoutes = [
   {
-    path: 'asterisk-setup',
+    path: '/integrations-asterisk',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
     children: [{ element: <IndexPage />, index: true }],
   },

@@ -8,9 +8,9 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 import { AuthGuard } from 'src/auth/guard';
 
-const WebhookIndexPage = lazy(() => import('src/pages/webhooks'));
-const WebhookCreatePage = lazy(() => import('src/pages/webhooks/create'));
-const WebhookEditPage = lazy(() => import('src/pages/webhooks/edit'));
+const ApiEndpointIndexPage = lazy(() => import('src/pages/api-endpoints'));
+const ApiEndpointCreatePage = lazy(() => import('src/pages/api-endpoints/create'));
+const ApiEndpointEditPage = lazy(() => import('src/pages/api-endpoints/edit'));
 
 const layoutContent = (
   <DashboardLayout>
@@ -20,19 +20,19 @@ const layoutContent = (
   </DashboardLayout>
 );
 
-export const webhooksRoutes = [
+export const apiEndpointsRoutes = [
   {
-    path: 'webhooks',
+    path: 'apiEndpoints',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
     children: [
-      { element: <WebhookIndexPage />, index: true },
+      { element: <ApiEndpointIndexPage />, index: true },
       {
         path: 'create',
-        element: <WebhookCreatePage />,
+        element: <ApiEndpointCreatePage />,
       },
       {
         path: ':id',
-        element: <WebhookEditPage />,
+        element: <ApiEndpointEditPage />,
       },
     ],
   },

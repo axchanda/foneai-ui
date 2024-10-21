@@ -6,7 +6,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
-import type { IFunctionItem } from 'src/types/function';
+import type { IZapItem } from 'src/types/zap';
 import { Box, Card, IconButton, Table, TableBody, Tooltip } from '@mui/material';
 import {
   emptyRows,
@@ -19,115 +19,70 @@ import {
 } from 'src/components/table';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { Scrollbar } from 'src/components/scrollbar';
-import { FunctionTableRow } from 'src/sections/functions/functions-table-row';
+import { ZapTableRow } from 'src/sections/zaps/zaps-table-row';
 import { useCallback, useEffect, useState } from 'react';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useRouter } from 'src/routes/hooks';
-import { deleteFunction } from 'src/utils/api/functions';
+import { deleteZap } from 'src/utils/api/zaps';
 
 const TABLE_HEAD = [
-  // { id: 'checkbox', width: '' },
-  { id: 'functionName', label: 'Function Name', width: 200 },
-  // { id: 'functionDescription', label: 'Description', width: 220 },
-  { id: 'functionAction', label: 'Action', width: 200 },
-  // { id: 'webhookURI', label: 'URI', width: 250 },
+  { id: 'zapName', label: 'Zap Name', width: 200 },
+  { id: 'zapDescription', label: 'Description', width: 220 },
+  { id: 'zapAction', label: 'Action', width: 200 },
   { id: '', width: 88 },
 ];
 
-// const functions: IFunctionItem[] = [
-//   {
-//     _id: '1',
-//     functionName: 'Function 1',
-//     functionDescription: 'Function 1 Description',
-//     functionAction: {
-//       type: 'webhook',
-//       data: {
-//         linkedWebhook: '1',
-//         slug: 'function-1',
-//       },
-//     },
-//     parameters: [],
-//   },
-//   {
-//     _id: '2',
-//     functionName: 'Function 2',
-//     functionDescription: 'Function 2 Description',
-//     functionAction: {
-//       type: 'transfer',
-//       data: null,
-//     },
-//     parameters: [
-//       {
-//         parameterIsRequired: true,
-//         parameterName: 'parameterName',
-//         parameterType: 'string',
-//         parameterDescription: 'parameterDescription',
-//       },
-//     ],
-//   },
-//   {
-//     _id: '3',
-//     functionName: 'Function 3',
-//     functionDescription: 'Function 3 Description',
-//     functionAction: {
-//       type: 'hangup',
-//       data: null,
-//     },
-//     parameters: [],
-//   },
-// ];
-
-function Functions() {
+function Zaps() {
   const table = useTable();
   const confirm = useBoolean();
   const router = useRouter();
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(`/functions/${id}`);
+      router.push(`/zaps/${id}`);
     },
     [router]
   );
 
-  const [functions, setFunctions] = useState<IFunctionItem[]>([]);
+  const [zaps, setZaps] = useState<IZapItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
-  const getFunctions = useCallback(async () => {
+  const getZaps = useCallback(async () => {
     const { data } = await API.get<{
-      functions: IFunctionItem[];
-    }>('/functions');
-    setFunctions(data.functions);
+      zaps: IZapItem[];
+    }>('/zaps');
+    setZaps(data.zaps);
     setLoaded(true);
   }, []);
 
   useEffect(() => {
-    getFunctions();
-  }, [getFunctions]);
+    getZaps();
+  }, [getZaps]);
 
   const handleDeleteRow = useCallback(
     async (id: string) => {
-      await deleteFunction(id, () => {
-        const deleteRow = functions.filter((row) => row._id !== id);
-        setFunctions(deleteRow);
-        table.onUpdatePageDeleteRow(functions.length);
+      await deleteZap(id, () => {
+        const deleteRow = zaps.filter((row) => row._id !== id);
+        setZaps(deleteRow);
+        table.onUpdatePageDeleteRow(zaps.length);
       });
     },
-    [functions, table]
+    [zaps, table]
   );
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Functions"
+        heading="Zaps"
         action={
           <Button
             component={RouterLink}
-            href="/functions/create"
+            href="/zaps/create"
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            New Function
+            New Zap
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
@@ -138,11 +93,11 @@ function Functions() {
             <TableSelectedAction
               dense={table.dense}
               numSelected={table.selected.length}
-              rowCount={functions.length}
+              rowCount={zaps.length}
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  functions.map((row) => row._id)
+                  zaps.map((row) => row._id)
                 )
               }
               action={
@@ -160,25 +115,25 @@ function Functions() {
                   order={table.order}
                   orderBy={table.orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={functions.length}
+                  rowCount={zaps.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
-                      functions.map((row) => row._id)
+                      zaps.map((row) => row._id)
                     )
                   }
                 />
 
                 <TableBody>
-                  {functions
+                  {zaps
                     .slice(
                       table.page * table.rowsPerPage,
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <FunctionTableRow
+                      <ZapTableRow
                         key={row._id}
                         row={row}
                         selected={table.selected.includes(row._id)}
@@ -190,10 +145,10 @@ function Functions() {
 
                   <TableEmptyRows
                     height={table.dense ? 56 : 56 + 20}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, functions.length)}
+                    emptyRows={emptyRows(table.page, table.rowsPerPage, zaps.length)}
                   />
 
-                  <TableNoData notFound={functions.length < 1} />
+                  <TableNoData notFound={zaps.length < 1} />
                 </TableBody>
               </Table>
             </Scrollbar>
@@ -202,7 +157,7 @@ function Functions() {
           <TablePaginationCustom
             page={table.page}
             // dense={table.dense}
-            count={functions.length}
+            count={zaps.length}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
             // onChangeDense={table.onChangeDense}
@@ -216,4 +171,4 @@ function Functions() {
   );
 }
 
-export default Functions;
+export default Zaps;

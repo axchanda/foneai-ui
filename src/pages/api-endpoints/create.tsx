@@ -2,18 +2,18 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { WebhookNewEditForm } from 'src/sections/webhooks/webhook-new-edit-form';
+import { ApiEndpointNewEditForm } from 'src/sections/api-endpoints/apiEndpoint-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-export default function WebhookCreate() {
+export default function ApiEndpointCreate() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Create a new webhook"
+        heading="Define a new API Endpoint"
         sx={{ mb: { xs: 3, md: 5 } }}
       />
-      <WebhookNewEditForm />
+      <ApiEndpointNewEditForm />
     </DashboardContent>
   );
 }

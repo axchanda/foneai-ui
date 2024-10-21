@@ -4,46 +4,45 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { CampaignNewEditForm } from 'src/sections/campaigns/campaign-new-edit-form';
 import { useParams } from 'react-router';
 import { useCallback, useEffect, useState } from 'react';
 import API from 'src/utils/API';
 import type { ICampaignType } from 'src/types/campaign';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { IWebhookItem } from 'src/types/webhook';
-import { WebhookNewEditForm } from 'src/sections/webhooks/webhook-new-edit-form';
+import { IApiEndpointItem } from 'src/types/apiEndpoint';
+import { ApiEndpointNewEditForm } from 'src/sections/api-endpoints/apiEndpoint-new-edit-form';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  webhook?: IWebhookItem;
+  apiEndpoint?: IApiEndpointItem;
 };
 
-export default function WebhookEdit({ webhook: currentWebhook }: Props) {
+export default function ApiEndpointEdit({ apiEndpoint: currentApiEndpoint }: Props) {
   const [loaded, setLoaded] = useState(false);
   
   const { id } = useParams();
-  const [webhook, setWebhook] = useState<IWebhookItem | null>(null);
+  const [apiEndpoint, setApiEndpoint] = useState<IApiEndpointItem | null>(null);
 
-  const getWebhookById = useCallback(async () => {
-    const { data } = await API.get<IWebhookItem>('/webhooks/' + id);
-    setWebhook(data);
+  const getApiEndpointById = useCallback(async () => {
+    const { data } = await API.get<IApiEndpointItem>('/apiEndpoints/' + id);
+    setApiEndpoint(data);
     setLoaded(true);
   }, [id]);
 
   useEffect(() => {
-    getWebhookById();
-  }, [getWebhookById]);
+    getApiEndpointById();
+  }, [getApiEndpointById]);
 
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit Webhook"
+        heading="Edit API Definition"
         sx={{ mb: { xs: 3, md: 5 } }}
       />
       {loaded ? 
-        <WebhookNewEditForm currentWebhook={webhook || undefined} /> : <LoadingScreen />}
+        <ApiEndpointNewEditForm currentApiEndpoint={apiEndpoint || undefined} /> : <LoadingScreen />}
     </DashboardContent>
   );
 }

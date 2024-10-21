@@ -26,9 +26,13 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
   const theme = useTheme();
   const { credits } = useUsage();
 
+  const usageMeter = Math.floor((credits.used / (credits.used + credits.available) )* 100);
+
   const [selectedSeries, setSelectedSeries] = useState('Jul');
 
   const chartColors = chart.colors ?? [theme.palette.primary.main, theme.palette.primary.light];
+  const chartWarningColors = chart.colors ?? [theme.palette.warning.main, theme.palette.warning.light];
+  const chartErrorColors = chart.colors ?? [theme.palette.error.main, theme.palette.error.light];
 
   const chartOptions = useChart({
     chart: { sparkline: { enabled: true } },
@@ -37,8 +41,12 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
       type: 'gradient',
       gradient: {
         colorStops: [
-          { offset: 0, color: chartColors[0], opacity: 1 },
-          { offset: 100, color: chartColors[1], opacity: 1 },
+          { offset: 0,
+            color: usageMeter > 75 ? (usageMeter > 90 ? chartErrorColors[0] : chartWarningColors[0]) : chartColors[0],
+            opacity: 1 },
+          { offset: 100, 
+            color: usageMeter > 75 ? (usageMeter > 90 ? chartErrorColors[1] : chartWarningColors[1]) : chartColors[1],
+            opacity: 1 },
         ],
       },
     },
@@ -78,14 +86,13 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
             onChange={handleChangeSeries}
           />
         }
-        title="Credits Available"
+        title="Usage Meter"
         subheader=""
         sx={{ mb: 5 }}
       />
-
       <Chart
         type="radialBar"
-        series={[Math.floor(100 - (credits.available + credits.used) / credits.used)]}
+        series={[usageMeter]}
         options={chartOptions}
         width={240}
         height={240}
@@ -106,11 +113,11 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
               width: 16,
               height: 16,
               borderRadius: 0.75,
-              bgcolor: chartColors[1],
+              bgcolor: usageMeter > 75 ? (usageMeter > 90 ? chartErrorColors[0] : chartWarningColors[0]) : chartColors[0],
             }}
           />
-          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Available</Box>
-          {credits.available}
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Used</Box>
+          {credits.used}
         </Box>
         <Box sx={{ gap: 1, display: 'flex', alignItems: 'center', typography: 'subtitle2' }}>
           <Box
@@ -118,12 +125,13 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
               width: 16,
               height: 16,
               borderRadius: 0.75,
-              bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.16),
-              // ...(item.label === 'Used' && ),
+              bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.16)
             }}
           />
-          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Used</Box>
-          {credits.used}
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>
+            Available
+          </Box>
+          {credits.available}
         </Box>
       </Box>
     </Card>

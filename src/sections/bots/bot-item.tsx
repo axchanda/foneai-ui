@@ -20,7 +20,7 @@ import { fDate } from 'src/utils/format-time';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import type { IBotType } from 'src/types/bot';
+import type { IBotListType, IBotType } from 'src/types/bot';
 
 // ----------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ const languages = {
 };
 
 type Props = {
-  bot: IBotType;
+  bot: IBotListType;
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -40,7 +40,6 @@ type Props = {
 export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
   const popover = usePopover();
   const confirm = useBoolean();
-  // console.log(bot);
   return (
     <>
       <Card onDoubleClick={onEdit}>
@@ -89,8 +88,6 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
         <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
           {[
             {
-              // label: the first character of the bot's language is capitalized, the rest are lowercase
-              // label: bot.botLanguage.charAt(0).toUpperCase() + bot.botLanguage.slice(1).toLowerCase(a,
               label: languages[bot.botLanguage],
               icon: <Iconify width={16} icon="ion:language" sx={{ flexShrink: 0 }} />,
             },
@@ -110,7 +107,7 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
             },
             {
               label: bot.botVoice.voiceId,
-              icon: <Iconify width={16} icon="iconoir:voice-circle" sx={{ flexShrink: 0 }} />,
+              icon: <Iconify width={16} icon="simple-icons:amazonaws" sx={{ flexShrink: 0 }} />,
             },
           ].map((item, index) => (
             <Stack

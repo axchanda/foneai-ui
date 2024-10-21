@@ -33,14 +33,14 @@ import {
   RadioGroup,
 } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { TableHeadCustom, useTable } from 'src/components/table';
 import { Iconify } from 'src/components/iconify';
-import type { IFunctionAction, IFunctionItem, IFunctionParameterType } from 'src/types/function';
+import type { IZapAction, IZapItem, IZapParameterItem } from 'src/types/zap';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
-import type { IWebhookItem } from 'src/types/webhook';
+import type { IApiEndpointItem } from 'src/types/apiEndpoint';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
+import { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 
 // ----------------------------------------------------------------------
 
@@ -53,30 +53,28 @@ const TABLE_HEAD = [
   { id: '', width: 88 },
 ];
 
-export type NewFunctionSchemaType = zod.infer<typeof NewFunctionSchema>;
+export type NewZapSchemaType = zod.infer<typeof NewZapSchema>;
 
-export const NewFunctionSchema = zod.object({
-  functionName: zod.string().min(1, 'Function name is required'),
+export const NewZapSchema = zod.object({
+  zapName: zod.string().min(1, 'Zap name is required'),
 });
 
 type Props = {
-  currentFunction?: IFunctionItem;
-  isUsed?: boolean;
+  currentZap?: IZapItem;
 };
 
-export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
+export function ZapsNewEditForm({ currentZap }: Props) {
   const router = useRouter();
-  const alertDialog = useBoolean();
   const defaultValues = useMemo(
     () => ({
-      functionName: currentFunction?.functionName || '',
-      functionDescription: currentFunction?.functionDescription || '',
+      zapName: currentZap?.zapName || '',
+      zapDescription: currentZap?.zapDescription || '',
     }),
-    [currentFunction]
+    [currentZap]
   );
-  const methods = useForm<NewFunctionSchemaType>({
+  const methods = useForm<NewZapSchemaType>({
     mode: 'all',
-    resolver: zodResolver(NewFunctionSchema),
+    resolver: zodResolver(NewZapSchema),
     //@ts-ignore
     defaultValues,
   });
@@ -87,15 +85,16 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
     formState: { isSubmitting, errors },
   } = methods;
 
-  const [parameters, setParameters] = useState<IFunctionItem['functionParameters']>(
-    currentFunction?.functionParameters || []
+  const [parameters, setParameters] = useState<IZapItem['zapParameters']>(
+    currentZap?.zapParameters || []
   );
   const [loaded, setLoaded] = useState(false);
-  const [webhooks, setWebhooks] = useState<IWebhookItem[]>([]);
-  const [action, setAction] = useState<IFunctionAction>(
-    currentFunction?.functionAction || {
+  const [apiEndpoints, setApiEndpoints] = useState<IApiEndpointItem[]>([]);
+  const [kbs, setKbs] = useState<IKnowledgeBaseItem[]>([]);
+  const [action, setAction] = useState<IZapAction>(
+    currentZap?.zapAction || {
       type: 'hangup',
-      data: null,
+      data: null
     }
   );
 
@@ -104,16 +103,24 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
 
   const [actionErrors, setActionErrors] = useState<Record<string, string>>({});
 
-  const getWebhooks = useCallback(async () => {
-    const webhookPromise = API.get<{
-      webhooks: IWebhookItem[];
+  const getApiEndpoints = useCallback(async () => {
+    const apiEndpointPromise = API.get<{
+      apiEndpoints: IApiEndpointItem[];
       count: number;
-    }>('/webhooks');
-
-    const [{ data }] = await Promise.all([webhookPromise]);
-
-    setWebhooks(data.webhooks);
-    setLoaded(true);
+    }>('/apiEndpoints');
+  
+    const { data } = await apiEndpointPromise;
+    setApiEndpoints(data.apiEndpoints);
+  }, []);
+  
+  const getKbs = useCallback(async () => {
+    const kbsPromise = API.get<{
+      knowledgeBases: IKnowledgeBaseItem[];
+      count: number;
+    }>('/knowledgeBases');
+  
+    const { data } = await kbsPromise;
+    setKbs(data.knowledgeBases);
   }, []);
 
   const processInputToJSX = (input: string, highlightVariables: string[]) => {
@@ -184,14 +191,19 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
   };
 
   useEffect(() => {
-    getWebhooks();
-  }, [getWebhooks]);
+    const loadData = async () => {
+      await Promise.all([getApiEndpoints(), getKbs()]);
+      setLoaded(true); // Only setLoaded(true) once both promises are fulfilled
+    };
+  
+    loadData();
+  }, [getApiEndpoints, getKbs]);
 
   useEffect(() => {
-    if (currentFunction) {
+    if (currentZap) {
       reset(defaultValues);
     }
-  }, [currentFunction, defaultValues, reset]);
+  }, [currentZap, defaultValues, reset]);
 
   useEffect(() => {
     const editorContainer = document.querySelector('.jsoneditor');
@@ -229,18 +241,18 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
   }, [payloadJsonData, parameters]);
 
   const ParametersCard: React.FC<{
-    parameters: IFunctionItem['functionParameters'];
-    setParameters: React.Dispatch<React.SetStateAction<IFunctionItem['functionParameters']>>;
+    parameters: IZapItem['zapParameters'];
+    setParameters: React.Dispatch<React.SetStateAction<IZapItem['zapParameters']>>;
     }> = ({ parameters, setParameters }) => {
       const table = useTable();
-      const [parameter, setParameter] = useState<IFunctionParameterType>({
+      const [parameter, setParameter] = useState<IZapParameterItem>({
         parameterDescription: '',
         parameterIsRequired: false,
         parameterName: '',
         parameterType: 'string',
       });
       const [parameterErrors, setParameterErrors] = useState<
-        Record<keyof IFunctionParameterType, boolean>
+        Record<keyof IZapParameterItem, boolean>
       >({
         parameterDescription: false,
         parameterIsRequired: false,
@@ -255,10 +267,10 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
         <Card>
           <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
             <Stack>
-              <Typography variant="h6">Function Parameters</Typography>
+              <Typography variant="h6">Zap Parameters</Typography>
               <Typography mt="4px" color="var(--palette-text-secondary)" variant='body2'>
-                Add parameters to the function. These parameters will be used to pass data to the
-                function.
+                Add parameters to the zap. These parameters will be used to pass data to the
+                zap.
               </Typography>
             </Stack>
             <Button
@@ -486,7 +498,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
                             removeParameter={() => {
                               setParameters((prev) => prev.filter((_, i) => i !== index));
                             }}
-                            updateParameter={(params: IFunctionParameterType) => {
+                            updateParameter={(params: IZapParameterItem) => {
                               // console.log(params);
                               setParameters((prev) => {
                                 const newParams = [...prev];
@@ -514,13 +526,13 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
   };
 
   const ParameterTableRow: React.FC<{
-    param: IFunctionParameterType;
+    param: IZapParameterItem;
     changeIsRequired: (val: boolean) => void;
     changeName: (val: string) => void;
     changeType: (val: string) => void;
     changeDescription: (val: string) => void;
     removeParameter: () => void;
-    updateParameter: (params: IFunctionParameterType) => void;
+    updateParameter: (params: IZapParameterItem) => void;
     }> = ({
       param,
       changeDescription,
@@ -534,7 +546,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
       const editing = useBoolean();
       const [parameter, setParameter] = useState({ ...param });
       const [parameterErrors, setParameterErrors] = useState<
-        Record<keyof IFunctionParameterType, boolean>
+        Record<keyof IZapParameterItem, boolean>
       >({
         parameterDescription: false,
         parameterIsRequired: false,
@@ -575,7 +587,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
                   // changeName(e.target.value);
                   setParameter({ ...param, parameterName: e.target.value });
                 }}
-                placeholder="Function name"
+                placeholder="Zap name"
                 disabled={!editing.value}
                 error={parameterErrors.parameterName}
               />
@@ -734,29 +746,40 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
     console.log('Form action data', action.data);
 
 
-    if (action.type === 'webhook') {
+    if (action.type === 'apiEndpoint') {
       console.log('Action data', action.data);
-      if (!action.data?.linkedWebhook || action.data?.linkedWebhook.trim().length < 1) {
-        console.log(action.data?.linkedWebhook.trim().length);
+      if (!action.data?.linkedApiEndpoint || action.data?.linkedApiEndpoint.trim().length < 1) {
+        console.log(action.data?.linkedApiEndpoint.trim().length);
         setActionErrors((prev) => ({
           ...prev,
-          linkedWebhook: 'Webhook is required',
+          linkedApiEndpoint: 'ApiEndpoint is required',
+        }));
+        return;
+      }
+    }
+
+    if (action.type === 'knowledgeBase') {
+      if (!action.data?.linkedKnowledgeBase || action.data?.linkedKnowledgeBase.trim().length < 1) {
+        setActionErrors((prev) => ({
+          ...prev,
+          linkedKnowledgeBase: 'KnowledgeBase is required',
         }));
         return;
       }
     }
     
     try {
-      const url = currentFunction ? `/functions/${currentFunction._id}` : '/functions/create';
-      const method = currentFunction ? API.put : API.post;
+      const url = currentZap ? `/zaps/${currentZap._id}` : '/zaps/create';
+      const method = currentZap ? API.put : API.post;
       await method(url, {
-        functionName: data.functionName,
-        functionAction: action,
-        functionParameters: parameters,
+        zapName: data.zapName,
+        zapDescription: data?.zapDescription,
+        zapAction: action,
+        zapParameters: parameters,
       });
       reset();
-      toast.success(currentFunction ? 'Update success!' : 'Create success!');
-      router.push('/functions');
+      toast.success(currentZap ? 'Update success!' : 'Create success!');
+      router.push('/zaps');
     } catch (error) {
       // console.error(error);
       const messages = Object.values(error.response.data.errors || {}) as string[];
@@ -768,14 +791,23 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" subheader="Function name and description" sx={{ mb: 3 }} />
+      <CardHeader title="Details" subheader="Zap name and description" sx={{ mb: 3 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Function Name</Typography>
-          <Field.Text name="functionName" placeholder="Ex: Function 1..." />
+          <Typography variant="subtitle2">Zap Name</Typography>
+          <Field.Text name="zapName" placeholder="Name your zap" />
+        </Stack>
+
+        <Stack spacing={1.5}>
+          <Typography variant="subtitle2">Zap Description</Typography>
+          <Field.Text name="zapDescription" placeholder="Describe your zap..."
+            multiline
+            minRows={4}
+            maxRows={4}
+          />
         </Stack>
       </Stack>
     </Card>
@@ -783,7 +815,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
 
   const renderActions = (
     <Card>
-      <CardHeader title="Action" subheader="Function action settings" sx={{ mb: 3 }} />
+      <CardHeader title="Action" subheader="Zap action settings" sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -791,14 +823,22 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
         <RadioGroup
           value={action.type}
           onChange={(e) => {
-            const type = e.target.value as IFunctionAction['type'];
-            if (type === 'webhook') {
+            const type = e.target.value as IZapAction['type'];
+            if (type === 'apiEndpoint') {
               setAction({
                 data: {
-                  linkedWebhook: action.data?.linkedWebhook || '',
+                  linkedApiEndpoint: action.data?.linkedApiEndpoint || '',
                   path: action.data?.path || '',
                   responseInstructions: action.data?.responseInstructions || '',
                   payloadData: action.data?.payloadData || JSON.parse('{}'),
+                },
+                type,
+              });
+            } else if (type === 'knowledgeBase') {
+              setAction({
+                data: {
+                  linkedKnowledgeBase: action.data?.linkedKnowledgeBase || '',
+                  responseInstructions: action.data?.responseInstructions || '',
                 },
                 type,
               });
@@ -812,24 +852,25 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
           name="action"
         >
           <Stack direction="row">
-            <FormControlLabel control={<Radio />} label="Webhook" value="webhook" />
+            <FormControlLabel control={<Radio />} label="Search through a Knowledge base" value="knowledgeBase" />
+            <FormControlLabel control={<Radio />} label="Call an API Endpoint" value="apiEndpoint" />
             {/* <FormControlLabel control={<Radio />} label="Transfer" value="transfer" /> */}
-            <FormControlLabel control={<Radio />} label="Hangup" value="hangup" />
+            <FormControlLabel control={<Radio />} label="Hangup the call" value="hangup" />
           </Stack>
         </RadioGroup>
-        {action.type === 'webhook' && (
+        {action.type === 'apiEndpoint' && (
           <Box display="grid" gridTemplateColumns="0.5fr 1fr" gap={4}>
-            <Typography alignSelf="center">Webhook</Typography>
+            <Typography alignSelf="center">API Endpoint</Typography>
             <Box>
               <Field.Select
-                error={Boolean(actionErrors.linkedWebhook)}
-                key={action.data?.linkedWebhook}
-                value={action.data?.linkedWebhook}
+                error={Boolean(actionErrors.linkedApiEndpoint)}
+                key={action.data?.linkedApiEndpoint}
+                value={action.data?.linkedApiEndpoint}
                 onChange={(e) => {
                   setAction((pre) => ({
-                    type: 'webhook',
+                    type: 'apiEndpoint',
                     data: {
-                      linkedWebhook: e.target.value,
+                      linkedApiEndpoint: e.target.value,
                       responseInstructions: pre.data!.responseInstructions,
                       path: pre.data!.path,
                       payloadData: pre.data!.payloadData,
@@ -837,27 +878,27 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
                   }));
                   setActionErrors((prev) => ({
                     ...prev,
-                    linkedWebhook: '',
+                    linkedApiEndpoint: '',
                   }));
                 }}
                 capitalize={false}
-                name="webhook"
-                placeholder="Select webhook"
+                name="apiEndpoint"
+                placeholder="Select apiEndpoint"
               >
-                {webhooks.map((webhook) => (
-                  <MenuItem key={webhook._id} value={webhook._id}>
-                    {webhook.webhookName}
+                {apiEndpoints.map((apiEndpoint) => (
+                  <MenuItem key={apiEndpoint._id} value={apiEndpoint._id}>
+                    {apiEndpoint.apiEndpointName}
                   </MenuItem>
                 ))}
               </Field.Select>
-              {actionErrors.linkedWebhook && (
+              {actionErrors.linkedApiEndpoint && (
                 <Typography variant="caption" color="error" mt={1}>
-                  {actionErrors.linkedWebhook}
+                  {actionErrors.linkedApiEndpoint}
                 </Typography>
               )}
             </Box>
 
-            <Typography alignSelf="center">Path</Typography>
+            <Typography alignSelf="center">Additional Path</Typography>
             <Box
               border="1px solid"
               borderColor={
@@ -899,9 +940,9 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
                 value={action.data?.path}
                 onChange={(e) => {
                   setAction((pre) => ({
-                    type: 'webhook',
+                    type: 'apiEndpoint',
                     data: {
-                      linkedWebhook: pre.data!.linkedWebhook,
+                      linkedApiEndpoint: pre.data!.linkedApiEndpoint,
                       responseInstructions: pre.data!.responseInstructions,
                       path: e.target.value,
                       payloadData: pre.data!.payloadData,
@@ -914,7 +955,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
             </Box>
 
             
-            <Typography alignSelf="center">Payload Data</Typography>
+            <Typography alignSelf="center">Request JSON Body</Typography>
             <Box>
               <Editor 
                   ref={jsonEditorRef}
@@ -923,9 +964,9 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
                     console.log('Updated JSON', updatedJson);
                     setPayloadJsonData(updatedJson);
                     setAction((pre) => ({
-                      type: 'webhook',
+                      type: 'apiEndpoint',
                       data: {
-                        linkedWebhook: pre.data!.linkedWebhook,
+                        linkedApiEndpoint: pre.data!.linkedApiEndpoint,
                         responseInstructions: pre.data!.responseInstructions,
                         path: pre.data!.path,
                         payloadData: updatedJson,
@@ -984,12 +1025,108 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
                 value={action.data?.responseInstructions}
                 onChange={(e) => {
                   setAction((pre) => ({
-                    type: 'webhook',
+                    type: 'apiEndpoint',
                     data: {
-                      linkedWebhook: pre.data!.linkedWebhook,
+                      linkedApiEndpoint: pre.data!.linkedApiEndpoint,
                       responseInstructions: e.target.value,
                       path: pre.data!.path,
                       payloadData: pre.data!.payloadData,
+                    },
+                  }));
+                }}
+                name="Response Instructions"
+                error={Boolean(actionErrors.responseInstructions)}
+              />
+            </Box>
+          </Box>
+        )}
+
+        {action.type === 'knowledgeBase' && (
+          <Box display="grid" gridTemplateColumns="0.5fr 1fr" gap={4}>
+            <Typography alignSelf="center">Knowledge Base</Typography>
+            <Box>
+              <Field.Select
+                error={Boolean(actionErrors.linkedKnowledgeBase)}
+                key={action.data?.linkedKnowledgeBase}
+                value={action.data?.linkedKnowledgeBase}
+                onChange={(e) => {
+                  setAction((pre) => ({
+                    type: 'knowledgeBase',
+                    data: {
+                      linkedKnowledgeBase: e.target.value,
+                      responseInstructions: pre.data!.responseInstructions
+                    },
+                  }));
+                  setActionErrors((prev) => ({
+                    ...prev,
+                    linkedKnowledgeBase: '',
+                  }));
+                }}
+                capitalize={false}
+                name="knowledgeBase"
+                placeholder="Select a knowledge base"
+              >
+                {kbs.map((kb) => (
+                  <MenuItem key={kb._id} value={kb._id}>
+                    {kb.knowledgeBaseName}
+                  </MenuItem>
+                ))}
+              </Field.Select>
+              {actionErrors.linkedKnowledgeBase && (
+                <Typography variant="caption" color="error" mt={1}>
+                  {actionErrors.linkedKnowledgeBase}
+                </Typography>
+              )}
+            </Box>
+
+            <Typography alignSelf="center">Response Instructions</Typography>
+            <Box
+              border="1px solid"
+              borderColor={
+                actionErrors.responseInstructions
+                  ? 'var(--palette-error-main)'
+                  : 'var(--palette-background-neutral)'
+              }
+              borderRadius="var(--shape-borderRadius)"
+              sx={{
+                ':hover': {
+                  borderColor: actionErrors.responseInstructions
+                    ? 'var(--palette-error-main)'
+                    : 'var(--palette-background-main)',
+                },
+                height: '125px', // Set height to accommodate more rows
+                overflowY: 'auto', // Optional: allows scrolling if content exceeds height
+              }}
+              position="relative"
+            >
+              <Box
+                sx={{
+                  position: 'absolute',
+                  height: '100%',
+                  width: '100%',
+                  borderRadius: 'var(--shape-borderRadius)',
+                  padding: '16.5px 14px',
+                }}
+              >
+                <Typography>
+                  {
+                    processResponseInstructionsToJSX(
+                      action.data?.responseInstructions || ''  
+                    ).props.children}
+                </Typography>
+              </Box>
+              <Field.Text
+                rows={4}
+                sx={{
+                  opacity: 0,
+                }}
+                value={action.data?.responseInstructions}
+                onChange={(e) => {
+                  setAction((pre) => ({
+                    type: 'knowledgeBase',
+                    data: {
+                      linkedKnowledgeBase: pre.data!.linkedKnowledgeBase,
+                      responseInstructions: e.target.value
                     },
                   }));
                 }}
@@ -1007,27 +1144,9 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
     <Box
       display="flex"
       alignItems="center"
-      justifyContent={currentFunction ? 'space-between' : 'end'}
+      justifyContent='end'
       flexWrap="wrap"
     >
-      {currentFunction && (
-        <Button
-          onClick={async () => {
-            if (isUsed) {
-              alertDialog.setValue(true);
-            } else {
-              // await deleteBot(currentFunction._id, () => {
-              //   router.push('/bots');
-              // });
-            }
-          }}
-          variant="contained"
-          size="large"
-          color="error"
-        >
-          Delete function
-        </Button>
-      )}
       <LoadingButton
         type="submit"
         variant="contained"
@@ -1035,7 +1154,7 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
         loading={isSubmitting}
         sx={{ ml: 2 }}
       >
-        {!currentFunction ? 'Create Function' : 'Update Function'}
+        {!currentZap ? 'Create Zap' : 'Update Zap'}
       </LoadingButton>
     </Box>
   );
@@ -1052,15 +1171,6 @@ export function FunctionsNewEditForm({ currentFunction, isUsed }: Props) {
               {renderCTA}
             </Stack>
           </Form>
-          <ConfirmDialog
-            title="Unable to delete bot"
-            content="This bot is currently being used in some campaign(s). Please remove it from the linked campaign(s) before deleting."
-            open={alertDialog.value}
-            action={<></>}
-            onClose={() => {
-              alertDialog.setValue(false);
-            }}
-          />
         </>
       ) : (
         <LoadingScreen />

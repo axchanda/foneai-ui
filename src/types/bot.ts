@@ -3,7 +3,7 @@ export type IBotType = {
   username: string;
   botName: string;
   botIntroduction: string;
-  botLanguage: 'en' | 'es';
+  botLanguage: 'en' | 'es' | 'ru';
   botEndpointing: number;
   botDaylightSavings: boolean;
   botIsInterruptable: boolean;
@@ -12,13 +12,26 @@ export type IBotType = {
   botKnowledgeBaseId: string;
   createdAt: string;
   updatedAt: string;
-  // botVoiceId: string;
   botVoice: {
-    voiceProvider: string;
+    ttsProvider: string;
     voiceId: string;
   };
-  botFunctions: {
-    functionId: string;
-    triggerLine: string;
+  botZaps: {
+    zapId: string;
+    trigger: string;
   }[];
+};
+
+export type IBotListType = {
+  _id: string;
+  username: string;
+  botName: string;
+  updatedAt: string;
+  botLanguage: 'en' | 'es' | 'ru';
+  botTimezone: string;
+  botIsInterruptable: boolean;
+  botVoice: {
+    ttsProvider: string;
+    voiceId: string;
+  };
 };

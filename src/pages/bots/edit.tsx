@@ -22,20 +22,11 @@ function BotEdit({ job }: Props) {
   const { id } = useParams();
   const [bot, setBot] = useState<IBotType | null>(null);
 
-  const [isUsedInCampaigns, setIsUsedInCampaigns] = useState(false);
 
   const getBot = useCallback(async () => {
-    const botPromise = API.get<IBotType>(`/bots/${id}`);
-    const usedPromise = API.get<{ count: number }>(`/bots/${id}/isUsedInCampaigns`);
-    const [
-      { data },
-      {
-        data: { count },
-      },
-    ] = await Promise.all([botPromise, usedPromise]);
-    setBot(data);
-    // console.log(count);
-    setIsUsedInCampaigns(count > 0);
+    const botPromise = API.get<any>(`/bots/${id}`);
+    const { data } = await botPromise;
+    setBot(data.bot);
     setLoading(false);
   }, [id]);
 
@@ -47,17 +38,12 @@ function BotEdit({ job }: Props) {
     <DashboardContent>
       <CustomBreadcrumbs
         heading="Edit bot"
-        // links={[
-        //   { name: 'Dashboard', href: paths.dashboard.root },
-        //   { name: 'Job', href: paths.dashboard.job.root },
-        //   { name: job?.title },
-        // ]}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
       {loading ? (
         <LoadingScreen />
       ) : (
-        <BotNewEditForm isUsed={isUsedInCampaigns} currentBot={bot!} />
+        <BotNewEditForm currentBot={bot!} />
       )}
     </DashboardContent>
   );

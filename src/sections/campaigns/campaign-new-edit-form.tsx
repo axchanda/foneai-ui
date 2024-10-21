@@ -12,7 +12,7 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { IBotType } from 'src/types/bot';
+import type { IBotListType } from 'src/types/bot';
 import API from 'src/utils/API';
 import type { ICampaignType } from 'src/types/campaign';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -22,10 +22,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
 export const NewUserSchema = zod.object({
-  campaignName: zod.string().min(1),
+  campaignName: zod.string().min(3, { message: 'Campaign Name must be at least 3 characters' }),
   campaignDescription: zod.string(),
-  // .min(8, { message: 'Description must be at least 8 characters' })
-  // .max(100, { message: 'Description must be at most 100 characters' }),
   linkedBot: zod.string(),
 });
 
@@ -44,9 +42,9 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
 
   const getBots = useCallback(async () => {
     const { data } = await API.get<{
-      bots: IBotType[];
+      bots: IBotListType[];
       count: number;
-    }>('/bots');
+    }>('/botsList');
     const botOptions = data.bots.map((bot) => ({ label: bot.botName, value: bot._id }));
     setBots(botOptions);
     setLoaded(true);
@@ -136,7 +134,6 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
                   autoHighlight
                   options={bots}
                   onChange={(event, newValue) => {
-                    // console.log('newValue', newValue);
                     setValue('linkedBot', newValue.value);
                   }}
                   value={bots.find((bot) => bot.value === values.linkedBot)?.label}
@@ -145,7 +142,7 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
 
               <Stack alignItems="flex-end" sx={{ mt: 3 }}>
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  {!currentCampaign ? 'Create campaign' : 'Save changes'}
+                  {!currentCampaign ? 'Create campaign' : 'Update campaign'}
                 </LoadingButton>
               </Stack>
             </Card>

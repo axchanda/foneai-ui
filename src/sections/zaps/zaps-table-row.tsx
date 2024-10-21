@@ -8,25 +8,29 @@ import {
   TableCell,
   TableRow,
 } from '@mui/material';
-import React from 'react';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
-import type { IWebhookItem } from 'src/types/webhook';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import type { IZapItem } from 'src/types/zap';
 
 type Props = {
-  row: IWebhookItem;
+  row: IZapItem;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
 };
 
-export function WebhookTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function ZapTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
+
+  const labelModifier = (label: string) => {
+    // break the word when it encounters a capital letter, and add a space before it, then convert it to uppercase
+    return label.replace(/([A-Z])/g, ' $1').toUpperCase();
+  }
 
   return (
     <>
@@ -40,23 +44,17 @@ export function WebhookTableRow({ row, selected, onEditRow, onSelectRow, onDelet
         <TableCell padding="checkbox">
           <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
         </TableCell>
-        <TableCell>{row.webhookName}</TableCell>
-        <TableCell>{row.webhookDescription}</TableCell>
+        <TableCell>{row.zapName}</TableCell>
+        <TableCell>{row.zapDescription}</TableCell>
         <TableCell>
           <Chip
             sx={{
               backgroundColor: 'primary.light',
             }}
             size="small"
-            label={row.webhookMethod}
+            label={labelModifier(row.zapAction.type)}
           />
-          {/* {row.webhookMethod} */}
         </TableCell>
-        <TableCell>{row.webhookURI}</TableCell>
-        {/* <TableCell>{row.timeout}</TableCell>
-        <TableCell>
-          <Label color="primary">{row.restMethod}</Label>
-        </TableCell> */}
         <TableCell align="right">
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
@@ -95,8 +93,8 @@ export function WebhookTableRow({ row, selected, onEditRow, onSelectRow, onDelet
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete webhook"
-        content={`Are you sure want to delete the webhook: ${row.webhookName}?`}
+        title="Delete zap"
+        content={`Are you sure want to delete the zap: ${row.zapName}?`}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete

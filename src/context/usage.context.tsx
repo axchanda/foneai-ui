@@ -57,17 +57,24 @@ export const UsageContextProvider: React.FC<PropsWithChildren> = ({ children }) 
       used: number;
     }>('/credits');
 
-    const [
-      {
-        data: { costPerChannel, costPerMinute },
-      },
-      {
-        data: { channels, minutes },
-      },
-      {
-        data: { available, used },
-      },
-    ] = await Promise.all([planPromise, usagePromise, creditsPromise]);
+    // const [
+    //   {
+    //     data: { costPerChannel, costPerMinute },
+    //   },
+    //   {
+    //     data: { channels, minutes },
+    //   },
+    //   {
+    //     data: { available, used },
+    //   },
+    // ] = await Promise.all([planPromise, usagePromise, creditsPromise]);
+    // const plan = await planPromise;
+    let costPerMinute = 0.05,
+        costPerChannel = 5,
+        channels = 3,
+        minutes = 10000,
+        available = 5000,
+        used = 5000;
 
     setState({
       costPerMinute,

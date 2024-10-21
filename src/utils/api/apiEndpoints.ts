@@ -1,9 +1,10 @@
 import { toast } from 'sonner';
 import API from '../API';
 
-export const deleteFunction = async (id: string, cb?: () => any) => {
+export const deleteApiEndpoint = async (id: string, cb?: () => any) => {
   try {
-    await API.delete(`/functions/${id}`);
+    // console.log(id);
+    await API.delete(`/apiEndpoints/${id}`);
     toast.success('Delete success!');
     if (cb) {
       cb();
