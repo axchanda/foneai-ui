@@ -47,14 +47,14 @@ export function JwtSignInView() {
 
   const password = useBoolean();
 
-  const defaultValues = {
-    username: 'USER1',
-    password: 'Password@123',
-  };
+  // const defaultValues = {
+  //   username: 'USER1',
+  //   password: 'Password@123',
+  // };
 
   const methods = useForm<SignInSchemaType>({
     resolver: zodResolver(SignInSchema),
-    defaultValues,
+    // defaultValues,
   });
 
   const {
@@ -110,7 +110,6 @@ export function JwtSignInView() {
         <Field.Text
           name="password"
           label="Password"
-          placeholder="6+ characters"
           type={password.value ? 'text' : 'password'}
           InputLabelProps={{ shrink: true }}
           InputProps={{
@@ -143,11 +142,11 @@ export function JwtSignInView() {
     <>
       {renderHead}
 
-      <Alert severity="info" sx={{ mb: 3 }}>
+      {/* <Alert severity="info" sx={{ mb: 3 }}>
         Use <strong>{defaultValues.username}</strong>
         {' with password '}
         <strong>{defaultValues.password}</strong>
-      </Alert>
+      </Alert> */}
 
       {!!errorMsg && (
         <Alert severity="error" sx={{ mb: 3 }}>

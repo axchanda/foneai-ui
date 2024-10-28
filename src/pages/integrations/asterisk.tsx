@@ -1,3 +1,4 @@
+import { LoadingButton } from '@mui/lab';
 import {
   Accordion,
   AccordionDetails,
@@ -18,15 +19,19 @@ import {
   Divider,
   Tooltip,
 } from '@mui/material';
-import React from 'react';
+import { use } from 'i18next';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import useClipboard from 'react-use-clipboard';
+import { toast } from 'sonner';
 import { _mock } from 'src/_mock';
 import { Iconify } from 'src/components/iconify';
 import { CONFIG } from 'src/config-global';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { SetupTable } from 'src/sections/setup/table';
+import { ApiKeyTable } from 'src/sections/integrations/table';
+import { IApiKeyItem } from 'src/types/apiKey';
+import API from 'src/utils/API';
 
 const faqs = [
   {
@@ -51,8 +56,29 @@ const faqs = [
   },
 ];
 
-const SetupPage: React.FC = () => {
+const AsteriskIntegrationPage: React.FC = () => {
   const openApiKeyDialog = useBoolean();
+  const [apiKeys, setApiKeys] = React.useState<IApiKeyItem[]>([]);
+  const [comment, setComment] = React.useState('');
+  const loaded = useBoolean();
+
+  useEffect(() => {
+    const fetchApiKeys = async () => {
+      const { data } = await API.get('/apiKeys');
+      console.log(data);
+      setApiKeys(data);
+      loaded.onTrue();
+    }
+    fetchApiKeys();
+  }, []);
+
+  useEffect(() => {
+    if (comment) {
+      openApiKeyDialog.onTrue();
+    }
+  }, [comment]);
+  
+
   return (
     <>
       <Helmet>
@@ -98,38 +124,103 @@ const SetupPage: React.FC = () => {
             ))}
           </Grid>
         </Grid>
-        <Box mt={12} mb={2} display="flex" justifyContent="space-between">
-          <Typography variant="h5">Api Keys</Typography>
-          <Button onClick={openApiKeyDialog.onTrue} variant="contained" color="primary">
-            Create new key
-          </Button>
-        </Box>
-        <SetupTable />
+        { loaded.value && (
+          <>
+          <Box mt={12} mb={2} display="flex" justifyContent="space-between">
+            <Typography variant="h5">API Key</Typography>
+              { apiKeys.length == 0 && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={openApiKeyDialog.onTrue}
+                  startIcon={<Iconify icon="bx:bx-plus" />}
+                >
+                  Create new API key
+                </Button>
+              ) }
+          </Box>
+          <ApiKeyTable 
+            apiKeys={apiKeys}
+            setComment={setComment}
+          />
+          </> )}
       </DashboardContent>
-      <CreateApiKeyDialog open={openApiKeyDialog.value} onClose={openApiKeyDialog.onFalse} />
+      <CreateApiKeyDialog open={openApiKeyDialog.value} onClose={openApiKeyDialog.onFalse} comment={comment} />
     </>
   );
 };
 
-const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+const CreateApiKeyDialog = ({ open, onClose, comment }: { open: boolean; onClose: () => void, comment: string }) => {
   const openConfirmationDialog = useBoolean();
-  const [apiKeyName, setApiKeyName] = React.useState('');
-  const [expiration, setExpiration] = React.useState('never');
+  const creating = useBoolean();
+  const [apiKeyComment, setApiKeyComment] = React.useState(comment);
+  const [createdApiKey, setCreatedApiKey] = React.useState('');
+
+  const createNewApiKey = async (comment: string) => {
+    const createNewApiKeyPromise = API.post('/apiKeys/create', {
+      comment
+    });    
+    try {
+      const { data } = await createNewApiKeyPromise;
+      if (!data) {
+        toast.error('Failed to create API key');
+        creating.onFalse();
+        return;
+      }
+      setCreatedApiKey(data.apiKey);
+    } catch (error) {
+      toast.error('Failed to create API key');
+      creating.onFalse();
+    }
+  }
+
+  const rotateApiKey = async (comment: string) => {
+    const rotateApiKeyPromise = API.post('/apiKeys/rotate', {
+      comment
+    });
+    try {
+      const { data } = await rotateApiKeyPromise;
+      if (!data) {
+        toast.error('Failed to rotate API key');
+        creating.onFalse();
+        return;
+      }
+      setCreatedApiKey(data.apiKey);
+    } catch (error) {
+      toast.error('Failed to rotate API key');
+      creating.onFalse();
+    }
+  }
+
+  useEffect(() => {
+    console.log(createdApiKey);
+    if (createdApiKey.trim()) {
+      creating.onFalse();
+      // show create success toast when API key is created & rotate success toast when API key is rotated
+      if(comment) {
+        toast.success('API key rotated successfully');
+      } else {
+        toast.success('API key created successfully');
+      }
+      onClose();
+      openConfirmationDialog.onTrue();
+    }
+  }, [createdApiKey]);
 
   const handleClose = (event: {}, reason: string) => {
     if (reason !== 'backdropClick') {
       onClose();
     }
   };
+
   return (
     <>
       <Dialog fullWidth maxWidth="xs" open={open} onClose={handleClose}>
-        <DialogTitle sx={{ pb: 2 }}>Create New API Key</DialogTitle>
+        <DialogTitle sx={{ pb: 2 }}>
+          { comment ? "Rotate API Key" : "Create New API Key" }
+        </DialogTitle>
         <DialogContent sx={{ typography: 'body2' }}>
-          <Typography fontWeight="600">Enter name</Typography>
-          <Typography variant="subtitle2" mt={2} mb={1} color="#919EAB">
-            Friendly name (comment)
-          </Typography>
+          <Typography fontWeight="600">Enter comment</Typography>
           <TextField
             fullWidth
             inputProps={{
@@ -137,8 +228,8 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
             }}
             name="comment"
             placeholder="e.g. My API key"
-            value={apiKeyName}
-            onChange={(e) => setApiKeyName(e.target.value)}
+            value={apiKeyComment}
+            onChange={(e) => setApiKeyComment(e.target.value)}
           />
           {/* <Divider sx={{ margin: '15px 0' }} /> */}
           {/* <li>
@@ -164,51 +255,59 @@ const CreateApiKeyDialog = ({ open, onClose }: { open: boolean; onClose: () => v
           <Button variant="outlined" color="error" onClick={onClose}>
             Cancel
           </Button>
-          <Button
+          <LoadingButton
+            loading={creating.value}
             variant="contained"
             color="primary"
-            onClick={() => {
-              onClose();
-              openConfirmationDialog.onTrue();
+            onClick={async () => {
+              creating.onTrue();
+              if(comment) {
+                rotateApiKey(apiKeyComment);
+                return;
+              } else {
+                createNewApiKey(apiKeyComment);
+                return;
+              }
             }}
-            disabled={!apiKeyName}
+            disabled={!apiKeyComment}
           >
-            Create key
-          </Button>
+            { comment ? "Rotate" : "Create" }
+          </LoadingButton>
         </DialogActions>
       </Dialog>
-      <SetupConfirmationDialog
+      <ApiKeyConfirmationDialog
+        createdApiKey={createdApiKey}
         open={openConfirmationDialog.value}
         onClose={() => {
-          setApiKeyName('');
+          setApiKeyComment('');
           openConfirmationDialog.onFalse();
         }}
         onConfirm={() => {
           openConfirmationDialog.onFalse();
-          setApiKeyName('');
+          setApiKeyComment('');
           onClose();
+          window.location.reload();
         }}
-        apiKeyName={apiKeyName}
-        expiration={expiration}
+        apiKeyComment={apiKeyComment}
       />
     </>
   );
 };
 
-const SetupConfirmationDialog = ({
+const ApiKeyConfirmationDialog = ({
   open,
   onClose,
   onConfirm,
-  apiKeyName,
-  expiration,
+  apiKeyComment,
+  createdApiKey,
 }: {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  apiKeyName: string;
-  expiration: string;
+  apiKeyComment: string;
+  createdApiKey: string;
 }) => {
-  const [isCopied, setCopied] = useClipboard(_mock.id(4), {
+  const [isCopied, setCopied] = useClipboard(createdApiKey, {
     successDuration: 3000,
   });
   const [agreed, setAgreed] = React.useState(false);
@@ -229,7 +328,7 @@ const SetupConfirmationDialog = ({
               Friendly name:
             </Typography>
             <Typography variant="subtitle2" mb={1}>
-              {apiKeyName}
+              {apiKeyComment}
             </Typography>
           </>
           {/* <Divider sx={{ margin: '15px 0' }} /> */}
@@ -238,7 +337,9 @@ const SetupConfirmationDialog = ({
               Secret:
             </Typography>
             <Box px={2} py={4} borderRadius="8px" position="relative" bgcolor="black" color="white">
-              <Typography>{_mock.id(4)}</Typography>
+              <Typography>
+                { createdApiKey }
+              </Typography>
               <IconButton
                 sx={{
                   position: 'absolute',
@@ -313,4 +414,4 @@ const SetupConfirmationDialog = ({
   );
 };
 
-export default SetupPage;
+export default AsteriskIntegrationPage;

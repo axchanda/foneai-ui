@@ -27,8 +27,12 @@ export const UpdateUserSchema = zod.object({
     .string()
     .min(1, { message: 'Email is required!' })
     .email({ message: 'Email must be a valid email address!' }),
-  photoURL: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
-  phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
+  // photoURL: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
+  phoneNumber: zod.string()
+    .optional()
+    .refine((value) => !value || isValidPhoneNumber(value), {
+      message: 'Phone number is not valid!',
+    }),
   country: schemaHelper.objectOrNull({ message: { required_error: 'Country is required!' } }),
   address: zod.string().min(1, { message: 'Address is required!' }),
   state: zod.string().min(1, { message: 'State is required!' }),
@@ -43,7 +47,7 @@ export function AccountGeneral() {
   const { user } = useAuth();
 
   const defaultValues = {
-    displayName: user?.firstName || '',
+    displayName: user?.firstName + ' ' + user?.lastName || '',
     email: user?.email || '',
     photoURL: user?.avatar || null,
     phoneNumber: '',

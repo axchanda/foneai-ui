@@ -1,5 +1,7 @@
+import path from 'path';
 import { Iconify } from 'src/components/iconify';
-
+import { FsIcon } from 'src/assets/icons';
+import { freemem } from 'os';
 // ----------------------------------------------------------------------
 
 const icon = (name: string) => (
@@ -8,16 +10,17 @@ const icon = (name: string) => (
 
 const ICONS = {
   asterisk: icon('simple-icons:asterisk'),
+  freeswitch: <Iconify width={16} icon="custom-freeswitch" color="primary" sx={{ flexShrink: 0 }} />,
   dashboard: icon('ic-dashboard'),
   bots: icon('file-icons:robots'),
   users: icon('heroicons:users-solid'),
   campaigns: icon('ic:round-campaign'),
   invoices: icon('hugeicons:invoice'),
+  integrations: icon('stash:integrations'),
   account: icon('material-symbols:account-circle'),
   knowledgeBase: icon('simple-icons:docsdotrs'),
   apiManager: icon('material-symbols:api'),
   zaps: icon('token:zap'),
-  setup: icon('mdi:spanner'),
   blank: icon('ic-blank'),
   kanban: icon('ic-kanban'),
   folder: icon('ic-folder'),
@@ -34,6 +37,8 @@ const ICONS = {
   analytics: icon('ic-analytics'),
   parameter: icon('ic-parameter'),
   billing: icon('entypo:credit'),
+  sip: icon('ic:round-sip'),
+  did: icon('lsicon:number-filled')
 };
 
 // ----------------------------------------------------------------------
@@ -78,22 +83,33 @@ export const navData = [
         path: '/zaps',
         icon: ICONS.zaps,
       },
-    ],
-  },
-  {
-    subheader: 'Integrations',
-    items: [
       {
-        title: 'Asterisk',
-        path: '/integrations-asterisk',
-        icon: ICONS.asterisk,
-      },
-      // {
-      //   title: 'Billing',
-      //   path: '/billing',
-      //   icon: ICONS.billing,
-      //   permission: 'billing.view',
-      // },
+        title: 'Integrations',
+        path: '/integrations',
+        icon: ICONS.integrations,
+        children: [
+          { 
+            title: 'Asterisk',
+            path: '/integrations/asterisk',
+            icon: ICONS.asterisk,
+          },
+          // {
+          //   title: 'FreeSWITCH',
+          //   path: '/integrations/freeswitch',
+          //   icon: ICONS.freeswitch,
+          // },
+          { 
+            title: 'SIP URI',
+            path: '/integrations/sip-uri',
+            icon: ICONS.sip
+          },
+          { 
+            title: 'DID Forwarding',
+            path: '/integrations/did-forwarding',
+            icon: ICONS.did
+          },
+        ],
+      }
     ],
-  },
+  }
 ];

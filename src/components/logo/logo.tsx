@@ -100,7 +100,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
           }}
           {...other}
         >
-          {user?.username !== 'JANTHONY' ? <img src='/logo512.png' alt='fone-ai' /> : <img src='/APBwhite.svg' alt='aiphonebot' />}
+          {user?.username !== 'janthony' ? <img src='/logo512.png' alt='fone-ai' /> : <img src='/APBwhite.svg' alt='aiphonebot' />}
         </Box>
       </NoSsr>
     );

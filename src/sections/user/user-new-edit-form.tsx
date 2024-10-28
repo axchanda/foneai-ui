@@ -39,13 +39,17 @@ const statusLabel: Record<string, string> = {
 export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 
 export const NewUserSchema = zod.object({
-  avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
+  // avatarUrl: schemaHelper.file({ message: { required_error: 'Avatar is required!' } }),
   name: zod.string().min(1, { message: 'Name is required!' }),
   email: zod
     .string()
     .min(1, { message: 'Email is required!' })
     .email({ message: 'Email must be a valid email address!' }),
-  phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
+  phoneNumber: zod.string()
+    .optional()
+    .refine((value) => !value || isValidPhoneNumber(value), {
+      message: 'Phone number is not valid!',
+    }),
   country: schemaHelper.objectOrNull<string | null>({
     message: { required_error: 'Country is required!' },
   }),
@@ -120,9 +124,10 @@ export function UserNewEditForm({ currentUser }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      console.info('DATA', data);
       const method = currentUser ? API.put : API.post;
       const endpoint = currentUser
-        ? `/users/asteriskUser/${currentUser._id}`
+        ? `/users/update/${currentUser._id}`
         : '/users/createAsteriskUser';
       const { data: response } = await method(endpoint, data);
       reset();

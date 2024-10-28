@@ -11,7 +11,7 @@ import { dashboardRoutes } from './dashboard';
 import { userRoutes } from './user';
 import { campaignsRoutes } from './campaigns';
 import { mainRoutes } from './main';
-import { setupRoutes } from './asterisk-setup';
+import { integrationsRoutes } from './integrations';
 import { apiEndpointsRoutes } from './api-endpoints';
 import { knowledgeBasesRoutes } from './knowledge-base';
 import { zapsRoutes } from './zaps';
@@ -53,7 +53,7 @@ export function Router() {
 
     ...mainRoutes,
 
-    ...setupRoutes,
+    ...integrationsRoutes,
 
     ...apiEndpointsRoutes,
 

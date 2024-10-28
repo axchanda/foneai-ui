@@ -33,7 +33,7 @@ export function ComingSoonView() {
 
       <ComingSoonIllustration sx={{ my: { xs: 5, sm: 10 } }} />
 
-      <Stack
+      {/* <Stack
         direction="row"
         justifyContent="center"
         divider={<Box sx={{ mx: { xs: 1, sm: 2.5 } }}>:</Box>}
@@ -80,7 +80,7 @@ export function ComingSoonView() {
             <SocialIcon icon={social.name} />
           </IconButton>
         ))}
-      </Stack>
+      </Stack> */}
     </Container>
   );
 }

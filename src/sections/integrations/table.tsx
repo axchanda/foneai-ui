@@ -1,5 +1,5 @@
 import { Card, Table, TableBody } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Scrollbar } from 'src/components/scrollbar';
 import {
   emptyRows,
@@ -8,9 +8,8 @@ import {
   TableNoData,
   useTable,
 } from 'src/components/table';
-import type { ISetupItem } from 'src/types/setup';
-import { _mock } from 'src/_mock';
-import { SetupTableRow } from './table-row';
+import type { IApiKeyItem } from 'src/types/apiKey';
+import { ApiKeyTableRow } from './table-row';
 
 const TABLE_HEAD = [
   { id: 'comment', label: 'Comment', width: 100 },
@@ -21,48 +20,22 @@ const TABLE_HEAD = [
     width: 110,
     align: 'center',
   },
-  // {
-  //   id: 'updatedAt',
-  //   label: 'Updated At',
-  //   width: 110,
-  //   align: 'center',
-  // },
-  // {
-  //   id: 'expiresOn',
-  //   label: 'Expires On',
-  //   width: 110,
-  //   align: 'center',
-  // },
+  {
+    id: 'updateAt',
+    label: 'Updated At',
+    width: 110,
+    align: 'center',
+  },
   { id: 'status', label: 'Status', width: 110 },
   { id: '', width: 50 },
 ];
+export const ApiKeyTable = ({ apiKeys = [], setComment }: { apiKeys: IApiKeyItem[]; setComment: (comment: string) => void }) => {
+  const table = useTable(); // Assuming this hook manages table-related state like sorting, pagination
+  const [data, setData] = useState<IApiKeyItem[]>(apiKeys);
 
-export const SetupTable = () => {
-  const table = useTable();
-  const [data, setData] = useState<ISetupItem[]>([
-    {
-      id: _mock.id(0),
-      comment: 'my_api_key',
-      secret: new Array(48).fill('*').join(''),
-      createdAt: _mock.time(2),
-      // updatedAt: _mock.time(1),
-      // expiresOn: _mock.time(0),
-      status: 'active',
-    },
-    // {
-    //   id: _mock.id(1),
-    //   comment: 'lorem ipsum',
-    //   secret: new Array(24).fill('*').join(''),
-    //   createdAt: _mock.time(4),
-    //   updatedAt: _mock.time(5),
-    //   expiresOn: _mock.time(6),
-    //   status: 'expired',
-    // },
-  ]);
-
-  const handleDeleteRow = (id: string) => {};
-
-  const handleEditRow = () => {};
+  useEffect(() => {
+    setData(apiKeys); // Ensure table data updates when apiKeys change
+  }, [apiKeys]);
 
   return (
     <Card>
@@ -84,22 +57,20 @@ export const SetupTable = () => {
                 table.page * table.rowsPerPage + table.rowsPerPage
               )
               .map((row) => (
-                <SetupTableRow
-                  key={row.id}
+                <ApiKeyTableRow
                   row={row}
-                  selected={table.selected.includes(row.id)}
-                  onSelectRow={() => table.onSelectRow(row.id)}
-                  onDeleteRow={() => handleDeleteRow(row.id)}
-                  // onViewRow={() => handleViewRow(row.id)}
+                  onRotateRow={() => setComment(row.comment)} // Assuming this function sets the comment for the key
                 />
               ))}
 
+            {/* Handle empty rows when pagination does not fill the entire page */}
             <TableEmptyRows
               height={table.dense ? 56 : 56 + 20}
               emptyRows={emptyRows(table.page, table.rowsPerPage, data.length)}
             />
 
-            <TableNoData notFound={false} />
+            {/* Handle case when no data is found */}
+            <TableNoData notFound={data.length === 0} />
           </TableBody>
         </Table>
       </Scrollbar>

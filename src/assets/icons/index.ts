@@ -11,3 +11,5 @@ export { default as PlanStarterIcon } from './plan-starter-icon';
 export { default as PlanPremiumIcon } from './plan-premium-icon';
 
 export { default as NewPasswordIcon } from './new-password-icon';
+
+export { FsIcon } from './FsIcon';
