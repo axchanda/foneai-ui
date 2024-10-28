@@ -41,6 +41,7 @@ import type { IApiEndpointItem } from 'src/types/apiEndpoint';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
 import { IKnowledgeBaseItem } from 'src/types/knowledge-base';
+import { I } from '@fullcalendar/core/internal-common';
 
 // ----------------------------------------------------------------------
 
@@ -98,7 +99,13 @@ export function ZapsNewEditForm({ currentZap }: Props) {
     }
   );
 
-  const [payloadJsonData, setPayloadJsonData] = useState<any>(action.data?.payloadData || JSON.parse('{}'));
+  const [payloadJsonData, setPayloadJsonData] = useState<any>(() => {
+    if (action.type === 'apiEndpoint') {
+      return action.data.payloadData || JSON.parse('{}');
+    }
+    return JSON.parse('{}');
+  });
+  
   const jsonEditorRef = useRef<any>(null);
 
   const [actionErrors, setActionErrors] = useState<Record<string, string>>({});
@@ -222,7 +229,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
       const match = regex.exec(textContent);
       if (match) {
         const variableName = match[1];
-        const isValidVariable = parameters.some(param => param.parameterName === variableName);
+        const isValidVariable = parameters?.some(param => param.parameterName === variableName);
 
         if (isValidVariable) {
           el.style.backgroundColor = 'black';
@@ -285,7 +292,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
 
           <Divider />
           <Box p={4}>
-            {Boolean(parameters.length) || shouldShowParameterForm.value ? (
+          {(parameters && parameters.length > 0) || shouldShowParameterForm.value ? (
               <Card>
                 <Scrollbar>
                   <Table>
@@ -412,7 +419,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
 
                                   if (!isError) {
                                     // console.log({ parameter });
-                                    setParameters((prev) => [...prev, parameter]);
+                                    setParameters((prev) => [...(prev ?? []), parameter]);
                                     setParameter({
                                       parameterDescription: '',
                                       parameterIsRequired: false,
@@ -461,47 +468,46 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                           </TableCell>
                         </TableRow>
                       )}
-                      {parameters.map((param, index) => {
-                        // console.log(param);
+                      {(parameters || []).map((param, index) => {
                         return (
                           <ParameterTableRow
                             param={param}
                             key={index}
                             changeIsRequired={(val) => {
                               setParameters((prev) => {
-                                const newParams = [...prev];
+                                const newParams = [...(prev ?? [])];
                                 newParams[index].parameterIsRequired = val;
                                 return newParams;
                               });
                             }}
                             changeName={(val) => {
                               setParameters((prev) => {
-                                const newParams = [...prev];
+                                const newParams = [...(prev ?? [])];
                                 newParams[index].parameterName = val;
                                 return newParams;
                               });
                             }}
                             changeType={(val) => {
                               setParameters((prev) => {
-                                const newParams = [...prev];
+                                const newParams = [...(prev ?? [])];
                                 newParams[index].parameterType = val;
                                 return newParams;
                               });
                             }}
                             changeDescription={(val) => {
                               setParameters((prev) => {
-                                const newParams = [...prev];
+                                const newParams = [...(prev ?? [])];
                                 newParams[index].parameterDescription = val;
                                 return newParams;
                               });
                             }}
                             removeParameter={() => {
-                              setParameters((prev) => prev.filter((_, i) => i !== index));
+                              setParameters((prev) => (prev ?? []).filter((_, i) => i !== index));
                             }}
                             updateParameter={(params: IZapParameterItem) => {
                               // console.log(params);
                               setParameters((prev) => {
-                                const newParams = [...prev];
+                                const newParams = [...(prev ?? [])];
                                 newParams[index] = params;
                                 return newParams;
                               });
@@ -742,7 +748,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
       );
   };
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async (data: any) => {
     console.log('Form action data', action.data);
 
 
@@ -827,18 +833,18 @@ export function ZapsNewEditForm({ currentZap }: Props) {
             if (type === 'apiEndpoint') {
               setAction({
                 data: {
-                  linkedApiEndpoint: action.data?.linkedApiEndpoint || '',
-                  path: action.data?.path || '',
-                  responseInstructions: action.data?.responseInstructions || '',
-                  payloadData: action.data?.payloadData || JSON.parse('{}'),
+                  linkedApiEndpoint: action.data && action.type === 'apiEndpoint' ? action.data.linkedApiEndpoint : '',
+                  path: action.data && action.type === 'apiEndpoint' ? action.data.path : '',
+                  responseInstructions: action.data && action.type === 'apiEndpoint' ? action.data.responseInstructions : '',
+                  payloadData: action.data && action.type === 'apiEndpoint' ? action.data.payloadData : JSON.parse('{}'),
                 },
                 type,
               });
             } else if (type === 'knowledgeBase') {
               setAction({
                 data: {
-                  linkedKnowledgeBase: action.data?.linkedKnowledgeBase || '',
-                  responseInstructions: action.data?.responseInstructions || '',
+                  linkedKnowledgeBase: action.data && action.type === 'knowledgeBase' ? action.data.linkedKnowledgeBase : '',
+                  responseInstructions: action.data && action.type === 'knowledgeBase' ? action.data.responseInstructions : '',
                 },
                 type,
               });
@@ -871,9 +877,9 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                     type: 'apiEndpoint',
                     data: {
                       linkedApiEndpoint: e.target.value,
-                      responseInstructions: pre.data!.responseInstructions,
-                      path: pre.data!.path,
-                      payloadData: pre.data!.payloadData,
+                      responseInstructions: pre.data && pre.type === 'apiEndpoint' ? pre.data.responseInstructions : '',
+                      path: pre.data && pre.type === 'apiEndpoint' ? pre.data.path : '',
+                      payloadData: pre.data && pre.type === 'apiEndpoint' ? pre.data.payloadData : JSON.parse('{}'),
                     },
                   }));
                   setActionErrors((prev) => ({
@@ -929,7 +935,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   {
                     processInputToJSX(
                       action.data?.path || '', 
-                      parameters.map((param) => param.parameterName)  
+                      parameters ? parameters.map((param) => param.parameterName) : []
                     ).props.children}
                 </Typography>
               </Box>
@@ -942,10 +948,10 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   setAction((pre) => ({
                     type: 'apiEndpoint',
                     data: {
-                      linkedApiEndpoint: pre.data!.linkedApiEndpoint,
-                      responseInstructions: pre.data!.responseInstructions,
+                      linkedApiEndpoint: pre.data && pre.type === 'apiEndpoint' ? pre.data.linkedApiEndpoint : '',
+                      responseInstructions: pre.data && pre.type === 'apiEndpoint' ? pre.data.responseInstructions : '',
                       path: e.target.value,
-                      payloadData: pre.data!.payloadData,
+                      payloadData: pre.data && pre.type === 'apiEndpoint' ? pre.data.payloadData : JSON.parse('{}')
                     },
                   }));
                 }}
@@ -966,12 +972,13 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                     setAction((pre) => ({
                       type: 'apiEndpoint',
                       data: {
-                        linkedApiEndpoint: pre.data!.linkedApiEndpoint,
-                        responseInstructions: pre.data!.responseInstructions,
-                        path: pre.data!.path,
+                        linkedApiEndpoint: pre.data && pre.type === 'apiEndpoint' ? pre.data.linkedApiEndpoint : '',
+                        responseInstructions: pre.data && pre.type === 'apiEndpoint' ? pre.data.responseInstructions : '',
+                        path: pre.data && pre.type === 'apiEndpoint' ? pre.data.path || '' : '', // Ensure this is a string
                         payloadData: updatedJson,
-                      }
+                      },
                     }));
+                    
                   }}
               />
               {actionErrors.payloadData && (
@@ -1027,12 +1034,12 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   setAction((pre) => ({
                     type: 'apiEndpoint',
                     data: {
-                      linkedApiEndpoint: pre.data!.linkedApiEndpoint,
+                      linkedApiEndpoint: pre.data && pre.type === 'apiEndpoint' ? pre.data.linkedApiEndpoint : '',
                       responseInstructions: e.target.value,
-                      path: pre.data!.path,
-                      payloadData: pre.data!.payloadData,
+                      path: pre.data && pre.type === 'apiEndpoint' ? pre.data.path || '' : '', // Ensure this is a string
+                      payloadData: pre.data && pre.type === 'apiEndpoint' ? pre.data.payloadData : JSON.parse('{}'),
                     },
-                  }));
+                  }));                  
                 }}
                 name="Response Instructions"
                 error={Boolean(actionErrors.responseInstructions)}
@@ -1054,7 +1061,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                     type: 'knowledgeBase',
                     data: {
                       linkedKnowledgeBase: e.target.value,
-                      responseInstructions: pre.data!.responseInstructions
+                      responseInstructions: pre.data && pre.type === 'knowledgeBase' ? pre.data.responseInstructions : '',
                     },
                   }));
                   setActionErrors((prev) => ({
@@ -1125,7 +1132,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   setAction((pre) => ({
                     type: 'knowledgeBase',
                     data: {
-                      linkedKnowledgeBase: pre.data!.linkedKnowledgeBase,
+                      linkedKnowledgeBase: pre.data && pre.type === 'knowledgeBase' ? pre.data.linkedKnowledgeBase : '',
                       responseInstructions: e.target.value
                     },
                   }));
