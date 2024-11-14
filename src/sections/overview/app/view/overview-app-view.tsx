@@ -14,7 +14,7 @@ import { AppWidgetSummary } from '../app-widget-summary';
 export function OverviewAppView() {
   const { channels, costPerMinute, credits, loading } = useUsage();
 
-  const totalAvailableMinutes = Math.floor(credits.available * costPerMinute);
+  const availableCredits = Math.floor(credits.available);
 
   const theme = useTheme();
 
@@ -43,19 +43,21 @@ export function OverviewAppView() {
 
           <Grid xs={12} md={4}>
             <AppWidgetSummary
-              title="Total available minutes"
+              title="Available credits"
               percent={2.6}
-              total={totalAvailableMinutes}
+              total={availableCredits}
               chart={{
                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
                 series: [15, 18, 12, 51, 68, 11, 39, 37],
               }}
+              rightIcon='material-symbols:add-shopping-cart-rounded'
+              rightIconTooltip='Buy more credits'
             />
           </Grid>
 
           <Grid xs={12} md={4}>
             <AppWidgetSummary
-              title="Total Channels"
+              title="Concurrent Channels"
               percent={0.2}
               total={channels}
               chart={{
@@ -63,12 +65,14 @@ export function OverviewAppView() {
                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
                 series: [20, 41, 63, 33, 28, 35, 50, 46],
               }}
+              rightIcon='streamline:graph-arrow-increase'
+              rightIconTooltip='Increase channels'
             />
           </Grid>
 
           <Grid xs={12} md={4}>
             <AppWidgetSummary
-              title="Total users"
+              title="All users"
               percent={-0.1}
               total={12}
               chart={{
@@ -76,6 +80,8 @@ export function OverviewAppView() {
                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
                 series: [18, 19, 31, 8, 16, 37, 12, 33],
               }}
+              rightIcon='mdi:user-add'
+              rightIconTooltip='Add new user'
             />
           </Grid>
 

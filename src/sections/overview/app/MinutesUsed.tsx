@@ -86,7 +86,7 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
             onChange={handleChangeSeries}
           />
         }
-        title="Usage Meter"
+        title="Credits Meter"
         subheader=""
         sx={{ mb: 5 }}
       />

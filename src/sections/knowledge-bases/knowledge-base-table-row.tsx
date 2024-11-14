@@ -12,6 +12,7 @@ import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import type { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { Label } from 'src/components/label';
 
 type Props = {
   row: IKnowledgeBaseItem;
@@ -32,6 +33,18 @@ export function KnowledgeBaseTableRow({
 
   const popover = usePopover();
 
+  function getLabelColor(status: string) {
+    switch (status) {
+      case 'active':
+        return 'success';
+      case 'pending':
+        return 'warning';
+      case 'error':
+        return 'error';
+      default:
+        return 'default';
+    }
+  }
   return (
     <>
       <TableRow
@@ -46,6 +59,11 @@ export function KnowledgeBaseTableRow({
         </TableCell>
         <TableCell>{row.knowledgeBaseName}</TableCell>
         <TableCell>{row.knowledgeBaseDescription}</TableCell>
+        <TableCell>
+          <Label  color={getLabelColor(row?.status || 'active')} >
+            {row?.status && row.status.toUpperCase()}
+          </Label>
+        </TableCell>
         <TableCell align="right">
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />

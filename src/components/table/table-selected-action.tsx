@@ -11,6 +11,7 @@ export type TableSelectedActionProps = StackProps & {
   rowCount: number;
   numSelected: number;
   action?: React.ReactNode;
+  checkBoxHidden?: boolean;
   onSelectAllRows: (checked: boolean) => void;
 };
 
@@ -46,14 +47,12 @@ export function TableSelectedAction({
       }}
       {...other}
     >
-      <Checkbox
+        <Checkbox
         indeterminate={!!numSelected && numSelected < rowCount}
         checked={!!rowCount && numSelected === rowCount}
         onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
           onSelectAllRows(event.target.checked)
-        }
-      />
-
+        } />
       <Typography
         variant="subtitle2"
         sx={{

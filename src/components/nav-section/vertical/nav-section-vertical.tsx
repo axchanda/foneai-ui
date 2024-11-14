@@ -33,7 +33,7 @@ export function NavSectionVertical({
 
   return (
     <Stack component="nav" className={navSectionClasses.vertical.root} sx={{ ...cssVars, ...sx }}>
-      <NavUl sx={{ flex: '1 1 auto', gap: 'var(--nav-item-gap)' }}>
+      <NavUl sx={{ flex: '1 1 auto', gap: 'var(--nav-item-gap)', pb: 5 }}>
         {data
           .filter((d) => (d.permission ? permissions.includes(d.permission) : true))
           .map((group) => (

@@ -44,7 +44,8 @@ import { KnowledgeBaseTableRow } from 'src/sections/knowledge-bases/knowledge-ba
 const TABLE_HEAD = [
   // { id: 'checkbox', width: '' },
   { id: 'knowledgeBaseName', label: 'Knowledge Base Name', width: 200 },
-  { id: 'knowledgeBaseDescription', label: 'Description', width: 260 },
+  { id: 'knowledgeBaseDescription', label: 'Description', width: 360 },
+  { id: 'status', label: 'Status', width: 100 },
   { id: '', width: 88 },
 ];
 

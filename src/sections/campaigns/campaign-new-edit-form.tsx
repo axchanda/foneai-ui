@@ -53,6 +53,7 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
   useEffect(() => {
     getBots();
   }, [getBots]);
+  
   const defaultValues = useMemo(
     () => ({
       campaignName: currentCampaign?.campaignName || '',

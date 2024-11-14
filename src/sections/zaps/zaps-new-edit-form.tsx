@@ -57,7 +57,7 @@ const TABLE_HEAD = [
 export type NewZapSchemaType = zod.infer<typeof NewZapSchema>;
 
 export const NewZapSchema = zod.object({
-  zapName: zod.string().min(1, 'Zap name is required'),
+  zapName: zod.string().min(1, 'Zap name is required').regex(/^[a-zA-Z0-9]+$/, 'Zap name should only contain letters and numbers without spaces or special characters'),
 });
 
 type Props = {

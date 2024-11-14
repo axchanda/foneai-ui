@@ -57,7 +57,7 @@ export function NavMobile({ data, open, onClose, slots, sx }: NavMobileProps) {
       )}
 
       <Scrollbar fillContent>
-        <Box component="nav" display="flex" flexDirection="column" flex="1 1 auto" sx={{ pb: 3 }}>
+        <Box component="nav" display="flex" flexDirection="column" flex="1 1 auto" sx={{ pb: 5 }}>
           <NavUl>
             {data.map((list) => (
               <NavList key={list.title} data={list} />

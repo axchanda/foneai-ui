@@ -44,8 +44,6 @@ export function CampaignTableRow({
     successDuration: 3000,
   });
 
-  console.log('Bots CampaignTableRow 47: ', bots);
-
   const linkedBot = bots.find((bot) => bot._id === row.linkedBot)?.botName || row.linkedBot;
 
   return (

@@ -1,18 +1,12 @@
 export type IKnowledgeBaseItem = {
   _id: string;
   knowledgeBaseName: string;
-  knowledgeBaseDescription: string;
-  knowledgeBaseQaPairs?: {
-    question: string;
-    answer: string;
-  }[];
-  knowledgeBaseFiles?: {
-    fileName: string;
-    fileURL: string;
-  }[];
+  knowledgeBaseDescription?: string;
+  status?: string;
 };
 
 export type IKnowledgeBaseQaPairType = {
+  _id?: string;
   question: string;
   answer: string;
 };

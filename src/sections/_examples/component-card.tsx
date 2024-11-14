@@ -18,7 +18,7 @@ type Props = {
   item: {
     name: string;
     icon: string;
-    href: string;
+    href?: string;
     category?: string;
   };
 };

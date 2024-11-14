@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Drawer from '@mui/material/Drawer';
 import MenuItem from '@mui/material/MenuItem';
-import { useTheme } from '@mui/material/styles';
+import { useColorScheme, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
@@ -24,19 +24,22 @@ import { useAuth } from 'src/auth/context/jwt/hooks';
 import { UpgradeBlock } from './nav-upgrade';
 import { AccountButton } from './account-button';
 import { SignOutButton } from './sign-out-button';
+import { useSettingsContext } from 'src/components/settings';
+import { Switch } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 export type AccountDrawerProps = IconButtonProps & {
   data?: {
     label: string;
-    href: string;
+    href?: string;
     icon?: React.ReactNode;
     info?: React.ReactNode;
+    darkModeBtn?: Boolean;
   }[];
 };
 
-export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
+export function AccountDrawer({ data = [],  sx, ...other }: AccountDrawerProps) {
   const theme = useTheme();
 
   const router = useRouter();
@@ -46,6 +49,10 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
   const { user } = useAuth();
 
   const [open, setOpen] = useState(false);
+
+  const settings = useSettingsContext();
+
+  const { mode, setMode } = useColorScheme();
 
   const handleOpenDrawer = useCallback(() => {
     setOpen(true);
@@ -67,7 +74,11 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
     <AnimateAvatar
       width={96}
       slotProps={{
-        avatar: { src: user?.avatar || '/user.png', alt: user?.username },
+        avatar: { 
+          src: user?.avatar || (settings.colorScheme === 'dark' ? '/user-dark.png' : '/user.png'),
+          
+          alt: user?.username
+        },
         overlay: {
           border: 2,
           spacing: 3,
@@ -84,7 +95,7 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
       <AccountButton
         open={open}
         onClick={handleOpenDrawer}
-        photoURL={user?.avatar || '/user.png'}
+        photoURL={user?.avatar || (settings.colorScheme === 'dark' ? '/user-dark.png' : '/user.png')}
         displayName={user?.username || 'User'}
         sx={sx}
         {...other}
@@ -158,7 +169,7 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
               return (
                 <MenuItem
                   key={option.label}
-                  onClick={() => handleClickItem(option.label === 'Home' ? rootHref : option.href)}
+                  onClick={() => handleClickItem(option.label === 'Home' ? rootHref : (option.href ? option.href : ''))}
                   sx={{
                     py: 1,
                     color: 'text.secondary',
@@ -177,6 +188,18 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
                       {option.info}
                     </Label>
                   )}
+                  
+                  {option?.darkModeBtn && <Box component="span" sx={{ ml: 10 }}
+                    onClick={ () => {            
+                      settings.onUpdateField('colorScheme', mode === 'light' ? 'dark' : 'light');
+                      setMode(mode === 'light' ? 'dark' : 'light');
+                    } }
+                  >
+                    <Switch size="medium" color="default" 
+                        checked={settings.colorScheme === 'dark'}
+                        sx={{ mr: -0.75 }} />
+                  </Box>}
+
                 </MenuItem>
               );
             })}

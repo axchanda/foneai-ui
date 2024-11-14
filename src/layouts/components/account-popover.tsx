@@ -22,7 +22,7 @@ import { SignOutButton } from './sign-out-button';
 export type AccountPopoverProps = IconButtonProps & {
   data?: {
     label: string;
-    href: string;
+    href?: string;
     icon?: React.ReactNode;
     info?: React.ReactNode;
   }[];
@@ -83,7 +83,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
             return (
               <MenuItem
                 key={option.label}
-                onClick={() => handleClickItem(option.label === 'Home' ? rootHref : option.href)}
+                onClick={() => handleClickItem(option.label === 'Home' ? rootHref : (option.href ? option.href : ''))}
                 sx={{
                   py: 1,
                   color: 'text.secondary',

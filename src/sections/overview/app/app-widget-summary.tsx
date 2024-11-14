@@ -9,6 +9,9 @@ import { fNumber, fPercent } from 'src/utils/format-number';
 
 import { Iconify } from 'src/components/iconify';
 import { Chart, useChart } from 'src/components/chart';
+import { Icon } from '@iconify/react';
+import { primary } from 'src/theme/core';
+import { Tooltip } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -16,6 +19,8 @@ type Props = CardProps & {
   title: string;
   total: number;
   percent: number;
+  rightIcon?: any;
+  rightIconTooltip?: string;
   chart: {
     colors?: string[];
     categories: string[];
@@ -24,7 +29,7 @@ type Props = CardProps & {
   };
 };
 
-export function AppWidgetSummary({ title, percent, total, chart, sx, ...other }: Props) {
+export function AppWidgetSummary({ title, percent, total, chart, rightIcon, rightIconTooltip, sx, ...other }: Props) {
   const theme = useTheme();
 
   const chartColors = chart.colors ?? [theme.palette.primary.main];
@@ -79,13 +84,22 @@ export function AppWidgetSummary({ title, percent, total, chart, sx, ...other }:
         {renderTrending}
       </Box>
 
-      <Chart
+      {/* <Chart
         type="bar"
         series={[{ data: chart.series }]}
         options={chartOptions}
         width={60}
         height={40}
-      />
+      /> */}
+
+        <Tooltip title={rightIconTooltip} arrow>
+          <Iconify icon={rightIcon}
+            style={{
+              color: theme.vars.palette.primary.main
+            }}
+            width={40} height={20} 
+            />
+        </Tooltip>
     </Card>
   );
 }

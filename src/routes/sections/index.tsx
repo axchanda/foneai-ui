@@ -18,6 +18,7 @@ import { zapsRoutes } from './zaps';
 import { billingRoutes } from './billing';
 import { plansRoutes } from './plans';
 import { subscribersRoutes } from './subscribers';
+import { logsRoutes } from './logs';
 
 export function Router() {
   return useRoutes([
@@ -63,6 +64,7 @@ export function Router() {
     ...billingRoutes,
     ...plansRoutes,
     ...subscribersRoutes,
+    ...logsRoutes,
     // No match
     { path: '*', element: <Navigate to="/page-not-found" replace /> },
   ]);

@@ -26,6 +26,7 @@ import {
   MenuItem,
   IconButton,
   InputAdornment,
+  CardHeader,
 } from '@mui/material';
 import type { IApiEndpointHeaders, IApiEndpointItem } from 'src/types/apiEndpoint';
 import API from 'src/utils/API';
@@ -124,6 +125,9 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
 
   const renderDetails = (
     <Card>
+      <CardHeader title="Details" subheader="API Endpoint name and description" sx={{ mb: 3 }} />
+
+      <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">API Endpoint Name</Typography>
@@ -142,6 +146,9 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
 
   const renderSpecs = (
     <Card>
+      <CardHeader title="Specifications" subheader="API Endpoint Specifications" sx={{ mb: 3 }} />
+
+      <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
 
         <Stack sx={{ px: 1 }}>
@@ -438,7 +445,7 @@ const HeaderTableRow: React.FC<{
     key: false,
     value: false,
   });
-  // console.log({ currentHeader });
+  
   return (
     <>
       <TableRow>

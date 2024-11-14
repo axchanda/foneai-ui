@@ -18,20 +18,22 @@ export function UploadPlaceholder({ ...other }: BoxProps) {
       }}
       {...other}
     >
-      <UploadIllustration hideBackground sx={{ width: 200 }} />
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+        <UploadIllustration hideBackground sx={{ width: 100 }} />
 
-      <Stack spacing={1} sx={{ textAlign: 'center' }}>
-        <Box sx={{ typography: 'h6' }}>Drop or select file</Box>
-        <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
-          Drop files here or click to
-          <Box
-            component="span"
-            sx={{ mx: 0.5, color: 'primary.main', textDecoration: 'underline' }}
-          >
-            browse
+        <Stack spacing={1} sx={{ textAlign: 'center' }}>
+          <Box sx={{ typography: 'h6' }}>Drop or select file</Box>
+          <Box sx={{ typography: 'body2', color: 'text.secondary' }}>
+            Drop files here or click to
+            <Box
+              component="span"
+              sx={{ mx: 0.5, color: 'primary.main', textDecoration: 'underline' }}
+            >
+              browse
+            </Box>
+            through your machine.
           </Box>
-          through your machine.
-        </Box>
+        </Stack>
       </Stack>
     </Box>
   );

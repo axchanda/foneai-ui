@@ -9,18 +9,19 @@ const icon = (name: string) => (
 );
 
 const ICONS = {
+  getStarted: icon('mdi:rocket-launch-outline'),
   asterisk: icon('simple-icons:asterisk'),
   freeswitch: <Iconify width={16} icon="custom-freeswitch" color="primary" sx={{ flexShrink: 0 }} />,
-  dashboard: icon('ic-dashboard'),
+  dashboard: icon('hugeicons:dashboard-square-02'),
   bots: icon('file-icons:robots'),
-  users: icon('heroicons:users-solid'),
-  campaigns: icon('ic:round-campaign'),
+  users: icon('heroicons:users'),
+  campaigns: icon('material-symbols:campaign-outline'),
   invoices: icon('hugeicons:invoice'),
   integrations: icon('stash:integrations'),
   account: icon('material-symbols:account-circle'),
   knowledgeBase: icon('simple-icons:docsdotrs'),
-  apiManager: icon('material-symbols:api'),
-  zaps: icon('token:zap'),
+  apiManager: icon('material-symbols-light:api'),
+  zaps: icon('typcn:flash-outline'),
   blank: icon('ic-blank'),
   kanban: icon('ic-kanban'),
   folder: icon('ic-folder'),
@@ -37,17 +38,28 @@ const ICONS = {
   analytics: icon('ic-analytics'),
   parameter: icon('ic-parameter'),
   billing: icon('entypo:credit'),
-  sip: icon('ic:round-sip'),
-  did: icon('lsicon:number-filled')
+  sip: icon('material-symbols:sip-outline-rounded'),
+  did: icon('lsicon:number-filled'),
+  logs: icon('proicons:script'),
+  keys: icon('material-symbols:key-vertical-rounded'),
+  docs: icon('carbon:notebook-reference'),
+  help: icon('bitcoin-icons:buoy-outline'),
+  rebranding: icon('qlementine-icons:paint-brush-thin-16'),
+  adminMode: icon('carbon:user-access-unlocked')
 };
 
 // ----------------------------------------------------------------------
 
 export const navData = [
   {
-    subheader: 'Dashboard',
+    subheader: 'Overview',
     permission: 'dashboard.view',
     items: [
+      // {
+      //   title: 'Get Started',
+      //   path: '/get-started',
+      //   icon: ICONS.getStarted,
+      // },
       {
         title: 'Dashboard',
         path: '/dashboard',
@@ -83,6 +95,11 @@ export const navData = [
         path: '/zaps',
         icon: ICONS.zaps,
       },
+    ],
+  },
+  {
+    subheader: 'Management',
+    items: [
       {
         title: 'Integrations',
         path: '/integrations',
@@ -109,7 +126,42 @@ export const navData = [
             icon: ICONS.did
           },
         ],
+      },
+      {
+        title: 'Logs',
+        path: '/logs',
+        icon: ICONS.logs,
+      },
+      {
+        title: 'Users',
+        path: '/users',
+        icon: ICONS.users,
+      },
+      {
+        title: 'Rebranding',
+        path: '/rebranding',
+        icon: ICONS.rebranding,
+      }, 
+      {
+        title: 'Admin mode',
+        path: '/admin-mode',
+        icon: ICONS.adminMode
       }
     ],
-  }
+  },
+  {
+    subheader: 'Help Center',
+    items: [
+      {
+        title: 'Docs',
+        path: 'https://docs.fone.ai',
+        icon: ICONS.docs
+      },
+      {
+        title: 'Support',
+        path: '/support',
+        icon: ICONS.help,
+      }
+    ],
+  },
 ];

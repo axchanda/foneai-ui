@@ -18,17 +18,20 @@ import { Label } from 'src/components/label';
 
 import { useAuth } from 'src/auth/context/jwt/hooks';
 
+import { useSettingsContext } from 'src/components/settings';
+
 // ----------------------------------------------------------------------
 
 export function NavUpgrade({ sx, ...other }: StackProps) {
   const { user } = useAuth();
+  const settings = useSettingsContext();
   // console.log({ user });
   return (
     <Stack sx={{ px: 2, py: 5, textAlign: 'center', ...sx }} {...other}>
       <Stack alignItems="center">
         <Box sx={{ position: 'relative' }}>
           <Avatar
-            src={user?.avatar || '/user.png'}
+            src={user?.avatar || (settings.colorScheme === 'dark' ? '/user-dark.png' : '/user.png')}
             alt={user?.firstName}
             sx={{ width: 48, height: 48 }}
           >

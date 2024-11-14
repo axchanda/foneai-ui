@@ -10,6 +10,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { logoClasses } from './classes';
 import { useAuth } from 'src/auth/context/jwt/hooks';
+import { useSettingsContext } from '../settings';
 
 // ----------------------------------------------------------------------
 
@@ -22,6 +23,8 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
   ({ width = 120, height = 40, disableLink = false, className, href = '/', sx, ...other }, ref) => {
     const theme = useTheme();
     const { user } = useAuth();
+    const settings = useSettingsContext();
+
 
     const gradientId = useId();
 
@@ -100,7 +103,16 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
           }}
           {...other}
         >
-          {user?.username !== 'janthony' ? <img src='/logo512.png' alt='fone-ai' /> : <img src='/APBwhite.svg' alt='aiphonebot' />}
+          {user?.username !== 'aiphonebot' ?  (
+            settings.colorScheme === 'dark' ?
+              <img src='/logo-text-dark.png' alt='Fone AI' /> :
+              <img src='/logo-text.svg' alt='Fone AI' />
+          )
+          : (
+            settings.colorScheme === 'dark' ?
+              <img src='/APBwhite.svg' alt='aiphonebot' /> :
+              <img src='/APBblack.svg' alt='aiphonebot' />
+          )}
         </Box>
       </NoSsr>
     );

@@ -47,18 +47,24 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
           <Iconify icon="eva:more-vertical-fill" />
         </IconButton>
 
-        <Stack sx={{ p: 3, pb: 2 }}>
+        <Stack sx={{ 
+          p: 3, 
+          pb: 1,
+         }}
+         direction={{ xs: 'column', sm: 'row' }}
+         columnGap={4}
+         >
           <Avatar
             alt="bot"
-            src="/assets/bot.png"
+            src="/assets/bot.svg"
             variant="rounded"
-            sx={{ width: 48, height: 48, mb: 2 }}
+            sx={{ width: 64, height: 64, mb: 2 }}
           />
 
           <ListItemText
             sx={{ mb: 1 }}
             primary={
-              <Link component={RouterLink} href={`/bots/${bot._id}`} color="inherit">
+              <Link component={RouterLink} href={`/bots/${bot._id}`} color="inherit" underline='none' >
                 {bot.botName}
               </Link>
             }

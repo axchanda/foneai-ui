@@ -32,6 +32,7 @@ export type TableHeadCustomProps = {
   onSort?: (id: string) => void;
   headLabel: Record<string, any>[];
   onSelectAllRows?: (checked: boolean) => void;
+  checkBoxHidden?: boolean;
 };
 
 export function TableHeadCustom({
@@ -43,13 +44,15 @@ export function TableHeadCustom({
   rowCount = 0,
   numSelected = 0,
   onSelectAllRows,
+  checkBoxHidden,
 }: TableHeadCustomProps) {
   return (
     <TableHead sx={sx}>
       <TableRow>
         {onSelectAllRows && (
           <TableCell padding="checkbox">
-            <Checkbox
+            { !checkBoxHidden || checkBoxHidden === undefined ? (
+              <Checkbox
               indeterminate={!!numSelected && numSelected < rowCount}
               checked={!!rowCount && numSelected === rowCount}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
@@ -58,8 +61,7 @@ export function TableHeadCustom({
               inputProps={{
                 name: 'select-all-rows',
                 'aria-label': 'select all rows',
-              }}
-            />
+              }} /> ) : null }
           </TableCell>
         )}
 

@@ -10,6 +10,7 @@ import { Iconify } from '../iconify';
 import { fileData, FileThumbnail } from '../file-thumbnail';
 
 import type { KbFilePreviewProps } from './types';
+import { Skeleton, Tooltip } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -47,7 +48,7 @@ export function KbFilePreview({
       {lastNode}
     </Box>
   );
-
+  console.log('File names:', fileNames);
   return (
     <Box
       component="ul"
@@ -64,7 +65,8 @@ export function KbFilePreview({
     >
       {renderFirstNode}
 
-      {fileNames.map((fileName) => {
+      {fileNames.map((fileName: string) => {
+        console.log('File name:', fileName);
         return (
           <Box
             component="li"
@@ -81,14 +83,17 @@ export function KbFilePreview({
                 `solid 1px ${varAlpha(theme.vars.palette.grey['500Channel'], 0.16)}`,
             }}
           >
+            
             <FileThumbnail file={fileName} {...slotProps?.thumbnail} />
 
             <ListItemText primary={fileName} />
 
-            {onEdit && (
-              <IconButton size="small" onClick={() => onEdit()}>
-                <Iconify icon="clarity:edit-line"  width={26} />
-              </IconButton>
+            {onRemove && (
+              <Tooltip title="Delete" arrow placement='right'>
+                <IconButton size="small" onClick={() => onRemove(fileName)}>
+                  <Iconify icon="fluent:delete-20-regular" color="error.main" width={26} />
+                </IconButton>
+              </Tooltip>
             )}
           </Box>
         );
