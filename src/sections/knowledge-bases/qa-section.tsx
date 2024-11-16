@@ -469,10 +469,7 @@ export function QaSection({
                     size="large"
                     onClick={() => {
                       editing.setValue(false);
-                      setQaPairState({
-                        question: qaPairState.question,
-                        answer: qaPairState.answer,
-                      });
+                      setQaPairState({...qaPair});
                       setQaPairErrors({
                         question: false,
                         answer: false

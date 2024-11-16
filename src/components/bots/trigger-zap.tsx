@@ -26,6 +26,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { Iconify } from 'src/components/iconify';
 import { IZapItem } from 'src/types/zap';
 import { set } from 'nprogress';
+import { Scrollbar } from '../scrollbar';
 
 const TABLE_HEAD = [
   { id: 'zap', label: 'Zap', width: 255 },
@@ -275,168 +276,170 @@ const TriggerZap: React.FC<{
           <Box p={4}>
           {Boolean(zapTriggers.length) || shouldShowForm.value ? (
               <Card>
-              <Table>
-                  <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  numSelected={table.selected.length}
-                  />
-                  <TableBody>
-                  {shouldShowForm.value && (
-                      <TableRow>
-                      <TableCell
-                          sx={{
-                          verticalAlign: 'top',
-                          }}
-                      >
-                          <Field.Select
-                          name="key"
-                          value={zapTrigger.zap}
-                          onChange={(e) => {
-                              setZapTrigger((prev) => ({
-                              ...prev,
-                              zap: e.target.value,
-                              }));
-                          }}
-                          placeholder="Select a Zap"
-                          error={errors.zap}
-                          >
-                          {zaps.map((zapItem) => (
-                              <MenuItem key={zapItem._id} value={zapItem._id}>
-                              {zapItem.zapName}
-                              </MenuItem>
-                          ))}
-                          </Field.Select>
-                      </TableCell>
-
-                      <TableCell
-                          sx={{
-                          verticalAlign: 'top',
-                          }}
-                      >
-                          {zapTrigger.trigger ? (
-                          <Typography>{zapTrigger.trigger}</Typography>
-                          ) : (
-                          <Button
-                              onClick={() => {
-                                setOpenActionDialog(true);
-                              }}
-                              fullWidth
-                              size="large"
-                              variant="contained"
-                          >
-                              Set Trigger event
-                          </Button>
-                          )}
-                      </TableCell>
-                      <TableCell>
-                          <Stack gap={2}>
-                          <Button
-                              variant="contained"
-                              onClick={() => {
-                              console.log('New Zap Trigger:', zapTrigger);
-                              let isError = false;
-                              if (!zapTrigger.zap) {
-                                  setErrors((prev) => ({
-                                  ...prev,
-                                  zap: true,
-                                  }));
-                                  isError = true;
-                              }
-                              if (!zapTrigger.trigger || zapTrigger.trigger.trim().length < 1) {
-                                  setErrors((prev) => ({
-                                  ...prev,
-                                  trigger: true,
-                                  }));
-                                  isError = true;
-                              }
-                              if (!isError) {
-                                  setZapTriggers((prev) => [
-                                  ...prev,
-                                  {
-                                      zapId: zapTrigger.zap,
-                                      trigger: zapTrigger.trigger,
-                                  },
-                                  ]);
-                                  setZapTrigger({
-                                  zap: '',
-                                  trigger: '',
-                                  });
-                                  setErrors({
-                                  zap: false,
-                                  trigger: false,
-                                  });
-                                  shouldShowForm.setValue(false);
-                                  setTriggerEditingInProgress(false);
-                              }
-
-                              }}
-                              size="large"
-                              color="primary"
-                              startIcon={<Iconify icon="ic:round-check" />}
-                          >
-                              Submit
-                          </Button>
-                          <Button
-                              variant="outlined"
-                              color="error"
-                              startIcon={<Iconify icon="ic:round-close" />}
-                              size="large"
-                              onClick={() => {
-                                shouldShowForm.setValue(false);
-                                setTriggerEditingInProgress(false);
-                                setZapTrigger({
-                                    zap: '',
-                                    trigger: '',
-                                });
-                                setErrors({
-                                    zap: false,
-                                    trigger: false,
-                                });
-                              }}
-                          >
-                              Cancel
-                          </Button>
-                          </Stack>
-                      </TableCell>
-                      </TableRow>
-                  )}
-                  {zapTriggers.map((i: any, index: number) => {
-                      return (
-                      <ZapTriggersTableRow
-                          key={JSON.stringify(i) + index}
-                          currentZapTrigger={{
-                          zap: i.zapId,
-                          trigger: i.trigger,
-                          }}
-                          removeZapTrigger={() => {
-                            setZapTriggers((prev) => {
-                                const newZapTriggers = [...prev];
-                                newZapTriggers.splice(index, 1);
-                                return newZapTriggers;
-                            });
-                          }}
-                          updateZapTrigger={(newZapTrigger) => {
-                            setZapTriggers((prev) => {
-                                const newZapTriggers = [...prev];
-                                newZapTriggers[index] = {
-                                zapId: newZapTrigger.zap,
-                                trigger: newZapTrigger.trigger,
-                                };
-                                return newZapTriggers;
-                            });
-                            setTriggerEditingInProgress(false);
-                          }}
-                          zaps={zaps}
-                          botInstructions={botInstructions}
-                          triggerEditingInProgress={triggerEditingInProgress}
-                          setTriggerEditingInProgress={setTriggerEditingInProgress}
+                <Scrollbar>
+                  <Table>
+                      <TableHeadCustom
+                      order={table.order}
+                      orderBy={table.orderBy}
+                      headLabel={TABLE_HEAD}
+                      numSelected={table.selected.length}
                       />
-                      );
-                  })}
-                  </TableBody>
-              </Table>
+                      <TableBody>
+                      {shouldShowForm.value && (
+                          <TableRow>
+                          <TableCell
+                              sx={{
+                              verticalAlign: 'top',
+                              }}
+                          >
+                              <Field.Select
+                              name="key"
+                              value={zapTrigger.zap}
+                              onChange={(e) => {
+                                  setZapTrigger((prev) => ({
+                                  ...prev,
+                                  zap: e.target.value,
+                                  }));
+                              }}
+                              placeholder="Select a Zap"
+                              error={errors.zap}
+                              >
+                              {zaps.map((zapItem) => (
+                                  <MenuItem key={zapItem._id} value={zapItem._id}>
+                                  {zapItem.zapName}
+                                  </MenuItem>
+                              ))}
+                              </Field.Select>
+                          </TableCell>
+
+                          <TableCell
+                              sx={{
+                              verticalAlign: 'top',
+                              }}
+                          >
+                              {zapTrigger.trigger ? (
+                              <Typography>{zapTrigger.trigger}</Typography>
+                              ) : (
+                              <Button
+                                  onClick={() => {
+                                    setOpenActionDialog(true);
+                                  }}
+                                  fullWidth
+                                  size="large"
+                                  variant="contained"
+                              >
+                                  Set Trigger event
+                              </Button>
+                              )}
+                          </TableCell>
+                          <TableCell>
+                              <Stack gap={2}>
+                              <Button
+                                  variant="contained"
+                                  onClick={() => {
+                                  console.log('New Zap Trigger:', zapTrigger);
+                                  let isError = false;
+                                  if (!zapTrigger.zap) {
+                                      setErrors((prev) => ({
+                                      ...prev,
+                                      zap: true,
+                                      }));
+                                      isError = true;
+                                  }
+                                  if (!zapTrigger.trigger || zapTrigger.trigger.trim().length < 1) {
+                                      setErrors((prev) => ({
+                                      ...prev,
+                                      trigger: true,
+                                      }));
+                                      isError = true;
+                                  }
+                                  if (!isError) {
+                                      setZapTriggers((prev) => [
+                                      ...prev,
+                                      {
+                                          zapId: zapTrigger.zap,
+                                          trigger: zapTrigger.trigger,
+                                      },
+                                      ]);
+                                      setZapTrigger({
+                                      zap: '',
+                                      trigger: '',
+                                      });
+                                      setErrors({
+                                      zap: false,
+                                      trigger: false,
+                                      });
+                                      shouldShowForm.setValue(false);
+                                      setTriggerEditingInProgress(false);
+                                  }
+
+                                  }}
+                                  size="large"
+                                  color="primary"
+                                  startIcon={<Iconify icon="ic:round-check" />}
+                              >
+                                  Submit
+                              </Button>
+                              <Button
+                                  variant="outlined"
+                                  color="error"
+                                  startIcon={<Iconify icon="ic:round-close" />}
+                                  size="large"
+                                  onClick={() => {
+                                    shouldShowForm.setValue(false);
+                                    setTriggerEditingInProgress(false);
+                                    setZapTrigger({
+                                        zap: '',
+                                        trigger: '',
+                                    });
+                                    setErrors({
+                                        zap: false,
+                                        trigger: false,
+                                    });
+                                  }}
+                              >
+                                  Cancel
+                              </Button>
+                              </Stack>
+                          </TableCell>
+                          </TableRow>
+                      )}
+                      {zapTriggers.map((i: any, index: number) => {
+                          return (
+                          <ZapTriggersTableRow
+                              key={JSON.stringify(i) + index}
+                              currentZapTrigger={{
+                              zap: i.zapId,
+                              trigger: i.trigger,
+                              }}
+                              removeZapTrigger={() => {
+                                setZapTriggers((prev) => {
+                                    const newZapTriggers = [...prev];
+                                    newZapTriggers.splice(index, 1);
+                                    return newZapTriggers;
+                                });
+                              }}
+                              updateZapTrigger={(newZapTrigger) => {
+                                setZapTriggers((prev) => {
+                                    const newZapTriggers = [...prev];
+                                    newZapTriggers[index] = {
+                                    zapId: newZapTrigger.zap,
+                                    trigger: newZapTrigger.trigger,
+                                    };
+                                    return newZapTriggers;
+                                });
+                                setTriggerEditingInProgress(false);
+                              }}
+                              zaps={zaps}
+                              botInstructions={botInstructions}
+                              triggerEditingInProgress={triggerEditingInProgress}
+                              setTriggerEditingInProgress={setTriggerEditingInProgress}
+                          />
+                          );
+                      })}
+                      </TableBody>
+                  </Table>
+                </Scrollbar>
               </Card>
           ) : (
               <Stack>

@@ -35,6 +35,7 @@ import { Tab } from '@mui/material';
 import { QaSection } from './qa-section';
 import { knowledgeBasesRoutes } from 'src/routes/sections/knowledge-base';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { error } from 'console';
 
 const icon = (name: string) => (
   <Iconify width={24} icon={name} color="primary" sx={{ flexShrink: 0 }} />
@@ -126,7 +127,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       reset(defaultValues);
     }
   }, [currentKb, defaultValues, reset]);
-
+  
   const getFileNames = useCallback(async () => {
     if (!currentKb || currentKb === undefined) {
       knowledgeBaseFilesLoaded.onTrue();
@@ -303,6 +304,17 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       console.log('QA pairs to create:', qaPairsToCreate);
 
       if(!currentKb || currentKb === undefined) {
+        if(filesToUpload.length <= 0 && qaPairsToCreate.length <= 0) {
+          setError('knowledgeBaseFiles', {
+            type: 'manual',
+            message: 'Please upload at least one file or add at least one QA pair',
+          });
+          setError('knowledgeBaseQaPairs', {
+            type: 'manual',
+            message: 'Please upload at least one file or add at least one QA pair',
+          });
+          throw new Error('Please upload at least one file or add at least one QA pair');
+        }
         const { data: newKb } = await API.post('/knowledgeBases/create', {
           knowledgeBaseName: data.knowledgeBaseName,
           knowledgeBaseDescription: data.knowledgeBaseDescription,
@@ -359,6 +371,54 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         return;
       } 
       else {
+        if(knowledgeBaseFilesLoaded.value === false && knowledgeBaseQaPairsLoaded.value === false) {
+          toast.error('Please wait for the files and QA pairs to load');
+          return;
+        } else if(knowledgeBaseFilesLoaded.value === false && knowledgeBaseQaPairsLoaded.value === true) {
+          const { data: filesData } = await API.get<{
+            knowledgeBaseFiles: string[];
+          }>(`/knowledgeBaseFilesList/${currentKb?._id}`);
+          if(filesData.knowledgeBaseFiles.length <= 0 && knowledgeBaseQaPairs.length <= 0) {
+            setError('knowledgeBaseFiles', {
+              type: 'manual',
+              message: 'Please upload at least one file or add at least one QA pair',
+            });
+            setError('knowledgeBaseQaPairs', {
+              type: 'manual',
+              message: 'Please upload at least one file or add at least one QA pair',
+            });
+            throw new Error('Please upload at least one file or add at least one QA pair');
+          }
+        } else if(knowledgeBaseFilesLoaded.value === true && knowledgeBaseQaPairsLoaded.value === false) {
+          const { data: qaPairsData } = await API.get<{
+            knowledgeBaseQaPairs: IKnowledgeBaseQaPairType[];
+          }>(`/knowledgeBaseQaPairsList/${currentKb?._id}`);
+          if(knowledgeBaseFiles.length <= 0 && qaPairsData.knowledgeBaseQaPairs.length <= 0) {
+            setError('knowledgeBaseFiles', {
+              type: 'manual',
+              message: 'Please upload at least one file or add at least one QA pair',
+            });
+            setError('knowledgeBaseQaPairs', {
+              type: 'manual',
+              message: 'Please upload at least one file or add at least one QA pair',
+            });
+            throw new Error('Please upload at least one file or add at least one QA pair');
+          }
+        } else {
+          console.log('knowledgeBaseFiles:', knowledgeBaseFiles);
+        }
+
+        if(knowledgeBaseFiles.length <= 0 && knowledgeBaseQaPairs.length <= 0) {
+          setError('knowledgeBaseFiles', {
+            type: 'manual',
+            message: 'Please upload at least one file or add at least one QA pair',
+          });
+          setError('knowledgeBaseQaPairs', {
+            type: 'manual',
+            message: 'Please upload at least one file or add at least one QA pair',
+          });
+          throw new Error('Please upload at least one file or add at least one QA pair');
+        }
         // If updating an existing knowledge base, update the kb with the new data
         const { data: updatedKb } = await API.put(`/knowledgeBases/${currentKb._id}`, {
           knowledgeBaseName: data.knowledgeBaseName,
@@ -367,21 +427,67 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
           qaPairsToUpdate,
           qaPairsToCreate,
           filesToDelete,
-          filesToCreate: filesToUpload
+          filesToCreate: (filesToUpload.length > 0) ? true : false,
         });
 
         if (!updatedKb) throw new Error('Failed to update Knowledge Base');
+        
+        if(filesToUpload.length > 0) {
+          const { data: signedUrlsData } = await API.post(`/knowledgeBases/generatePreSignedUrls`, {
+            knowledgeBaseId: currentKb._id,
+            fileNames: filesToUpload.map((file) => file.name)
+          });
 
+          const uploadFilePromises = filesToUpload.map((file, index) =>
+            fetch(signedUrlsData.urls[index].url, {
+              method: 'PUT',
+              body: file,
+              headers: {
+                'Content-Type': file.type,
+              },
+            })
+          );
+
+          let fileNames: any[] = [];
+
+          try {
+            const responses = await Promise.all(uploadFilePromises);
+            responses.forEach((response, index) => {
+              console.log('Response:', response);
+              console.log('Index:', index);
+
+              if (!response.ok) {
+                throw new Error(`Failed to upload file ${filesToUpload[index].name}`);
+              }
+              console.log(filesToUpload[index])
+              console.log(filesToUpload[index].name)
+              fileNames.push(filesToUpload[index].name);
+            })
+            await API.put(`/knowledgeBases/${currentKb._id}/updateCreatedFiles`, {
+              fileNames
+            });
+          } catch (error) {
+            console.error('Error uploading files:', error);
+            throw new Error('Failed to upload files');
+          }
+        }
+        // TODO: need to work on upload Files
         toast.success('Update knowledge base success!');
         router.push('/knowledge-bases');
         return;
       }
     } catch (error) {
       console.error('error', error);
-      const messages = Object.values(error.response.data.errors || {}) as string[];
-      messages.forEach((m: string) => {
-        toast.error(m);
-      });
+      // send a error trigger message and set the status to error
+      if(error.response) {
+        const messages = Object.values(error.response.data.errors || {}) as string[];
+        messages.forEach((m: string) => {
+          toast.error(m);
+        });
+      } else {
+        console.error(error.message);
+        toast.error(error.message);
+      }
     }
   });
 
@@ -415,7 +521,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
           mr: 2,
           marginLeft: 'auto',
         }}
-        disabled={currentKb?.status === 'pending'}
+        // disabled={currentKb?.status === 'pending'}
       >
         {!currentKb ? 'Create Knowledge Base' : 'Update Knowledge Base'}
       </LoadingButton>
