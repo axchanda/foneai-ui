@@ -8,8 +8,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useParams } from 'react-router';
 import API from 'src/utils/API';
-import type { IBotType } from 'src/types/bot';
-import { BotNewEditForm } from 'src/sections/bots/bot-new-edit-form';
+import type { IAgentType } from 'src/types/agent';
+import { AgentNewEditForm } from 'src/sections/agents/agent-new-edit-form';
 
 // ----------------------------------------------------------------------
 
@@ -17,36 +17,36 @@ type Props = {
   job?: IJobItem;
 };
 
-function BotEdit({ job }: Props) {
+function AgentEdit({ job }: Props) {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
-  const [bot, setBot] = useState<IBotType | null>(null);
+  const [agent, setAgent] = useState<IAgentType | null>(null);
 
 
-  const getBot = useCallback(async () => {
-    const botPromise = API.get<any>(`/bots/${id}`);
-    const { data } = await botPromise;
-    setBot(data.bot);
+  const getAgent = useCallback(async () => {
+    const agentPromise = API.get<any>(`/agents/${id}`);
+    const { data } = await agentPromise;
+    setAgent(data.agent);
     setLoading(false);
   }, [id]);
 
   useEffect(() => {
-    getBot();
-  }, [getBot]);
+    getAgent();
+  }, [getAgent]);
 
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit bot"
+        heading="Edit agent"
         sx={{ mb: { xs: 3, md: 5 } }}
       />
       {loading ? (
         <LoadingScreen />
       ) : (
-        <BotNewEditForm currentBot={bot!} />
+        <AgentNewEditForm currentAgent={agent!} />
       )}
     </DashboardContent>
   );
 }
 
-export default BotEdit;
+export default AgentEdit;

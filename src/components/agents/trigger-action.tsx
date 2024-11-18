@@ -24,12 +24,12 @@ import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { TableHeadCustom, useTable } from 'src/components/table';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { Iconify } from 'src/components/iconify';
-import { IZapItem } from 'src/types/zap';
+import { IActionItem } from 'src/types/action';
 import { set } from 'nprogress';
 import { Scrollbar } from '../scrollbar';
 
 const TABLE_HEAD = [
-  { id: 'zap', label: 'Zap', width: 255 },
+  { id: 'action', label: 'Action', width: 255 },
   { id: 'trigger', label: 'Trigger', width: 255 },
   { id: '', width: 200 },
 ];
@@ -38,11 +38,11 @@ const TABLE_HEAD = [
 const ActionTriggerDialog: React.FC<{
     open: boolean;
     onClose: () => void;
-    botInstructions: string;
-    onSubmit: (action: string) => void;
-  }> = ({ open, onClose, botInstructions, onSubmit }) => {
+    instructions: string;
+    onSubmit: (trigger: string) => void;
+  }> = ({ open, onClose, instructions, onSubmit }) => {
     const [selected, setSelected] = useState<string | null>(null);
-    const instructionLines = botInstructions.split('.').filter((line) => line.trim().length > 0);
+    const instructionLines = instructions.split('.').filter((line) => line.trim().length > 0);
     const [selectedAction, setSelectedAction] = useState<string | undefined>(undefined);
     const [tab, setTab] = useState(1);
   
@@ -68,7 +68,7 @@ const ActionTriggerDialog: React.FC<{
           borderRadius="12px"
           borderColor="background.neutral"
           sx={{
-            '.action': {
+            '.trigger': {
               cursor: 'pointer',
               ':hover': {
                 backgroundColor: 'primary.main',
@@ -90,7 +90,7 @@ const ActionTriggerDialog: React.FC<{
                 {instructionLine.startsWith('\n') && <br />}
                 <Typography
                   component="span"
-                  className={`action ${selectedAction === instructionLine.trim() ? 'selected' : ''}`}
+                  className={`trigger ${selectedAction === instructionLine.trim() ? 'selected' : ''}`}
                   onClick={() => setSelectedAction(
                     instructionLine.trim()
                   )}
@@ -130,7 +130,7 @@ const ActionTriggerDialog: React.FC<{
           multiline
           rows={10}
           fullWidth
-          placeholder="Write instructions to trigger the zap"
+          placeholder="Write instructions to trigger the action"
           onChange={(e) => setSelectedAction(e.target.value.trim())}
         />
       </Box>
@@ -174,7 +174,7 @@ const ActionTriggerDialog: React.FC<{
             px={2}
             py={4}
           >
-            <Typography>Highlighting Bot Instructions</Typography>
+            <Typography>Highlight Agent Instructions</Typography>
           </Box>
         </Card>
       </Box>
@@ -184,7 +184,7 @@ const ActionTriggerDialog: React.FC<{
   
     return (
       <Dialog open={open} onClose={onClose}>
-        <DialogTitle>Trigger the Zap by: </DialogTitle>
+        <DialogTitle>Trigger the Action by: </DialogTitle>
         <Divider />
         <DialogContent>
           {tab === 1 ? renderRadios : selected === 'highlight' ? renderTriggerByBotInstructions : renderCustomInstructions}
@@ -216,49 +216,49 @@ const ActionTriggerDialog: React.FC<{
     );
 };
 
-const TriggerZap: React.FC<{
-  zaps: any[];
-  botInstructions: string;
-  zapTriggers: {
-      zapId: string;
+const TriggerAction: React.FC<{
+  actions: any[];
+  instructions: string;
+  actionTriggers: {
+      actionId: string;
       trigger: string;
   }[];
-  setZapTriggers: React.Dispatch<
-      React.SetStateAction<{ zapId: string; trigger: string }[]>
+  setActionTriggers: React.Dispatch<
+      React.SetStateAction<{ actionId: string; trigger: string }[]>
   >;
-}> = ({ botInstructions, zaps, zapTriggers, setZapTriggers }) => {
+}> = ({ instructions, actions, actionTriggers, setActionTriggers }) => {
   const shouldShowForm = useBoolean();
   const table = useTable();
   const [triggerEditingInProgress, setTriggerEditingInProgress] = useState(false);
-  const [zapTrigger, setZapTrigger] = useState<{
-      zap: string;
+  const [actionTrigger, setActionTrigger] = useState<{
+      action: string;
       trigger: string;
   }>({
-      zap: '',
+      action: '',
       trigger: '',
   });
   const [errors, setErrors] = useState<{
-      zap: boolean;
+      action: boolean;
       trigger: boolean;
   }>({
-      zap: false,
+      action: false,
       trigger: false,
   });
 
   const [openActionDialog, setOpenActionDialog] = useState(false);
 
   useEffect(() => {
-      if (zapTrigger) {
+      if (actionTrigger) {
       setOpenActionDialog(false);
       }
-  }, [zapTrigger]);
+  }, [actionTrigger]);
 
   return (
       <>
       <Card>
           <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
           <Stack>
-              <Typography variant="h5">Trigger Zaps</Typography>
+              <Typography variant="h5">Trigger Actions</Typography>
           </Stack>
           <Button
               onClick={() => {
@@ -268,13 +268,13 @@ const TriggerZap: React.FC<{
               variant="contained"
               disabled={triggerEditingInProgress}
           >
-              Add New Zap Trigger
+              Add New Action Trigger
           </Button>
           </Stack>
           <Divider />
           <Divider />
           <Box p={4}>
-          {Boolean(zapTriggers.length) || shouldShowForm.value ? (
+          {Boolean(actionTriggers.length) || shouldShowForm.value ? (
               <Card>
                 <Scrollbar>
                   <Table>
@@ -294,19 +294,19 @@ const TriggerZap: React.FC<{
                           >
                               <Field.Select
                               name="key"
-                              value={zapTrigger.zap}
+                              value={actionTrigger.action}
                               onChange={(e) => {
-                                  setZapTrigger((prev) => ({
+                                  setActionTrigger((prev) => ({
                                   ...prev,
-                                  zap: e.target.value,
+                                  action: e.target.value,
                                   }));
                               }}
-                              placeholder="Select a Zap"
-                              error={errors.zap}
+                              placeholder="Select a Action"
+                              error={errors.action}
                               >
-                              {zaps.map((zapItem) => (
-                                  <MenuItem key={zapItem._id} value={zapItem._id}>
-                                  {zapItem.zapName}
+                              {actions.map((actionItem) => (
+                                  <MenuItem key={actionItem._id} value={actionItem._id}>
+                                  {actionItem.actionName}
                                   </MenuItem>
                               ))}
                               </Field.Select>
@@ -317,8 +317,8 @@ const TriggerZap: React.FC<{
                               verticalAlign: 'top',
                               }}
                           >
-                              {zapTrigger.trigger ? (
-                              <Typography>{zapTrigger.trigger}</Typography>
+                              {actionTrigger.trigger ? (
+                              <Typography>{actionTrigger.trigger}</Typography>
                               ) : (
                               <Button
                                   onClick={() => {
@@ -337,16 +337,16 @@ const TriggerZap: React.FC<{
                               <Button
                                   variant="contained"
                                   onClick={() => {
-                                  console.log('New Zap Trigger:', zapTrigger);
+                                  console.log('New Action Trigger:', actionTrigger);
                                   let isError = false;
-                                  if (!zapTrigger.zap) {
+                                  if (!actionTrigger.action) {
                                       setErrors((prev) => ({
                                       ...prev,
-                                      zap: true,
+                                      action: true,
                                       }));
                                       isError = true;
                                   }
-                                  if (!zapTrigger.trigger || zapTrigger.trigger.trim().length < 1) {
+                                  if (!actionTrigger.trigger || actionTrigger.trigger.trim().length < 1) {
                                       setErrors((prev) => ({
                                       ...prev,
                                       trigger: true,
@@ -354,19 +354,19 @@ const TriggerZap: React.FC<{
                                       isError = true;
                                   }
                                   if (!isError) {
-                                      setZapTriggers((prev) => [
+                                      setActionTriggers((prev) => [
                                       ...prev,
                                       {
-                                          zapId: zapTrigger.zap,
-                                          trigger: zapTrigger.trigger,
+                                          actionId: actionTrigger.action,
+                                          trigger: actionTrigger.trigger,
                                       },
                                       ]);
-                                      setZapTrigger({
-                                      zap: '',
+                                      setActionTrigger({
+                                      action: '',
                                       trigger: '',
                                       });
                                       setErrors({
-                                      zap: false,
+                                      action: false,
                                       trigger: false,
                                       });
                                       shouldShowForm.setValue(false);
@@ -388,12 +388,12 @@ const TriggerZap: React.FC<{
                                   onClick={() => {
                                     shouldShowForm.setValue(false);
                                     setTriggerEditingInProgress(false);
-                                    setZapTrigger({
-                                        zap: '',
+                                    setActionTrigger({
+                                        action: '',
                                         trigger: '',
                                     });
                                     setErrors({
-                                        zap: false,
+                                        action: false,
                                         trigger: false,
                                     });
                                   }}
@@ -404,34 +404,34 @@ const TriggerZap: React.FC<{
                           </TableCell>
                           </TableRow>
                       )}
-                      {zapTriggers.map((i: any, index: number) => {
+                      {actionTriggers.map((i: any, index: number) => {
                           return (
-                          <ZapTriggersTableRow
+                          <ActionTriggersTableRow
                               key={JSON.stringify(i) + index}
-                              currentZapTrigger={{
-                              zap: i.zapId,
+                              currentActionTrigger={{
+                              action: i.actionId,
                               trigger: i.trigger,
                               }}
-                              removeZapTrigger={() => {
-                                setZapTriggers((prev) => {
-                                    const newZapTriggers = [...prev];
-                                    newZapTriggers.splice(index, 1);
-                                    return newZapTriggers;
+                              removeActionTrigger={() => {
+                                setActionTriggers((prev) => {
+                                    const newActionTriggers = [...prev];
+                                    newActionTriggers.splice(index, 1);
+                                    return newActionTriggers;
                                 });
                               }}
-                              updateZapTrigger={(newZapTrigger) => {
-                                setZapTriggers((prev) => {
-                                    const newZapTriggers = [...prev];
-                                    newZapTriggers[index] = {
-                                    zapId: newZapTrigger.zap,
-                                    trigger: newZapTrigger.trigger,
+                              updateActionTrigger={(newActionTrigger) => {
+                                setActionTriggers((prev) => {
+                                    const newActionTriggers = [...prev];
+                                    newActionTriggers[index] = {
+                                    actionId: newActionTrigger.action,
+                                    trigger: newActionTrigger.trigger,
                                     };
-                                    return newZapTriggers;
+                                    return newActionTriggers;
                                 });
                                 setTriggerEditingInProgress(false);
                               }}
-                              zaps={zaps}
-                              botInstructions={botInstructions}
+                              actions={actions}
+                              instructions={instructions}
                               triggerEditingInProgress={triggerEditingInProgress}
                               setTriggerEditingInProgress={setTriggerEditingInProgress}
                           />
@@ -444,7 +444,7 @@ const TriggerZap: React.FC<{
           ) : (
               <Stack>
               <Typography variant="h5" align="center">
-                  No Zap Triggers
+                  No Action Triggers
               </Typography>
               </Stack>
           )}
@@ -453,12 +453,12 @@ const TriggerZap: React.FC<{
       <ActionTriggerDialog
           open={openActionDialog}
           onClose={() => setOpenActionDialog(false)}
-          botInstructions={botInstructions}
-          onSubmit={(action) => {
+          instructions={instructions}
+          onSubmit={(trigger) => {
             console.log(455)
-            setZapTrigger((prev) => ({
+            setActionTrigger((prev) => ({
                 ...prev,
-                trigger: action,
+                trigger
             }));
           }}
       />
@@ -466,29 +466,29 @@ const TriggerZap: React.FC<{
   );
   };
 
-const ZapTriggersTableRow: React.FC<{
-currentZapTrigger: {
-    zap: string;
+const ActionTriggersTableRow: React.FC<{
+currentActionTrigger: {
+    action: string;
     trigger: string;
 };
-removeZapTrigger: () => void;
-updateZapTrigger: (newZapTrigger: { zap: string; trigger: string }) => void;
+removeActionTrigger: () => void;
+updateActionTrigger: (newActionTrigger: { action: string; trigger: string }) => void;
 triggerEditingInProgress: boolean;
 setTriggerEditingInProgress: React.Dispatch<React.SetStateAction<boolean>>;
-zaps: IZapItem[];
-botInstructions: string;
-}> = ({ currentZapTrigger, removeZapTrigger, updateZapTrigger, triggerEditingInProgress, setTriggerEditingInProgress, zaps, botInstructions }) => {
+actions: IActionItem[];
+instructions: string;
+}> = ({ currentActionTrigger, removeActionTrigger, updateActionTrigger, triggerEditingInProgress, setTriggerEditingInProgress, actions, instructions }) => {
 const popover = usePopover();
-const zapEditing = useBoolean();
-const [zapTrigger, setZapTrigger] = useState<{
-    zap: string;
+const actionEditing = useBoolean();
+const [actionTrigger, setActionTrigger] = useState<{
+    action: string;
     trigger: string;
-}>(currentZapTrigger);
+}>(currentActionTrigger);
 const [errors, setErrors] = useState<{
-    zap: boolean;
+    action: boolean;
     trigger: boolean;
 }>({
-    zap: false,
+    action: false,
     trigger: false,
 });
 
@@ -496,11 +496,11 @@ const [errors, setErrors] = useState<{
 const [openActionDialog, setOpenActionDialog] = useState(false);
 
 useEffect(() => {
-    if (zapTrigger && zapTrigger?.trigger.trim().length > 0) {
-      updateZapTrigger(zapTrigger); 
+    if (actionTrigger && actionTrigger?.trigger.trim().length > 0) {
+      updateActionTrigger(actionTrigger); 
       setOpenActionDialog(false);
     }
-}, [zapTrigger]);
+}, [actionTrigger]);
 
 return (
     <>
@@ -512,20 +512,20 @@ return (
         >
         <Field.Select
             name="key"
-            disabled={!zapEditing.value}
-            value={zapTrigger.zap}
+            disabled={!actionEditing.value}
+            value={actionTrigger.action}
             onChange={(e) => {
-            setZapTrigger((prev) => ({
+            setActionTrigger((prev) => ({
                 ...prev,
-                zap: e.target.value,
+                action: e.target.value,
             }));
             }}
-            placeholder="Select a Zap"
-            error={errors.zap}
+            placeholder="Select a Action"
+            error={errors.action}
         >
-            {zaps.map((zapItem) => (
-            <MenuItem key={zapItem._id} value={zapItem._id}>
-                {zapItem.zapName}
+            {actions.map((actionItem) => (
+            <MenuItem key={actionItem._id} value={actionItem._id}>
+                {actionItem.actionName}
             </MenuItem>
             ))}
         </Field.Select>
@@ -536,8 +536,8 @@ return (
             verticalAlign: 'top',
         }}
         >
-        {!zapEditing.value ? (
-            <Typography>{zapTrigger.trigger}</Typography>
+        {!actionEditing.value ? (
+            <Typography>{actionTrigger.trigger}</Typography>
         ) : (
             <Button
             size="large"
@@ -552,20 +552,20 @@ return (
         )}
         </TableCell>
         <TableCell align="right"> 
-        {zapEditing.value ? (
+        {actionEditing.value ? (
             <Stack gap={2}>
             <Button
                 variant="contained"
                 onClick={() => {
                   let isError = false;
-                  if (!zapTrigger.zap) {
+                  if (!actionTrigger.action) {
                       setErrors((prev) => ({
                       ...prev,
-                      zap: true,
+                      action: true,
                       }));
                       isError = true;
                   }
-                  if (!zapTrigger.trigger || zapTrigger.trigger.trim().length < 1) {
+                  if (!actionTrigger.trigger || actionTrigger.trigger.trim().length < 1) {
                       setErrors((prev) => ({
                       ...prev,
                       trigger: true,
@@ -574,12 +574,12 @@ return (
                   }
 
                   if (!isError) {
-                      updateZapTrigger(zapTrigger);
+                      updateActionTrigger(actionTrigger);
                       setErrors({
-                      zap: false,
+                      action: false,
                       trigger: false,
                       });
-                      zapEditing.setValue(false);
+                      actionEditing.setValue(false);
                       setTriggerEditingInProgress(false);
                   }
                 }}
@@ -595,14 +595,14 @@ return (
                 startIcon={<Iconify icon="ic:round-close" />}
                 size="large"
                 onClick={() => {
-                  setZapTrigger({
-                      ...currentZapTrigger,
+                  setActionTrigger({
+                      ...currentActionTrigger,
                   });
                   setErrors({
-                      zap: false,
+                      action: false,
                       trigger: false,
                   });
-                  zapEditing.setValue(false);
+                  actionEditing.setValue(false);
                   setTriggerEditingInProgress(false);
                 }}
             >
@@ -629,7 +629,7 @@ return (
         <MenuList>
             <MenuItem
                 onClick={() => {
-                  zapEditing.setValue(true);
+                  actionEditing.setValue(true);
                   popover.onClose();
                   setTriggerEditingInProgress(true);
                 }}
@@ -639,7 +639,7 @@ return (
             </MenuItem>
             <MenuItem
                 onClick={() => {
-                removeZapTrigger();
+                removeActionTrigger();
                 popover.onClose();
                 }}
                 sx={{ color: 'error.main' }}
@@ -652,18 +652,18 @@ return (
     <ActionTriggerDialog
         open={openActionDialog}
         onClose={() => setOpenActionDialog(false)}
-        botInstructions={botInstructions}
-        onSubmit={(action) => {
+        instructions={instructions}
+        onSubmit={(trigger) => {
           console.log(653)
-          setZapTrigger((prev) => ({
+          setActionTrigger((prev) => ({
               ...prev,
-              trigger: action,
+              trigger
           }));
-          zapEditing.setValue(false);
+          actionEditing.setValue(false);
         }}
     />
     </>
 );
 };
 
-export default TriggerZap;
+export default TriggerAction;

@@ -2,21 +2,21 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { BotNewEditForm } from 'src/sections/bots/bot-new-edit-form';
+import { AgentNewEditForm } from 'src/sections/agents/agent-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-function BotsCreate() {
+function AgentsCreate() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Create a new bot"
+        heading="Create a new agent"
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <BotNewEditForm />
+      <AgentNewEditForm />
     </DashboardContent>
   );
 }
 
-export default BotsCreate;
+export default AgentsCreate;

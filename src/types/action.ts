@@ -1,24 +1,24 @@
-export type IZapItem = {
+export type IActionItem = {
   _id: string;
-  zapName: string;
-  zapDescription?: string;
-  zapAction: IZapAction;
-  zapParameters?: IZapParameterItem[];
+  actionName: string;
+  actionDescription?: string;
+  actionOperation: IActionOperation;
+  actionParameters?: IActionParameterItem[];
 };
 
-export type IZapListType = {
+export type IActionListType = {
   _id: string;
-  zapName: string;
+  actionName: string;
 }[];
 
-export type IZapParameterItem = {
+export type IActionParameterItem = {
   parameterIsRequired: boolean;
   parameterName: string;
   parameterType?: number | string | boolean;
   parameterDescription: string;
 };
 
-export type IZapAction =
+export type IActionOperation =
   | {
       type: 'apiEndpoint';
       data: {

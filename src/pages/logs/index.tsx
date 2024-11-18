@@ -37,7 +37,7 @@ import type { ICampaignFilters, ICampaignType } from 'src/types/campaign';
 import { CampaignTableRow } from 'src/sections/campaigns/campaign-table-row';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
-import type { IBotListType } from 'src/types/bot';
+import type { IAgentListType } from 'src/types/agent';
 import { deleteCampaign } from 'src/utils/api/campaigns';
 import { ILogFilters, ILogType } from 'src/types/log';
 import { LogTableRow } from 'src/sections/logs/log-table-row';
@@ -53,7 +53,7 @@ const TABLE_HEAD = [
   { id: 'costPerMinute', label: 'CPM', width: 75 },
   { id: 'totalCost', label: `Used credits`, width: 100 },
   { id: 'campaignId', label: 'Campaign', width: 200 },
-  { id: 'botId', label: 'App', width: 250 },
+  { id: 'linkedAppId', label: 'App', width: 250 },
   // { id: 'sessionLog', label: 'Session Log', width: 100 },
   { id: '', width: 88 },
 ];
@@ -243,7 +243,7 @@ export default function LogListView() {
         title="Delete"
         content={
           <>
-            Are you sure want to delete the campaign <strong> {table.selected.length} </strong> ?
+            Are you sure want to delete the log <strong> {table.selected.length} </strong> ?
           </>
         }
         action={

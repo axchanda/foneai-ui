@@ -12,17 +12,17 @@ import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import type { IZapItem } from 'src/types/zap';
+import type { IActionItem } from 'src/types/action';
 
 type Props = {
-  row: IZapItem;
+  row: IActionItem;
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
   onDeleteRow: () => void;
 };
 
-export function ZapTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
+export function ActionTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
 
   const popover = usePopover();
@@ -44,15 +44,15 @@ export function ZapTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow
         <TableCell padding="checkbox">
           <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
         </TableCell>
-        <TableCell>{row.zapName}</TableCell>
-        <TableCell>{row.zapDescription}</TableCell>
+        <TableCell>{row.actionName}</TableCell>
+        <TableCell>{row.actionDescription}</TableCell>
         <TableCell>
           <Chip
             sx={{
               backgroundColor: 'primary.light',
             }}
             size="small"
-            label={labelModifier(row.zapAction.type)}
+            label={labelModifier(row.actionOperation.type)}
           />
         </TableCell>
         <TableCell align="right">
@@ -93,8 +93,8 @@ export function ZapTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete zap"
-        content={`Are you sure want to delete the zap: ${row.zapName}?`}
+        title="Delete action"
+        content={`Are you sure want to delete the action: ${row.actionName}?`}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
             Delete

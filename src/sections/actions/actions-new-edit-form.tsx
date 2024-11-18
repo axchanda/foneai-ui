@@ -35,7 +35,7 @@ import {
 import { useBoolean } from 'src/hooks/use-boolean';
 import { TableHeadCustom, useTable } from 'src/components/table';
 import { Iconify } from 'src/components/iconify';
-import type { IZapAction, IZapItem, IZapParameterItem } from 'src/types/zap';
+import type { IActionOperation, IActionItem, IActionParameterItem } from 'src/types/action';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import type { IApiEndpointItem } from 'src/types/apiEndpoint';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -54,28 +54,28 @@ const TABLE_HEAD = [
   { id: '', width: 88 },
 ];
 
-export type NewZapSchemaType = zod.infer<typeof NewZapSchema>;
+export type NewActionSchemaType = zod.infer<typeof NewActionSchema>;
 
-export const NewZapSchema = zod.object({
-  zapName: zod.string().min(1, 'Zap name is required').regex(/^[a-zA-Z0-9]+$/, 'Zap name should only contain letters and numbers without spaces or special characters'),
+export const NewActionSchema = zod.object({
+  actionName: zod.string().min(1, 'Action name is required').regex(/^[a-zA-Z0-9]+$/, 'Action name should only contain letters and numbers without spaces or special characters'),
 });
 
 type Props = {
-  currentZap?: IZapItem;
+  currentAction?: IActionItem;
 };
 
-export function ZapsNewEditForm({ currentZap }: Props) {
+export function ActionsNewEditForm({ currentAction }: Props) {
   const router = useRouter();
   const defaultValues = useMemo(
     () => ({
-      zapName: currentZap?.zapName || '',
-      zapDescription: currentZap?.zapDescription || '',
+      actionName: currentAction?.actionName || '',
+      actionDescription: currentAction?.actionDescription || '',
     }),
-    [currentZap]
+    [currentAction]
   );
-  const methods = useForm<NewZapSchemaType>({
+  const methods = useForm<NewActionSchemaType>({
     mode: 'all',
-    resolver: zodResolver(NewZapSchema),
+    resolver: zodResolver(NewActionSchema),
     //@ts-ignore
     defaultValues,
   });
@@ -86,29 +86,29 @@ export function ZapsNewEditForm({ currentZap }: Props) {
     formState: { isSubmitting, errors },
   } = methods;
 
-  const [parameters, setParameters] = useState<IZapItem['zapParameters']>(
-    currentZap?.zapParameters || []
+  const [parameters, setParameters] = useState<IActionItem['actionParameters']>(
+    currentAction?.actionParameters || []
   );
   const [loaded, setLoaded] = useState(false);
   const [apiEndpoints, setApiEndpoints] = useState<IApiEndpointItem[]>([]);
   const [kbs, setKbs] = useState<IKnowledgeBaseItem[]>([]);
-  const [action, setAction] = useState<IZapAction>(
-    currentZap?.zapAction || {
+  const [operation, setOperation] = useState<IActionOperation>(
+    currentAction?.actionOperation || {
       type: 'hangup',
       data: null
     }
   );
 
   const [payloadJsonData, setPayloadJsonData] = useState<any>(() => {
-    if (action.type === 'apiEndpoint') {
-      return action.data.payloadData || JSON.parse('{}');
+    if (operation.type === 'apiEndpoint') {
+      return operation.data.payloadData || JSON.parse('{}');
     }
     return JSON.parse('{}');
   });
   
   const jsonEditorRef = useRef<any>(null);
 
-  const [actionErrors, setActionErrors] = useState<Record<string, string>>({});
+  const [operationErrors, setOperationErrors] = useState<Record<string, string>>({});
 
   const getApiEndpoints = useCallback(async () => {
     const apiEndpointPromise = API.get<{
@@ -207,10 +207,10 @@ export function ZapsNewEditForm({ currentZap }: Props) {
   }, [getApiEndpoints, getKbs]);
 
   useEffect(() => {
-    if (currentZap) {
+    if (currentAction) {
       reset(defaultValues);
     }
-  }, [currentZap, defaultValues, reset]);
+  }, [currentAction, defaultValues, reset]);
 
   useEffect(() => {
     const editorContainer = document.querySelector('.jsoneditor');
@@ -248,18 +248,18 @@ export function ZapsNewEditForm({ currentZap }: Props) {
   }, [payloadJsonData, parameters]);
 
   const ParametersCard: React.FC<{
-    parameters: IZapItem['zapParameters'];
-    setParameters: React.Dispatch<React.SetStateAction<IZapItem['zapParameters']>>;
+    parameters: IActionItem['actionParameters'];
+    setParameters: React.Dispatch<React.SetStateAction<IActionItem['actionParameters']>>;
     }> = ({ parameters, setParameters }) => {
       const table = useTable();
-      const [parameter, setParameter] = useState<IZapParameterItem>({
+      const [parameter, setParameter] = useState<IActionParameterItem>({
         parameterDescription: '',
         parameterIsRequired: false,
         parameterName: '',
         parameterType: 'string',
       });
       const [parameterErrors, setParameterErrors] = useState<
-        Record<keyof IZapParameterItem, boolean>
+        Record<keyof IActionParameterItem, boolean>
       >({
         parameterDescription: false,
         parameterIsRequired: false,
@@ -274,10 +274,10 @@ export function ZapsNewEditForm({ currentZap }: Props) {
         <Card>
           <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
             <Stack>
-              <Typography variant="h6">Zap Parameters</Typography>
+              <Typography variant="h6">Action Parameters</Typography>
               <Typography mt="4px" color="var(--palette-text-secondary)" variant='body2'>
-                Add parameters to the zap. These parameters will be used to pass data to the
-                zap.
+                Add parameters to the action. These parameters will be used to pass data to the
+                action.
               </Typography>
             </Stack>
             <Button
@@ -504,7 +504,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                             removeParameter={() => {
                               setParameters((prev) => (prev ?? []).filter((_, i) => i !== index));
                             }}
-                            updateParameter={(params: IZapParameterItem) => {
+                            updateParameter={(params: IActionParameterItem) => {
                               // console.log(params);
                               setParameters((prev) => {
                                 const newParams = [...(prev ?? [])];
@@ -532,13 +532,13 @@ export function ZapsNewEditForm({ currentZap }: Props) {
   };
 
   const ParameterTableRow: React.FC<{
-    param: IZapParameterItem;
+    param: IActionParameterItem;
     changeIsRequired: (val: boolean) => void;
     changeName: (val: string) => void;
     changeType: (val: string) => void;
     changeDescription: (val: string) => void;
     removeParameter: () => void;
-    updateParameter: (params: IZapParameterItem) => void;
+    updateParameter: (params: IActionParameterItem) => void;
     }> = ({
       param,
       changeDescription,
@@ -552,7 +552,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
       const editing = useBoolean();
       const [parameter, setParameter] = useState({ ...param });
       const [parameterErrors, setParameterErrors] = useState<
-        Record<keyof IZapParameterItem, boolean>
+        Record<keyof IActionParameterItem, boolean>
       >({
         parameterDescription: false,
         parameterIsRequired: false,
@@ -593,7 +593,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   // changeName(e.target.value);
                   setParameter({ ...param, parameterName: e.target.value });
                 }}
-                placeholder="Zap name"
+                placeholder="Action name"
                 disabled={!editing.value}
                 error={parameterErrors.parameterName}
               />
@@ -749,14 +749,14 @@ export function ZapsNewEditForm({ currentZap }: Props) {
   };
 
   const onSubmit = handleSubmit(async (data: any) => {
-    console.log('Form action data', action.data);
+    console.log('Form operation data', operation.data);
 
 
-    if (action.type === 'apiEndpoint') {
-      console.log('Action data', action.data);
-      if (!action.data?.linkedApiEndpoint || action.data?.linkedApiEndpoint.trim().length < 1) {
-        console.log(action.data?.linkedApiEndpoint.trim().length);
-        setActionErrors((prev) => ({
+    if (operation.type === 'apiEndpoint') {
+      console.log('Operation data', operation.data);
+      if (!operation.data?.linkedApiEndpoint || operation.data?.linkedApiEndpoint.trim().length < 1) {
+        console.log(operation.data?.linkedApiEndpoint.trim().length);
+        setOperationErrors((prev) => ({
           ...prev,
           linkedApiEndpoint: 'ApiEndpoint is required',
         }));
@@ -764,9 +764,9 @@ export function ZapsNewEditForm({ currentZap }: Props) {
       }
     }
 
-    if (action.type === 'knowledgeBase') {
-      if (!action.data?.linkedKnowledgeBase || action.data?.linkedKnowledgeBase.trim().length < 1) {
-        setActionErrors((prev) => ({
+    if (operation.type === 'knowledgeBase') {
+      if (!operation.data?.linkedKnowledgeBase || operation.data?.linkedKnowledgeBase.trim().length < 1) {
+        setOperationErrors((prev) => ({
           ...prev,
           linkedKnowledgeBase: 'KnowledgeBase is required',
         }));
@@ -775,17 +775,17 @@ export function ZapsNewEditForm({ currentZap }: Props) {
     }
     
     try {
-      const url = currentZap ? `/zaps/${currentZap._id}` : '/zaps/create';
-      const method = currentZap ? API.put : API.post;
+      const url = currentAction ? `/actions/${currentAction._id}` : '/actions/create';
+      const method = currentAction ? API.put : API.post;
       await method(url, {
-        zapName: data.zapName,
-        zapDescription: data?.zapDescription,
-        zapAction: action,
-        zapParameters: parameters,
+        actionName: data.actionName,
+        actionDescription: data?.actionDescription,
+        actionOperation: operation,
+        actionParameters: parameters,
       });
       reset();
-      toast.success(currentZap ? 'Update success!' : 'Create success!');
-      router.push('/zaps');
+      toast.success(currentAction ? 'Update success!' : 'Create success!');
+      router.push('/actions');
     } catch (error) {
       // console.error(error);
       const messages = Object.values(error.response.data.errors || {}) as string[];
@@ -797,19 +797,19 @@ export function ZapsNewEditForm({ currentZap }: Props) {
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" subheader="Zap name and description" sx={{ mb: 3 }} />
+      <CardHeader title="Details" subheader="Action name and description" sx={{ mb: 3 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Zap Name</Typography>
-          <Field.Text name="zapName" placeholder="Name your zap" />
+          <Typography variant="subtitle2">Action Name</Typography>
+          <Field.Text name="actionName" placeholder="Name your action" />
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Zap Description</Typography>
-          <Field.Text name="zapDescription" placeholder="Describe your zap..."
+          <Typography variant="subtitle2">Action Description</Typography>
+          <Field.Text name="actionDescription" placeholder="Describe your action..."
             multiline
             minRows={4}
             maxRows={4}
@@ -819,43 +819,43 @@ export function ZapsNewEditForm({ currentZap }: Props) {
     </Card>
   );
 
-  const renderActions = (
+  const renderOperations = (
     <Card>
-      <CardHeader title="Action" subheader="Zap action settings" sx={{ mb: 3 }} />
+      <CardHeader title="Operation" subheader="Action operation settings" sx={{ mb: 3 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <RadioGroup
-          value={action.type}
+          value={operation.type}
           onChange={(e) => {
-            const type = e.target.value as IZapAction['type'];
+            const type = e.target.value as IActionOperation['type'];
             if (type === 'apiEndpoint') {
-              setAction({
+              setOperation({
                 data: {
-                  linkedApiEndpoint: action.data && action.type === 'apiEndpoint' ? action.data.linkedApiEndpoint : '',
-                  path: action.data && action.type === 'apiEndpoint' ? action.data.path : '',
-                  responseInstructions: action.data && action.type === 'apiEndpoint' ? action.data.responseInstructions : '',
-                  payloadData: action.data && action.type === 'apiEndpoint' ? action.data.payloadData : JSON.parse('{}'),
+                  linkedApiEndpoint: operation.data && operation.type === 'apiEndpoint' ? operation.data.linkedApiEndpoint : '',
+                  path: operation.data && operation.type === 'apiEndpoint' ? operation.data.path : '',
+                  responseInstructions: operation.data && operation.type === 'apiEndpoint' ? operation.data.responseInstructions : '',
+                  payloadData: operation.data && operation.type === 'apiEndpoint' ? operation.data.payloadData : JSON.parse('{}'),
                 },
                 type,
               });
             } else if (type === 'knowledgeBase') {
-              setAction({
+              setOperation({
                 data: {
-                  linkedKnowledgeBase: action.data && action.type === 'knowledgeBase' ? action.data.linkedKnowledgeBase : '',
-                  responseInstructions: action.data && action.type === 'knowledgeBase' ? action.data.responseInstructions : '',
+                  linkedKnowledgeBase: operation.data && operation.type === 'knowledgeBase' ? operation.data.linkedKnowledgeBase : '',
+                  responseInstructions: operation.data && operation.type === 'knowledgeBase' ? operation.data.responseInstructions : '',
                 },
                 type,
               });
             } else {
-              setAction({
+              setOperation({
                 data: null,
                 type,
               });
             }
           }}
-          name="action"
+          name="operation"
         >
           <Stack direction="row">
             <FormControlLabel control={<Radio />} label="Search through a Knowledge base" value="knowledgeBase" />
@@ -864,16 +864,16 @@ export function ZapsNewEditForm({ currentZap }: Props) {
             <FormControlLabel control={<Radio />} label="Hangup the call" value="hangup" />
           </Stack>
         </RadioGroup>
-        {action.type === 'apiEndpoint' && (
+        {operation.type === 'apiEndpoint' && (
           <Box display="grid" gridTemplateColumns="0.5fr 1fr" gap={4}>
             <Typography alignSelf="center">API Endpoint</Typography>
             <Box>
               <Field.Select
-                error={Boolean(actionErrors.linkedApiEndpoint)}
-                key={action.data?.linkedApiEndpoint}
-                value={action.data?.linkedApiEndpoint}
+                error={Boolean(operationErrors.linkedApiEndpoint)}
+                key={operation.data?.linkedApiEndpoint}
+                value={operation.data?.linkedApiEndpoint}
                 onChange={(e) => {
-                  setAction((pre) => ({
+                  setOperation((pre) => ({
                     type: 'apiEndpoint',
                     data: {
                       linkedApiEndpoint: e.target.value,
@@ -882,7 +882,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                       payloadData: pre.data && pre.type === 'apiEndpoint' ? pre.data.payloadData : JSON.parse('{}'),
                     },
                   }));
-                  setActionErrors((prev) => ({
+                  setOperationErrors((prev) => ({
                     ...prev,
                     linkedApiEndpoint: '',
                   }));
@@ -897,9 +897,9 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   </MenuItem>
                 ))}
               </Field.Select>
-              {actionErrors.linkedApiEndpoint && (
+              {operationErrors.linkedApiEndpoint && (
                 <Typography variant="caption" color="error" mt={1}>
-                  {actionErrors.linkedApiEndpoint}
+                  {operationErrors.linkedApiEndpoint}
                 </Typography>
               )}
             </Box>
@@ -908,14 +908,14 @@ export function ZapsNewEditForm({ currentZap }: Props) {
             <Box
               border="1px solid"
               borderColor={
-                actionErrors.path
+                operationErrors.path
                   ? 'var(--palette-error-main)'
                   : 'var(--palette-background-neutral)'
               }
               borderRadius="var(--shape-borderRadius)"
               sx={{
                 ':hover': {
-                  borderColor: actionErrors.path
+                  borderColor: operationErrors.path
                     ? 'var(--palette-error-main)'
                     : 'var(--palette-background-main)',
                 },
@@ -934,7 +934,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                 <Typography>
                   {
                     processInputToJSX(
-                      action.data?.path || '', 
+                      operation.data?.path || '', 
                       parameters ? parameters.map((param) => param.parameterName) : []
                     ).props.children}
                 </Typography>
@@ -943,9 +943,9 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                 sx={{
                   opacity: 0,
                 }}
-                value={action.data?.path}
+                value={operation.data?.path}
                 onChange={(e) => {
-                  setAction((pre) => ({
+                  setOperation((pre) => ({
                     type: 'apiEndpoint',
                     data: {
                       linkedApiEndpoint: pre.data && pre.type === 'apiEndpoint' ? pre.data.linkedApiEndpoint : '',
@@ -956,7 +956,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   }));
                 }}
                 name="path"
-                error={Boolean(actionErrors.path)}
+                error={Boolean(operationErrors.path)}
               />
             </Box>
 
@@ -969,7 +969,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   onChange={(updatedJson: any) => {
                     console.log('Updated JSON', updatedJson);
                     setPayloadJsonData(updatedJson);
-                    setAction((pre) => ({
+                    setOperation((pre) => ({
                       type: 'apiEndpoint',
                       data: {
                         linkedApiEndpoint: pre.data && pre.type === 'apiEndpoint' ? pre.data.linkedApiEndpoint : '',
@@ -981,9 +981,9 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                     
                   }}
               />
-              {actionErrors.payloadData && (
+              {operationErrors.payloadData && (
                 <Typography variant="caption" color="error" mt={1}>
-                  {actionErrors.payloadData}
+                  {operationErrors.payloadData}
                 </Typography>
               )}
             </Box>
@@ -992,14 +992,14 @@ export function ZapsNewEditForm({ currentZap }: Props) {
             <Box
               border="1px solid"
               borderColor={
-                actionErrors.responseInstructions
+                operationErrors.responseInstructions
                   ? 'var(--palette-error-main)'
                   : 'var(--palette-background-neutral)'
               }
               borderRadius="var(--shape-borderRadius)"
               sx={{
                 ':hover': {
-                  borderColor: actionErrors.responseInstructions
+                  borderColor: operationErrors.responseInstructions
                     ? 'var(--palette-error-main)'
                     : 'var(--palette-background-main)',
                 },
@@ -1020,7 +1020,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                 <Typography>
                   {
                     processResponseInstructionsToJSX(
-                      action.data?.responseInstructions || ''  
+                      operation.data?.responseInstructions || ''  
                     ).props.children}
                 </Typography>
               </Box>
@@ -1029,9 +1029,9 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                 sx={{
                   opacity: 0,
                 }}
-                value={action.data?.responseInstructions}
+                value={operation.data?.responseInstructions}
                 onChange={(e) => {
-                  setAction((pre) => ({
+                  setOperation((pre) => ({
                     type: 'apiEndpoint',
                     data: {
                       linkedApiEndpoint: pre.data && pre.type === 'apiEndpoint' ? pre.data.linkedApiEndpoint : '',
@@ -1042,29 +1042,29 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   }));                  
                 }}
                 name="Response Instructions"
-                error={Boolean(actionErrors.responseInstructions)}
+                error={Boolean(operationErrors.responseInstructions)}
               />
             </Box>
           </Box>
         )}
 
-        {action.type === 'knowledgeBase' && (
+        {operation.type === 'knowledgeBase' && (
           <Box display="grid" gridTemplateColumns="0.5fr 1fr" gap={4}>
             <Typography alignSelf="center">Knowledge Base</Typography>
             <Box>
               <Field.Select
-                error={Boolean(actionErrors.linkedKnowledgeBase)}
-                key={action.data?.linkedKnowledgeBase}
-                value={action.data?.linkedKnowledgeBase}
+                error={Boolean(operationErrors.linkedKnowledgeBase)}
+                key={operation.data?.linkedKnowledgeBase}
+                value={operation.data?.linkedKnowledgeBase}
                 onChange={(e) => {
-                  setAction((pre) => ({
+                  setOperation((pre) => ({
                     type: 'knowledgeBase',
                     data: {
                       linkedKnowledgeBase: e.target.value,
                       responseInstructions: pre.data && pre.type === 'knowledgeBase' ? pre.data.responseInstructions : '',
                     },
                   }));
-                  setActionErrors((prev) => ({
+                  setOperationErrors((prev) => ({
                     ...prev,
                     linkedKnowledgeBase: '',
                   }));
@@ -1079,9 +1079,9 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   </MenuItem>
                 ))}
               </Field.Select>
-              {actionErrors.linkedKnowledgeBase && (
+              {operationErrors.linkedKnowledgeBase && (
                 <Typography variant="caption" color="error" mt={1}>
-                  {actionErrors.linkedKnowledgeBase}
+                  {operationErrors.linkedKnowledgeBase}
                 </Typography>
               )}
             </Box>
@@ -1090,14 +1090,14 @@ export function ZapsNewEditForm({ currentZap }: Props) {
             <Box
               border="1px solid"
               borderColor={
-                actionErrors.responseInstructions
+                operationErrors.responseInstructions
                   ? 'var(--palette-error-main)'
                   : 'var(--palette-background-neutral)'
               }
               borderRadius="var(--shape-borderRadius)"
               sx={{
                 ':hover': {
-                  borderColor: actionErrors.responseInstructions
+                  borderColor: operationErrors.responseInstructions
                     ? 'var(--palette-error-main)'
                     : 'var(--palette-background-main)',
                 },
@@ -1118,7 +1118,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                 <Typography>
                   {
                     processResponseInstructionsToJSX(
-                      action.data?.responseInstructions || ''  
+                      operation.data?.responseInstructions || ''  
                     ).props.children}
                 </Typography>
               </Box>
@@ -1127,9 +1127,9 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                 sx={{
                   opacity: 0,
                 }}
-                value={action.data?.responseInstructions}
+                value={operation.data?.responseInstructions}
                 onChange={(e) => {
-                  setAction((pre) => ({
+                  setOperation((pre) => ({
                     type: 'knowledgeBase',
                     data: {
                       linkedKnowledgeBase: pre.data && pre.type === 'knowledgeBase' ? pre.data.linkedKnowledgeBase : '',
@@ -1138,7 +1138,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
                   }));
                 }}
                 name="Response Instructions"
-                error={Boolean(actionErrors.responseInstructions)}
+                error={Boolean(operationErrors.responseInstructions)}
               />
             </Box>
           </Box>
@@ -1161,7 +1161,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
         loading={isSubmitting}
         sx={{ ml: 2 }}
       >
-        {!currentZap ? 'Create Zap' : 'Update Zap'}
+        {!currentAction ? 'Create Action' : 'Update Action'}
       </LoadingButton>
     </Box>
   );
@@ -1174,7 +1174,7 @@ export function ZapsNewEditForm({ currentZap }: Props) {
             <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: '1100px' }}>
               {renderDetails}
               <ParametersCard parameters={parameters} setParameters={setParameters} />
-              {renderActions}
+              {renderOperations}
               {renderCTA}
             </Stack>
           </Form>

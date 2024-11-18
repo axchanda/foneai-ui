@@ -9,9 +9,9 @@ export type ILogType = {
     costPerMinute: any;
     totalCost: Float32Array;
     username: string;   
-    botId: any;
+    appId: any;
     campaignId: any; 
-    app?: string;
+    appType?: string;
   };
   
   export type ISessionLogType = {

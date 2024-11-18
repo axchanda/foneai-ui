@@ -12,7 +12,7 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import { Box } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { IBotListType } from 'src/types/bot';
+import type { IAgentListType } from 'src/types/agent';
 import API from 'src/utils/API';
 import type { ICampaignType } from 'src/types/campaign';
 import { LoadingScreen } from 'src/components/loading-screen';
@@ -24,7 +24,7 @@ export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
 export const NewUserSchema = zod.object({
   campaignName: zod.string().min(3, { message: 'Campaign Name must be at least 3 characters' }),
   campaignDescription: zod.string(),
-  linkedBot: zod.string(),
+  linkedAppId: zod.string(),
 });
 
 // ----------------------------------------------------------------------
@@ -38,27 +38,27 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
 
   const [loaded, setLoaded] = useState(false);
 
-  const [bots, setBots] = useState<{ label: string; value: string }[]>([]);
+  const [agents, setAgents] = useState<{ label: string; value: string }[]>([]);
 
-  const getBots = useCallback(async () => {
+  const getAgents = useCallback(async () => {
     const { data } = await API.get<{
-      bots: IBotListType[];
+      agents: IAgentListType[];
       count: number;
-    }>('/botsList');
-    const botOptions = data.bots.map((bot) => ({ label: bot.botName, value: bot._id }));
-    setBots(botOptions);
+    }>('/agentsList');
+    const agentOptions = data.agents.map((agent) => ({ label: agent.name, value: agent._id }));
+    setAgents(agentOptions);
     setLoaded(true);
   }, []);
 
   useEffect(() => {
-    getBots();
-  }, [getBots]);
+    getAgents();
+  }, [getAgents]);
   
   const defaultValues = useMemo(
     () => ({
       campaignName: currentCampaign?.campaignName || '',
       campaignDescription: currentCampaign?.description || '',
-      linkedBot: currentCampaign?.linkedBot || '',
+      linkedAppId: currentCampaign?.linkedAppId || '',
     }),
     [currentCampaign]
   );
@@ -129,15 +129,15 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
 
                 <Field.Autocomplete
                   fullWidth
-                  name="linkedBot"
-                  label="Linked Bot"
-                  placeholder="Choose a bot to link"
+                  name="linkedAppId"
+                  label="Linked Agent"
+                  placeholder="Choose a agent to link"
                   autoHighlight
-                  options={bots}
+                  options={agents}
                   onChange={(event, newValue) => {
-                    setValue('linkedBot', newValue.value);
+                    setValue('linkedAppId', newValue.value);
                   }}
-                  value={bots.find((bot) => bot.value === values.linkedBot)?.label}
+                  value={agents.find((agent) => agent.value === values.linkedAppId)?.label}
                 />
               </Box>
 

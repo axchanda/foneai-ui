@@ -15,12 +15,13 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import type { ICampaignType } from 'src/types/campaign';
 import { Checkbox, Typography } from '@mui/material';
 import useClipboard from 'react-use-clipboard';
-import type { IBotListType } from 'src/types/bot';
+import type { IAgentListType } from 'src/types/agent';
+import { Label } from 'src/components/label';
 // ----------------------------------------------------------------------
 
 type Props = {
   row: ICampaignType;
-  bots: IBotListType[];
+  agents: IAgentListType[];
   selected: boolean;
   onEditRow: () => void;
   onSelectRow: () => void;
@@ -33,7 +34,7 @@ export function CampaignTableRow({
   onEditRow,
   onSelectRow,
   onDeleteRow,
-  bots,
+  agents,
 }: Props) {
   const confirm = useBoolean();
 
@@ -44,7 +45,7 @@ export function CampaignTableRow({
     successDuration: 3000,
   });
 
-  const linkedBot = bots.find((bot) => bot._id === row.linkedBot)?.botName || row.linkedBot;
+  const linkedAgent = agents.find((agent) => agent._id === row.linkedAppId)?.name || row.linkedAppId;
 
   return (
     <>
@@ -61,7 +62,7 @@ export function CampaignTableRow({
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.campaignName}</TableCell>
         <TableCell>
-          <Stack spacing={2} direction="row" alignItems="center">
+          <Stack spacing={1} direction="row" alignItems="center">
             <Typography>{row.campaignId}</Typography>
             <IconButton
               sx={{ cursor: 'pointer' }}
@@ -79,7 +80,14 @@ export function CampaignTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{linkedBot}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Stack direction={'row'} gap={1}>
+            <Label>
+              AGENT
+            </Label>
+            {linkedAgent}
+          </Stack>
+        </TableCell>
 
         <TableCell>
           <Typography>{row.description}</Typography>

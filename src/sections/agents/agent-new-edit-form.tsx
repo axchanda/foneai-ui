@@ -15,7 +15,7 @@ import { useRouter } from 'src/routes/hooks';
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import API from 'src/utils/API';
-import type { IBotType } from 'src/types/bot';
+import type { IAgentType } from 'src/types/agent';
 import {
   Button,
   Dialog,
@@ -31,55 +31,53 @@ import {
   TableRow
 } from '@mui/material';
 import { useBoolean } from 'src/hooks/use-boolean';
-import type { IZapListType } from 'src/types/zap';
+import type { IActionListType } from 'src/types/action';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { TableHeadCustom, useTable } from 'src/components/table';
 import { Iconify } from 'src/components/iconify';
-import TriggerZap from 'src/components/bots/trigger-zap';
+import TriggerAction from 'src/components/agents/trigger-action';
 
-export type NewBotSchemaType = zod.infer<typeof NewBotSchema>;
+export type NewAgentSchemaType = zod.infer<typeof NewAgentSchema>;
 
-export const NewBotSchema = zod.object({
-  botName: zod.string().min(1, { message: 'Bot name is required!' }),
-  botIntroduction: zod.string().min(1, { message: 'Bot Introduction is required!' }),
-  botInstructions: zod.string().min(1, { message: 'Bot Instructions is required!' }),
-  botVoiceId: zod.string().min(1, { message: 'Voice ID is required!' }),
-  botIsInterruptable: zod.boolean(),
-  botKnowledgeBase: zod.string(),
-  botEndpointing: zod
+export const NewAgentSchema = zod.object({
+  name: zod.string().min(1, { message: 'Name is required!' }),
+  introduction: zod.string().min(1, { message: 'Introduction is required!' }),
+  instructions: zod.string().min(1, { message: 'Instructions are required!' }),
+  voiceId: zod.string().min(1, { message: 'Voice ID is required!' }),
+  isInterruptable: zod.boolean(),
+  endpointing: zod
     .number()
     .min(0, { message: 'Endpointing must be a positive number!' })
     .max(3000, { message: 'Endpointing must be less than 3000!' })
     .refine((value) => value % 1 === 0, { message: 'Endpointing must be an integer!' }),
-  botTimezone: zod.string().min(1, { message: 'Bot Timezone is required!' }),
-  botDaylightSavings: zod.boolean(),
-  botLanguage: zod.string().min(1, { message: 'Bot Language is required!' }),
+  timezone: zod.string().min(1, { message: 'Timezone is required!' }),
+  daylightSavings: zod.boolean(),
+  language: zod.string().min(1, { message: 'Language is required!' }),
 });
 
 type Props = {
-  currentBot?: IBotType;
+  currentAgent?: IAgentType;
 };
 
-export function BotNewEditForm({ currentBot }: Props) {
+export function AgentNewEditForm({ currentAgent }: Props) {
   const router = useRouter();
   const defaultValues = useMemo(
     () => ({
-      botName: currentBot?.botName || '',
-      botIntroduction: currentBot?.botIntroduction || '',
-      botInstructions: currentBot?.botInstructions || '',
-      botLanguage: currentBot?.botLanguage || 'en',
-      botVoiceId: currentBot?.botVoice?.voiceId || '',
-      botIsInterruptable: currentBot?.botIsInterruptable || false,
-      botEndpointing: currentBot?.botEndpointing || 20,
-      botKnowledgeBase: currentBot?.botKnowledgeBaseId || '',
-      botTimezone: currentBot?.botTimezone || 'UTC-05:00',
-      botDaylightSavings: currentBot?.botDaylightSavings || false,
+      name: currentAgent?.name || '',
+      introduction: currentAgent?.introduction || '',
+      instructions: currentAgent?.instructions || '',
+      language: currentAgent?.language || 'en',
+      voiceId: currentAgent?.voice?.voiceId || '',
+      isInterruptable: currentAgent?.isInterruptable || false,
+      endpointing: currentAgent?.endpointing || 20,
+      timezone: currentAgent?.timezone || 'UTC-05:00',
+      daylightSavings: currentAgent?.daylightSavings || false      
     }),
-    [currentBot]
+    [currentAgent]
   );
-  const methods = useForm<NewBotSchemaType>({
+  const methods = useForm<NewAgentSchemaType>({
     mode: 'all',
-    resolver: zodResolver(NewBotSchema),
+    resolver: zodResolver(NewAgentSchema),
     //@ts-ignore
     defaultValues,
   });
@@ -96,32 +94,32 @@ export function BotNewEditForm({ currentBot }: Props) {
   const values = watch();
 
   const [loaded, setLoaded] = useState(false);
-  // this zaps is the list of zaps that are available for the user
-  const [zaps, setZaps] = useState<IZapListType>([]);
+  // this actions is the list of actions that are available for the user
+  const [actions, setActions] = useState<IActionListType>([]);
 
-  // this zapTriggers is the list of zaps that are triggered by the bot
-  const [zapTriggers, setZapTriggers] = useState<{ zapId: string; trigger: string }[]>(
-    currentBot?.botZaps || []
+  // this actionTriggers is the list of actions that are triggered by the agent
+  const [actionTriggers, setActionTriggers] = useState<{ actionId: string; trigger: string }[]>(
+    currentAgent?.actions || []
   );
   const [selectedVoice, setSelectedVoice] = useState<string | null>(
-    currentBot?.botVoice?.voiceId || null
+    currentAgent?.voice?.voiceId || null
   );
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
 
   const getData = useCallback(async () => {
-    const {data} = await API.get<any>('/zapsList');
+    const {data} = await API.get<any>('/actionsList');
     console.log(data);
-    setZaps(data.zaps);
+    setActions(data.actions);
 
     setLoaded(true);
   }, []);
 
   useEffect(() => {
-    if (currentBot) {
+    if (currentAgent) {
       //@ts-ignore
       reset(defaultValues);
     }
-  }, [currentBot, defaultValues, reset]);
+  }, [currentAgent, defaultValues, reset]);
 
   useEffect(() => {
     getData();
@@ -129,27 +127,29 @@ export function BotNewEditForm({ currentBot }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
       try {
-        console.log('Zap Triggers 141: ', zapTriggers);
-        const url = currentBot ? `/bots/${currentBot._id}` : '/bots/create';
-        const method = currentBot ? API.put : API.post;
+        console.log('data', data)
+        console.log('Action Triggers 141: ', actionTriggers);
+        const url = currentAgent ? `/agents/${currentAgent._id}` : '/agents/create';
+        const method = currentAgent ? API.put : API.post;
         await method(url, {
-          botName: data.botName,
-          botIntroduction: data.botIntroduction,
-          botInstructions: data.botInstructions,
-          botLanguage: data.botLanguage,
-          botVoice: {
+          name: data.name,
+          introduction: data.introduction,
+          instructions: data.instructions,
+          language: data.language,
+          voice: {
             ttsProvider: 'AWS',
-            voiceId: data.botVoiceId
+            voiceId: data.voiceId,
           },
-          botIsInterruptable: data.botIsInterruptable,
-          botEndpointing: data.botEndpointing,
-          botTimezone: data.botTimezone,
-          botDaylightSavings: data.botDaylightSavings,
-          botZaps: zapTriggers,
+          isInterruptable: data.isInterruptable,
+          endpointing: data.endpointing,
+          timezone: data.timezone,
+          daylightSavings: data.daylightSavings,
+          actions: actionTriggers,
+          
         });
         reset();
-        toast.success(currentBot ? 'Update success!' : 'Create success!');
-        router.push('/bots');
+        toast.success(currentAgent ? 'Update success!' : 'Create success!');
+        router.push('/agents');
       } catch (error) {
         const messages = Object.values(error.response.data.errors || {}) as string[];
         messages.forEach((m: string) => {
@@ -162,7 +162,7 @@ export function BotNewEditForm({ currentBot }: Props) {
     <Card>
       <CardHeader
         title="Details"
-        subheader="Bot name, introduction and prompt instructions"
+        subheader="Agent name, introduction and prompt instructions"
         sx={{ mb: 3 }}
       />
 
@@ -170,25 +170,25 @@ export function BotNewEditForm({ currentBot }: Props) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Bot Name</Typography>
-          <Field.Text name="botName" placeholder="Ex: Sales bot..." />
+          <Typography variant="subtitle2">Agent Name</Typography>
+          <Field.Text name="name" placeholder="Ex: Sales agent..." />
         </Stack>
 
         <Stack spacing={1.5}>
           <Typography variant="subtitle2">Introduction Line</Typography>
           <Field.Text
-            name="botIntroduction"
+            name="introduction"
             placeholder="Hi, I'm an AI assistant that would like to ..."
           />
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Bot Instructions</Typography>
+          <Typography variant="subtitle2">Agent Instructions</Typography>
           <Field.TextareaWithMaximize
             // height={200}
             // showToolbar={false}
             // rows={6}
-            name="botInstructions"
+            name="instructions"
             placeholder="Enter detailed instructions..."
           />
         </Stack>
@@ -216,12 +216,12 @@ export function BotNewEditForm({ currentBot }: Props) {
                   <Typography variant="subtitle2">Language</Typography>
                   <Field.Select
                     onChange={(e) => {
-                      setValue('botLanguage', e.target.value as 'en' | 'es');
-                      setValue('botVoiceId', '');
+                      setValue('language', e.target.value as 'en' | 'es');
+                      setValue('voiceId', '');
                       setSelectedVoice(null);
                       // voiceRef.current?.focus();
                     }}
-                    defaultValue={values.botLanguage}
+                    defaultValue={values.language}
                     name="language"
                   >
                     <MenuItem value="en">English</MenuItem>
@@ -235,7 +235,7 @@ export function BotNewEditForm({ currentBot }: Props) {
                   <Stack spacing={1}>
                     <Typography variant="subtitle2">Voice Id</Typography>
                     <Button
-                      disabled={!values.botLanguage}
+                      disabled={!values.language}
                       onClick={() => {
                         setOpenVoiceDialog(true);
                       }}
@@ -246,13 +246,13 @@ export function BotNewEditForm({ currentBot }: Props) {
                       variant="contained"
                       size="large"
                     >
-                      {values.botVoiceId || 'Select Voice'}
+                      {values.voiceId || 'Select Voice'}
                       <Iconify icon="eva:arrow-ios-downward" />
                     </Button>
-                    {/* error message when botVoiceId is empty */}
-                    {errors.botVoiceId && (
+                    {/* error message when agentVoiceId is empty */}
+                    {errors.voiceId && (
                       <Typography variant="caption" sx={{ color: 'error.main' }}>
-                        {errors.botVoiceId.message}
+                        {errors.voiceId.message}
                       </Typography>
                     )}
                   </Stack>
@@ -266,11 +266,11 @@ export function BotNewEditForm({ currentBot }: Props) {
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Interruptable</Typography>
               <Field.Switch
-                name="botIsInterruptable"
+                name="isInterruptable"
                 label={
-                  values.botIsInterruptable
-                    ? 'The bot stops speaking when the user interrupts the bot'
-                    : 'The bot continues to speak even when the user interrupts the bot'
+                  values.isInterruptable
+                    ? 'The agent stops speaking when the user interrupts the agent'
+                    : 'The agent continues to speak even when the user interrupts the agent'
                 }
               />
             </Stack>
@@ -279,7 +279,7 @@ export function BotNewEditForm({ currentBot }: Props) {
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Endpointing</Typography>
               <Field.Text
-                name="botEndpointing"
+                name="endpointing"
                 placeholder="Enter endpointing value"
                 type="number"
                 sx={{
@@ -313,13 +313,13 @@ export function BotNewEditForm({ currentBot }: Props) {
         <Grid item xs={12} sm={6}>
           <Stack spacing={1.5}>
             <Typography variant="subtitle2">Timezone</Typography>
-            <Field.TimezoneSelect name="botTimezone" placeholder="Select a timezone" />
+            <Field.TimezoneSelect name="timezone" placeholder="Select a timezone" />
           </Stack>
         </Grid>
         <Grid alignSelf="center" item xs={12} sm={6}>
           <Stack spacing={1.5}>
             <Typography variant="subtitle2">Daylight Savings</Typography>
-            <Field.Switch name="botDaylightSavings" label="Daylight Savings" />
+            <Field.Switch name="daylightSavings" label="Daylight Savings" />
           </Stack>
         </Grid>
       </Grid>
@@ -335,11 +335,11 @@ export function BotNewEditForm({ currentBot }: Props) {
 
             {renderProperties}
 
-            <TriggerZap
-              zaps={zaps}
-              botInstructions={values.botInstructions}
-              zapTriggers={zapTriggers}
-              setZapTriggers={setZapTriggers}
+            <TriggerAction
+              actions={actions}
+              instructions={values.instructions}
+              actionTriggers={actionTriggers}
+              setActionTriggers={setActionTriggers}
             />
             {renderMisc}
 
@@ -356,7 +356,7 @@ export function BotNewEditForm({ currentBot }: Props) {
                 loading={isSubmitting}
                 sx={{ ml: 2 }}
               >
-                {!currentBot ? 'Create Bot' : 'Update Bot'}
+                {!currentAgent ? 'Create Agent' : 'Update Agent'}
               </LoadingButton>
             </Box>
           </Stack>
@@ -367,18 +367,18 @@ export function BotNewEditForm({ currentBot }: Props) {
       <VoiceDialog
         open={openVoiceDialog}
         onClose={() => setOpenVoiceDialog(false)}
-        // voices={voiceIDs[values.botLanguage || 'en']}
+        // voices={voiceIDs[values.agentLanguage || 'en']}
         onSelect={(voice) => {
           setSelectedVoice(voice);
-          setValue('botVoiceId', voice);
+          setValue('voiceId', voice);
           setOpenVoiceDialog(false);
-          errors.botVoiceId = undefined;
+          errors.voiceId = undefined;
         }}
         selectedVoice={selectedVoice}
         setSelectedVoice={setSelectedVoice}
-        language={values.botLanguage}
+        language={values.language}
         onConfirm={(voiceId: string) => {
-          setValue('botVoiceId', voiceId);
+          setValue('voiceId', voiceId);
           setOpenVoiceDialog(false);
         }}
       />

@@ -15,10 +15,10 @@ import PermissionGuard from 'src/auth/guard/permission-guard';
 /** **************************************
  * Jwt
  *************************************** */
-const BotsPages = {
-  BotsPage: lazy(() => import('src/pages/bots/index')),
-  BotCreatePage: lazy(() => import('src/pages/bots/create')),
-  BotEditPage: lazy(() => import('src/pages/bots/edit')),
+const AgentsPages = {
+  AgentsPage: lazy(() => import('src/pages/agents/index')),
+  AgentCreatePage: lazy(() => import('src/pages/agents/create')),
+  AgentEditPage: lazy(() => import('src/pages/agents/edit')),
 };
 
 const layoutContent = (
@@ -29,9 +29,9 @@ const layoutContent = (
   </DashboardLayout>
 );
 
-export const botsRoutes = [
+export const agentsRoutes = [
   {
-    path: 'bots',
+    path: 'agents',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
     children: [
       {
@@ -40,8 +40,8 @@ export const botsRoutes = [
             <Helmet>
               <title> {`${CONFIG.site.name}`}</title>
             </Helmet>
-            <PermissionGuard permission="bots.view">
-              <BotsPages.BotsPage />
+            <PermissionGuard permission="agents.view">
+              <AgentsPages.AgentsPage />
             </PermissionGuard>
           </>
         ),
@@ -54,8 +54,8 @@ export const botsRoutes = [
             <Helmet>
               <title> {`${CONFIG.site.name}`}</title>
             </Helmet>
-            <PermissionGuard permission="bots.create">
-              <BotsPages.BotCreatePage />
+            <PermissionGuard permission="agents.create">
+              <AgentsPages.AgentCreatePage />
             </PermissionGuard>
           </>
         ),
@@ -67,8 +67,8 @@ export const botsRoutes = [
             <Helmet>
               <title> {`${CONFIG.site.name}`}</title>
             </Helmet>
-            <PermissionGuard permission="bots.edit">
-              <BotsPages.BotEditPage />
+            <PermissionGuard permission="agents.edit">
+              <AgentsPages.AgentEditPage />
             </PermissionGuard>
           </>
         ),

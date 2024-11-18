@@ -9,10 +9,10 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { AuthGuard } from 'src/auth/guard';
 import { Helmet } from 'react-helmet-async';
 
-const ZapsPages = {
-  ZapsPage: lazy(() => import('src/pages/zaps/index')),
-  ZapCreatePage: lazy(() => import('src/pages/zaps/create')),
-  ZapEditPage: lazy(() => import('src/pages/zaps/edit')),
+const ActionsPages = {
+  ActionsPage: lazy(() => import('src/pages/actions/index')),
+  ActionCreatePage: lazy(() => import('src/pages/actions/create')),
+  ActionEditPage: lazy(() => import('src/pages/actions/edit')),
 };
 
 const layoutContent = (
@@ -23,9 +23,9 @@ const layoutContent = (
   </DashboardLayout>
 );
 
-export const zapsRoutes = [
+export const actionsRoutes = [
   {
-    path: 'zaps',
+    path: 'actions',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
     children: [
       {
@@ -34,7 +34,7 @@ export const zapsRoutes = [
             <Helmet>
               <title> {`${CONFIG.site.name}`}</title>
             </Helmet>
-            <ZapsPages.ZapsPage />
+            <ActionsPages.ActionsPage />
           </>
         ),
         index: true,
@@ -45,7 +45,7 @@ export const zapsRoutes = [
             <Helmet>
               <title> {`${CONFIG.site.name}`}</title>
             </Helmet>
-            <ZapsPages.ZapCreatePage />
+            <ActionsPages.ActionCreatePage />
           </>
         ),
         path: 'create',
@@ -56,7 +56,7 @@ export const zapsRoutes = [
             <Helmet>
               <title> {`${CONFIG.site.name}`}</title>
             </Helmet>
-            <ZapsPages.ZapEditPage />
+            <ActionsPages.ActionEditPage />
           </>
         ),
         path: ':id',

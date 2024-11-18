@@ -15,7 +15,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import type { ICampaignType } from 'src/types/campaign';
 import { Checkbox, Typography } from '@mui/material';
 import useClipboard from 'react-use-clipboard';
-import type { IBotListType } from 'src/types/bot';
+import type { IAgentListType } from 'src/types/agent';
 import { ILogType } from 'src/types/log';
 import { Label } from 'src/components/label';
 // ----------------------------------------------------------------------
@@ -85,9 +85,9 @@ export function LogTableRow({
                   padding: '2px 8px',
                 }}
             >
-                {row.app ? row.app : 'Agent'}
+                {row.appType ? row.appType : 'Agent'}
             </Label>
-            {row.botId && row.botId.botName}
+            {row.appId && row.appId.name}
           </Stack>
         </TableCell>
 

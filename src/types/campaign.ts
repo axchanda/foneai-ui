@@ -1,7 +1,7 @@
 export type ICampaignType = {
   _id: string;
   campaignName: string;
-  linkedBot: string;
+  linkedAppId: string;
   description: string;
   campaignId: string;
 };

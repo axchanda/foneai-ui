@@ -13,7 +13,7 @@ const ICONS = {
   asterisk: icon('simple-icons:asterisk'),
   freeswitch: <Iconify width={16} icon="custom-freeswitch" color="primary" sx={{ flexShrink: 0 }} />,
   dashboard: icon('hugeicons:dashboard-square-02'),
-  bots: icon('file-icons:robots'),
+  agents: icon('file-icons:robots'),
   users: icon('heroicons:users'),
   campaigns: icon('material-symbols:campaign-outline'),
   invoices: icon('hugeicons:invoice'),
@@ -21,7 +21,7 @@ const ICONS = {
   account: icon('material-symbols:account-circle'),
   knowledgeBase: icon('simple-icons:docsdotrs'),
   apiManager: icon('material-symbols-light:api'),
-  zaps: icon('typcn:flash-outline'),
+  actions: icon('typcn:flash-outline'),
   blank: icon('ic-blank'),
   kanban: icon('ic-kanban'),
   folder: icon('ic-folder'),
@@ -71,9 +71,9 @@ export const navData = [
     subheader: 'App',
     items: [
       {
-        title: 'Bots',
-        path: '/bots',
-        icon: ICONS.bots,
+        title: 'Agents',
+        path: '/agents',
+        icon: ICONS.agents,
       },
       {
         title: 'Campaigns',
@@ -91,9 +91,9 @@ export const navData = [
         icon: ICONS.apiManager,
       },
       {
-        title: 'Zaps',
-        path: '/zaps',
-        icon: ICONS.zaps,
+        title: 'Actions',
+        path: '/actions',
+        icon: ICONS.actions,
       },
     ],
   },

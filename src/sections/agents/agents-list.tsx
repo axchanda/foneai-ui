@@ -6,20 +6,20 @@ import Pagination, { paginationClasses } from '@mui/material/Pagination';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
-import type { IBotListType } from 'src/types/bot';
-import { deleteBot } from 'src/utils/api/bots';
+import type { IAgentListType } from 'src/types/agent';
+import { deleteAgent } from 'src/utils/api/agents';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
-import { BotItem } from './bot-item';
+import { AgentItem } from './agent-item';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  bots: IBotListType[];
-  setBots: Dispatch<SetStateAction<IBotListType[]>>;
+  agents: IAgentListType[];
+  setAgents: Dispatch<SetStateAction<IAgentListType[]>>;
 };
 
-export function BotList({ bots, setBots }: Props) {
+export function AgentList({ agents, setAgents }: Props) {
   const router = useRouter();
   const alertDialog = useBoolean();
 
@@ -32,18 +32,18 @@ export function BotList({ bots, setBots }: Props) {
 
   const handleEdit = useCallback(
     (id: string) => {
-      router.push(`/bots/${id}`);
+      router.push(`/agents/${id}`);
     },
     [router]
   );
 
   const handleDelete = useCallback(
     (id: string) => {
-        deleteBot(id, () => {
-          setBots((prevBots) => prevBots.filter((bot) => bot._id !== id));
+        deleteAgent(id, () => {
+          setAgents((prevAgents) => prevAgents.filter((agent) => agent._id !== id));
         });
       },
-    [setBots]
+    [setAgents]
   );
 
   return (
@@ -53,18 +53,18 @@ export function BotList({ bots, setBots }: Props) {
         display="grid"
         gridTemplateColumns={{ xs: 'repeat(1, 1fr)', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }}
       >
-        {bots.map((bot) => (
-          <BotItem
-            key={bot._id}
-            bot={bot}
-            onView={() => handleView(bot._id)}
-            onEdit={() => handleEdit(bot._id)}
-            onDelete={() => handleDelete(bot._id)}
+        {agents.map((agent) => (
+          <AgentItem
+            key={agent._id}
+            agent={agent}
+            onView={() => handleView(agent._id)}
+            onEdit={() => handleEdit(agent._id)}
+            onDelete={() => handleDelete(agent._id)}
           />
         ))}
       </Box>
 
-      {bots.length > 8 && (
+      {agents.length > 8 && (
         <Pagination
           count={8}
           sx={{

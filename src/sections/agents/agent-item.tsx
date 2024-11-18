@@ -20,7 +20,7 @@ import { fDate } from 'src/utils/format-time';
 import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
-import type { IBotListType, IBotType } from 'src/types/bot';
+import type { IAgentListType } from 'src/types/agent';
 
 // ----------------------------------------------------------------------
 
@@ -31,13 +31,13 @@ const languages = {
 };
 
 type Props = {
-  bot: IBotListType;
+  agent: IAgentListType;
   onView: () => void;
   onEdit: () => void;
   onDelete: () => void;
 };
 
-export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
+export function AgentItem({ agent, onView, onEdit, onDelete }: Props) {
   const popover = usePopover();
   const confirm = useBoolean();
   return (
@@ -55,8 +55,8 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
          columnGap={4}
          >
           <Avatar
-            alt="bot"
-            src="/assets/bot.svg"
+            alt="agent"
+            src="/assets/agent.svg"
             variant="rounded"
             sx={{ width: 64, height: 64, mb: 2 }}
           />
@@ -64,11 +64,11 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
           <ListItemText
             sx={{ mb: 1 }}
             primary={
-              <Link component={RouterLink} href={`/bots/${bot._id}`} color="inherit" underline='none' >
-                {bot.botName}
+              <Link component={RouterLink} href={`/agents/${agent._id}`} color="inherit" underline='none' >
+                {agent.name}
               </Link>
             }
-            secondary={`Update date: ${fDate(bot.updatedAt)}`}
+            secondary={`Update date: ${fDate(agent.updatedAt)}`}
             primaryTypographyProps={{ typography: 'subtitle1' }}
             secondaryTypographyProps={{
               mt: 1,
@@ -85,7 +85,7 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
             sx={{ color: 'primary.main', typography: 'caption' }}
           >
             <Iconify width={16} icon="solar:users-group-rounded-bold" />
-            {bot.candidates.length} candidates
+            {agent.candidates.length} candidates
           </Stack> */}
         </Stack>
 
@@ -94,15 +94,15 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
         <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
           {[
             {
-              label: languages[bot.botLanguage],
+              label: languages[agent.language],
               icon: <Iconify width={16} icon="ion:language" sx={{ flexShrink: 0 }} />,
             },
             {
-              label: bot.botTimezone,
+              label: agent.timezone,
               icon: <Iconify width={16} icon="mingcute:clock-line" sx={{ flexShrink: 0 }} />,
             },
             {
-              label: bot.botIsInterruptable ? 'Interruptable' : 'Non-interruptable',
+              label: agent.isInterruptable ? 'Interruptable' : 'Non-interruptable',
               icon: (
                 <Iconify
                   width={16}
@@ -112,7 +112,7 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
               ),
             },
             {
-              label: bot.botVoice.voiceId,
+              label: agent.voice.voiceId,
               icon: <Iconify width={16} icon="simple-icons:amazonaws" sx={{ flexShrink: 0 }} />,
             },
           ].map((item, index) => (
@@ -179,7 +179,7 @@ export function BotItem({ bot, onView, onEdit, onDelete }: Props) {
         title="Delete"
         content={
           <>
-            Are you sure want to delete <strong> {bot.botName} </strong>?
+            Are you sure want to delete <strong> {agent.name} </strong>?
           </>
         }
         action={

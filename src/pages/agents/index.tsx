@@ -10,22 +10,22 @@ import { Iconify } from 'src/components/iconify';
 import { EmptyContent } from 'src/components/empty-content';
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { BotList } from 'src/sections/bots/bots-list';
+import { AgentList } from 'src/sections/agents/agents-list';
 import API from 'src/utils/API';
-import { IBotListType } from 'src/types/bot';
+import { IAgentListType } from 'src/types/agent';
 import { LoadingScreen } from 'src/components/loading-screen';
 
-function Bots() {
+function Agents() {
   const [loaded, setLoaded] = useState(false);
-  const [bots, setBots] = useState<IBotListType[]>([]);
+  const [agents, setAgents] = useState<IAgentListType[]>([]);
 
   const getData = useCallback(async () => {
-    const botsPromise = API.get<{
-      bots: IBotListType[];
+    const agentsPromise = API.get<{
+      agents: IAgentListType[];
       count: number;
-    }>('/botsList');
-    const { data }= await botsPromise;
-    setBots(data.bots);
+    }>('/agentsList');
+    const { data }= await agentsPromise;
+    setAgents(data.agents);
     setLoaded(true);
   }, []);
 
@@ -36,15 +36,15 @@ function Bots() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Bots"
+        heading="Agents"
         action={
           <Button
             component={RouterLink}
-            href="/bots/create"
+            href="/agents/create"
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            New Bot
+            New Agent
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
@@ -52,7 +52,7 @@ function Bots() {
       {loaded ? (
         <>
           {/* {notFound && <EmptyContent filled sx={{ py: 10 }} />} */}
-          <BotList bots={bots} setBots={setBots} />
+          <AgentList agents={agents} setAgents={setAgents} />
         </>
       ) : (
         <LoadingScreen />
@@ -61,4 +61,4 @@ function Bots() {
   );
 }
 
-export default Bots;
+export default Agents;

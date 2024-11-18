@@ -16,7 +16,7 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import API from 'src/utils/API';
 import { Button, Table, TableBody, TableCell, TableRow, TextField } from '@mui/material';
-import { deleteBot } from 'src/utils/api/bots';
+import { deleteAgent } from 'src/utils/api/agents';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { TableHeadCustom } from 'src/components/table';
@@ -35,9 +35,9 @@ const CHARGE_TABLE_HEAD = [
   { id: 'profit', label: 'Profit', width: 200 },
 ];
 
-export type NewBotSchemaType = zod.infer<typeof NewBotSchema>;
+export type NewAgentSchemaType = zod.infer<typeof NewAgentSchema>;
 
-export const NewBotSchema = zod.object({
+export const NewAgentSchema = zod.object({
   planName: zod.string().min(1, { message: 'Plan name is required!' }),
   planDescription: zod.string().min(1, { message: 'Plan description is required!' }),
   creditSellingPrice: zod.number().min(0.01, { message: 'Credits sales price is required!' }),
@@ -72,9 +72,9 @@ export function PlansNewEditForm({ currentPlan, isUsed }: Props) {
     }),
     [currentPlan]
   );
-  const methods = useForm<NewBotSchemaType>({
+  const methods = useForm<NewAgentSchemaType>({
     mode: 'all',
-    resolver: zodResolver(NewBotSchema),
+    resolver: zodResolver(NewAgentSchema),
     //@ts-ignore
     defaultValues,
   });
@@ -97,8 +97,8 @@ export function PlansNewEditForm({ currentPlan, isUsed }: Props) {
     }
   }, [currentPlan, defaultValues, reset]);
 
-  // values.botLanguage = values.botLanguage || 'en';
-  // console.log(values.botLanguage);
+  // values.agentLanguage = values.agentLanguage || 'en';
+  // console.log(values.agentLanguage);
   const onSubmit = handleSubmit(async (data) => {
     try {
       // console.log(data);
@@ -109,7 +109,7 @@ export function PlansNewEditForm({ currentPlan, isUsed }: Props) {
       });
       reset();
       toast.success(currentPlan ? 'Update success!' : 'Create success!');
-      router.push('/bots');
+      router.push('/agents');
     } catch (error) {
       // console.error(error);
       const messages = Object.values(error.response.data.errors || {}) as string[];
@@ -248,8 +248,8 @@ export function PlansNewEditForm({ currentPlan, isUsed }: Props) {
                   if (isUsed) {
                     alertDialog.setValue(true);
                   } else {
-                    await deleteBot(currentPlan._id, () => {
-                      router.push('/bots');
+                    await deleteAgent(currentPlan._id, () => {
+                      router.push('/agents');
                     });
                   }
                 }}
@@ -257,7 +257,7 @@ export function PlansNewEditForm({ currentPlan, isUsed }: Props) {
                 size="large"
                 color="error"
               >
-                Delete bot
+                Delete agent
               </Button>
             )}
             <LoadingButton
@@ -275,8 +275,8 @@ export function PlansNewEditForm({ currentPlan, isUsed }: Props) {
       </Form>
 
       <ConfirmDialog
-        title="Unable to delete bot"
-        content="This bot is currently being used in some campaign(s). Please remove it from the linked campaign(s) before deleting."
+        title="Unable to delete agent"
+        content="This agent is currently being used in some campaign(s). Please remove it from the linked campaign(s) before deleting."
         open={alertDialog.value}
         action={<></>}
         onClose={() => {

@@ -15,7 +15,7 @@ import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import type { ICampaignType } from 'src/types/campaign';
 import { Checkbox, Typography } from '@mui/material';
 import useClipboard from 'react-use-clipboard';
-import type { IBotListType } from 'src/types/bot';
+import type { IAgentListType } from 'src/types/agent';
 import { ILogType, ISessionLogDetailType } from 'src/types/log';
 import { Label } from 'src/components/label';
 // ----------------------------------------------------------------------

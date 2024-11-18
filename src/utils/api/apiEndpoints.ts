@@ -10,7 +10,11 @@ export const deleteApiEndpoint = async (id: string, cb?: () => any) => {
       cb();
     }
   } catch (error) {
-    toast.error('Delete failed!');
+    if(error?.response && error?.response?.status == 500 && error?.response?.data) {
+      toast.error(error?.response?.data);
+    } else {
+      toast.error("Delete Failed");
+    }
     // console.error(error);
   }
 };

@@ -2,15 +2,15 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { CustomBreadcrumbs } from 'src/components/custom-breadcrumbs';
 
-import { ZapsNewEditForm } from 'src/sections/zaps/zaps-new-edit-form';
+import { ActionsNewEditForm } from 'src/sections/actions/actions-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-function ZapsCreate() {
+function ActionsCreate() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Create a new zap"
+        heading="Create a new action"
         // links={[
         //   { name: 'Dashboard', href: paths.dashboard.root },
         //   { name: 'Job', href: paths.dashboard.job.root },
@@ -19,9 +19,9 @@ function ZapsCreate() {
         sx={{ mb: { xs: 3, md: 5 } }}
       />
 
-      <ZapsNewEditForm />
+      <ActionsNewEditForm />
     </DashboardContent>
   );
 }
 
-export default ZapsCreate;
+export default ActionsCreate;

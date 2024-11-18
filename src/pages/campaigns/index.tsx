@@ -37,7 +37,7 @@ import type { ICampaignFilters, ICampaignType } from 'src/types/campaign';
 import { CampaignTableRow } from 'src/sections/campaigns/campaign-table-row';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
-import type { IBotListType } from 'src/types/bot';
+import type { IAgentListType } from 'src/types/agent';
 import { deleteCampaign } from 'src/utils/api/campaigns';
 
 // ----------------------------------------------------------------------
@@ -46,7 +46,7 @@ const TABLE_HEAD = [
   // { id: 'checkbox', width: '' },
   { id: 'campaignName', label: 'Campaign Name', width: 160 },
   { id: 'campaignId', label: 'Campaign ID', width: 220 },
-  { id: 'linkedBot', label: 'Linked Bot', width: 220 },
+  { id: 'linkedAppId', label: 'Linked App', width: 220 },
   { id: 'description', label: 'Description', width: 180 },
   // { id: 'status', label: 'Status', width: 100 },
   { id: '', width: 88 },
@@ -57,7 +57,7 @@ const TABLE_HEAD = [
 export default function CampaignListView() {
   const [loaded, setLoaded] = useState(false);
   const [campaigns, setCampaigns] = useState<ICampaignType[]>([]);
-  const [bots, setBots] = useState<IBotListType[]>([]);
+  const [agents, setAgents] = useState<IAgentListType[]>([]);
 
   const table = useTable();
 
@@ -117,15 +117,15 @@ export default function CampaignListView() {
       campaigns: ICampaignType[];
       count: number;
     }>('/campaigns');
-    const botsListPromise = API.get<{
-      bots: IBotListType[];
+    const agentsListPromise = API.get<{
+      agents: IAgentListType[];
       count: number;
-    }>('/botsList');
+    }>('/agentsList');
 
-    const [{ data }, { data: botsData }] = await Promise.all([campaignPromise, botsListPromise]);
+    const [{ data }, { data: agentsData }] = await Promise.all([campaignPromise, agentsListPromise]);
 
     setCampaigns(data.campaigns);
-    setBots(botsData.bots);
+    setAgents(agentsData.agents);
     setTableData(data.campaigns);
     setLoaded(true);
   }, []);
@@ -213,7 +213,7 @@ export default function CampaignListView() {
                           onSelectRow={() => table.onSelectRow(row._id)}
                           onDeleteRow={() => handleDeleteRow(row._id)}
                           onEditRow={() => handleEditRow(row._id)}
-                          bots={bots}
+                          agents={agents}
                         />
                       ))}
 
