@@ -38,8 +38,8 @@ export type ConfigValue = {
 // ----------------------------------------------------------------------
 
 export const CONFIG: ConfigValue = {
-  backendURL: 'https://msgu33pqsbr4yavtleabs7qrue0yiaqe.lambda-url.us-east-1.on.aws',
-  // backendURL: 'http://localhost:4000/api/v1',
+  // backendURL: 'https://msgu33pqsbr4yavtleabs7qrue0yiaqe.lambda-url.us-east-1.on.aws',
+  backendURL: 'http://localhost:4000/api/v1',
   site: {
     name: 'Console',
     serverUrl: import.meta.env.VITE_SERVER_URL ?? '',

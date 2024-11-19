@@ -34,7 +34,7 @@ export function Section({
   methods,
   title = 'Manage the job',
   imgUrl = `${CONFIG.site.basePath}/assets/illustrations/illustration-dashboard.webp`,
-  subtitle = 'Create voice s like a PRO without coding.',
+  subtitle = 'Create voice agents like a PRO without coding.',
   ...other
 }: SectionProps) {
   const theme = useTheme();
