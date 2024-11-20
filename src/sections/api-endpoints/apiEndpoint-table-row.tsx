@@ -5,6 +5,7 @@ import {
   IconButton,
   MenuItem,
   MenuList,
+  Stack,
   TableCell,
   TableRow,
 } from '@mui/material';
@@ -13,6 +14,7 @@ import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import type { IApiEndpointItem } from 'src/types/apiEndpoint';
 import { ConfirmDialog } from 'src/components/custom-dialog';
+import { Label } from 'src/components/label';
 
 type Props = {
   row: IApiEndpointItem;
@@ -42,16 +44,13 @@ export function ApiEndpointTableRow({ row, selected, onEditRow, onSelectRow, onD
         <TableCell>{row.apiEndpointName}</TableCell>
         <TableCell>{row.apiEndpointDescription}</TableCell>
         <TableCell>
-          <Chip
-            sx={{
-              backgroundColor: 'primary.light',
-            }}
-            size="small"
-            label={row.apiEndpointMethod}
-          />
-          {/* {row.apiEndpointMethod} */}
+          <Stack direction={'row'} gap={3}>
+            <Label>
+              {row.apiEndpointMethod}
+            </Label>
+            {row.apiEndpointURI}
+          </Stack>
         </TableCell>
-        <TableCell>{row.apiEndpointURI}</TableCell>
         {/* <TableCell>{row.timeout}</TableCell>
         <TableCell>
           <Label color="primary">{row.restMethod}</Label>

@@ -44,9 +44,8 @@ import { deleteApiEndpoint } from 'src/utils/api/apiEndpoints';
 const TABLE_HEAD = [
   // { id: 'checkbox', width: '' },
   { id: 'apiEndpointName', label: 'API Endpoint Name', width: 160 },
-  { id: 'apiEndpointDescription', label: 'Description', width: 220 },
-  { id: 'apiEndpointMethod', label: 'Method', width: 30 },
-  { id: 'apiEndpointURI', label: 'URI', width: 250 },
+  { id: 'apiEndpointDescription', label: 'Description', width: 250 },
+  { id: 'apiEndpointURI', label: 'API URI', width: 250 },
   { id: '', width: 88 },
 ];
 

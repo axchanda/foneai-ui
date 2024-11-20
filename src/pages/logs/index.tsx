@@ -177,7 +177,7 @@ export default function LogListView() {
               <Scrollbar>
                 <Table size={table.dense ? 'small' : 'medium'}  
                   sx={{ 
-                    minWidth: 960,
+                    minWidth: 1080,
                     scrollBehavior: 'smooth',                    
                   }}>
                   <TableHeadCustom

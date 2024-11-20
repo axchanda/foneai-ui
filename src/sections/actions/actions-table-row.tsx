@@ -13,6 +13,7 @@ import { Iconify } from 'src/components/iconify';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import type { IActionItem } from 'src/types/action';
+import { Label } from 'src/components/label';
 
 type Props = {
   row: IActionItem;
@@ -47,13 +48,9 @@ export function ActionTableRow({ row, selected, onEditRow, onSelectRow, onDelete
         <TableCell>{row.actionName}</TableCell>
         <TableCell>{row.actionDescription}</TableCell>
         <TableCell>
-          <Chip
-            sx={{
-              backgroundColor: 'primary.light',
-            }}
-            size="small"
-            label={labelModifier(row.actionOperation.type)}
-          />
+          <Label>
+            {labelModifier(row.actionOperation.type)}
+          </Label>
         </TableCell>
         <TableCell align="right">
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>

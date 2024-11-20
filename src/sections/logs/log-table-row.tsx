@@ -78,14 +78,8 @@ export function LogTableRow({
         </TableCell> 
         <TableCell>
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Label
-                variant="soft"
-                color={'primary'}
-                sx={{
-                  padding: '2px 8px',
-                }}
-            >
-                {row.appType ? row.appType : 'Agent'}
+            <Label>
+                {row.appType ? row.appType : 'AGENT'}
             </Label>
             {row.appId && row.appId.name}
           </Stack>
