@@ -13,24 +13,24 @@ import { useUsage } from 'src/context/usage.context';
 // ----------------------------------------------------------------------
 
 type Props = CardProps & {
-  total: number;
-
   chart: {
     colors?: string[];
-    series: Record<string, number>;
+    series?: Record<string, number>;
     options?: ChartOptions;
   };
 };
 
-export function MinutesUsed({ total, chart, ...other }: Props) {
+export function CreditsUsed({ chart, ...other }: Props) {
   const theme = useTheme();
   const { credits } = useUsage();
+  
+  let availableMeter = Math.floor((credits.available / (credits.used + credits.available) )* 100);
+  if (isNaN(availableMeter)) {
+    availableMeter = 0;
+  }
 
-  const usageMeter = Math.floor((credits.used / (credits.used + credits.available) )* 100);
-
-  const [selectedSeries, setSelectedSeries] = useState('Jul');
-
-  const chartColors = chart.colors ?? [theme.palette.primary.main, theme.palette.primary.light];
+  // const chartColors = chart.colors ?? [theme.palette.primary.main, theme.palette.primary.light];
+  const chartColors = chart.colors ?? [theme.palette.primary.main, theme.palette.secondary.light];
   const chartWarningColors = chart.colors ?? [theme.palette.warning.main, theme.palette.warning.light];
   const chartErrorColors = chart.colors ?? [theme.palette.error.main, theme.palette.error.light];
 
@@ -42,10 +42,10 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
       gradient: {
         colorStops: [
           { offset: 0,
-            color: usageMeter > 75 ? (usageMeter > 90 ? chartErrorColors[0] : chartWarningColors[0]) : chartColors[0],
+            color: availableMeter < 30 ? (availableMeter < 10 ? chartErrorColors[0] : chartWarningColors[0]) : chartColors[0],
             opacity: 1 },
           { offset: 100, 
-            color: usageMeter > 75 ? (usageMeter > 90 ? chartErrorColors[1] : chartWarningColors[1]) : chartColors[1],
+            color: availableMeter < 30 ? (availableMeter < 10 ? chartErrorColors[1] : chartWarningColors[1]) : chartColors[1],
             opacity: 1 },
         ],
       },
@@ -72,27 +72,27 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
     ...chart.options,
   });
 
-  const handleChangeSeries = useCallback((newValue: string) => {
-    setSelectedSeries(newValue);
-  }, []);
+  // const handleChangeSeries = useCallback((newValue: string) => {
+  //   setSelectedSeries(newValue);
+  // }, []);
 
   return (
     <Card {...other}>
       <CardHeader
-        action={
-          <ChartSelect
-            options={Object.keys(chart.series)}
-            value={selectedSeries}
-            onChange={handleChangeSeries}
-          />
-        }
+        // action={
+        //   <ChartSelect
+        //     options={Object.keys(chart.series)}
+        //     value={selectedSeries}
+        //     onChange={handleChangeSeries}
+        //   />
+        // }
         title="Credits Meter"
         subheader=""
         sx={{ mb: 5 }}
       />
       <Chart
         type="radialBar"
-        series={[usageMeter]}
+        series={[availableMeter]}
         options={chartOptions}
         width={240}
         height={240}
@@ -113,11 +113,20 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
               width: 16,
               height: 16,
               borderRadius: 0.75,
-              bgcolor: usageMeter > 75 ? (usageMeter > 90 ? chartErrorColors[0] : chartWarningColors[0]) : chartColors[0],
-            }}
+              bgcolor: availableMeter < 30
+              ? (availableMeter < 10 
+                  ? chartErrorColors[0] 
+                  : chartWarningColors[0])
+              : undefined, // No solid color; fallback to gradient
+              background: availableMeter >= 30 
+              ? `linear-gradient(235deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.light} 100%)` 
+              : undefined,
+                        }}
           />
-          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>Used</Box>
-          {credits.used}
+          <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>
+            Available
+          </Box>
+          {credits.available}
         </Box>
         <Box sx={{ gap: 1, display: 'flex', alignItems: 'center', typography: 'subtitle2' }}>
           <Box
@@ -129,9 +138,9 @@ export function MinutesUsed({ total, chart, ...other }: Props) {
             }}
           />
           <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>
-            Available
+            Used
           </Box>
-          {credits.available}
+          {credits.used}
         </Box>
       </Box>
     </Card>

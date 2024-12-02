@@ -33,14 +33,19 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 
-import type { ICampaignFilters, ICampaignType } from 'src/types/campaign';
-import { CampaignTableRow } from 'src/sections/campaigns/campaign-table-row';
+import {
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from '@mui/material';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
 import type { IAgentListType } from 'src/types/agent';
 import { deleteCampaign } from 'src/utils/api/campaigns';
 import { ILogFilters, ILogType } from 'src/types/log';
 import { LogTableRow } from 'src/sections/logs/log-table-row';
+import { Dialog } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -49,9 +54,9 @@ const TABLE_HEAD = [
   { id: 'id', label: 'Log ID', width: 100 },
   { id: 'sessionStart', label: 'Start Time', width: 150 },
   { id: 'sessionEnd', label: 'End Time', width: 150 },
-  { id: 'chargableDuration', label: 'Billed Mins', width: 75 },
+  { id: 'billedMins', label: 'Billed Mins', width: 75 },
   { id: 'costPerMinute', label: 'CPM', width: 75 },
-  { id: 'totalCost', label: `Used credits`, width: 100 },
+  { id: 'chargedCredits', label: `Charged credits`, width: 100 },
   { id: 'campaignId', label: 'Campaign', width: 200 },
   { id: 'linkedAppId', label: 'App', width: 250 },
   // { id: 'sessionLog', label: 'Session Log', width: 100 },
@@ -75,6 +80,7 @@ export default function LogListView() {
   const router = useRouter();
 
   const confirm = useBoolean();
+  const logParamsDialog = useBoolean();
 
   const [tableData, setTableData] = useState<ILogType[]>([]);
 
@@ -126,6 +132,8 @@ export default function LogListView() {
     const { data } = await logPromise;
 
     setLogs(data.logs);
+
+    console.log('Logs = ', data.logs);
     setTableData(data.logs);
     setLoaded(true);
   }, []);
@@ -206,7 +214,10 @@ export default function LogListView() {
                         <LogTableRow
                           key={row._id}
                           row={row}
-                          onOpenRow={() => router.push(`/logs/${row._id}`)}
+                          onOpenRow={() => { 
+                            logParamsDialog.onTrue();
+                            // router.push(`/logs/${row._id}`);
+                          }}
                           onDeleteRow={() => handleDeleteRow(row._id)}
                         />
                       ))}

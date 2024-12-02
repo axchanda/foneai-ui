@@ -34,6 +34,7 @@ import { TableHeadCustom, useTable } from 'src/components/table';
 import { useBoolean } from 'src/hooks/use-boolean';
 import { Iconify } from 'src/components/iconify';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
+import { Checkbox } from '@mui/material';
 
 export type NewApiEndpointSchemaType = zod.infer<typeof NewApiEndpointSchema>;
 
@@ -52,8 +53,7 @@ export const NewApiEndpointSchema = zod.object({
     .min(1, { message: 'timeout is required!' })
     .refine((value) => Number.isInteger(value), {
       message: 'Timeout must be a whole number!',
-    }),
-  // TODO: HEADERS
+    })
 });
 
 type Props = {
@@ -64,6 +64,7 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
   const router = useRouter();
   const [headers, setHeaders] = useState<
     {
+      isEncrypted: boolean;
       key: string;
       value: string;
     }[]
@@ -102,6 +103,8 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      console.log(data);
+      console.log('Headers:', headers);
       const url = currentApiEndpoint ? `/apiEndpoints/${currentApiEndpoint._id}` : '/apiEndpoints/create';
       const method = currentApiEndpoint ? API.put : API.post;
       await method(url, {
@@ -110,7 +113,7 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
         apiEndpointDescription: data.apiEndpointDescription,
         apiEndpointMethod: data.apiEndpointMethod,
         apiEndpointTimeout: data.apiEndpointTimeout,
-        apiEndpointsHeaders : headers,
+        apiEndpointHeaders : headers,
       });
       reset();
       toast.success(currentApiEndpoint ? 'Updating API Definition success!' : 'Defining API Endpoint success!');
@@ -228,7 +231,6 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
         {renderDetails}
         {renderSpecs}
         <HeadersForm headers={headers} setHeaders={setHeaders} />
-
         {renderActions}
       </Stack>
     </Form>
@@ -236,7 +238,7 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
 }
 
 const TABLE_HEAD = [
-  // { id: 'checkbox', width: '' },
+  { id: 'checkbox', label: 'Encryption', width: '' },
   { id: 'key', label: 'Key', width: 255 },
   { id: 'value', label: 'Value', width: 255 },
   { id: '', width: 200 },
@@ -247,6 +249,7 @@ const HeadersForm: React.FC<{
   setHeaders: React.Dispatch<
     React.SetStateAction<
       {
+        isEncrypted: boolean;
         key: string;
         value: string;
       }[]
@@ -255,15 +258,15 @@ const HeadersForm: React.FC<{
 }> = ({ headers, setHeaders }) => {
   const table = useTable();
   const [header, setHeader] = useState<IApiEndpointHeaders>({
+    isEncrypted: false,
     key: '',
     value: '',
   });
   const [headerErrors, setHeaderErrors] = useState<Record<keyof IApiEndpointHeaders, boolean>>({
+    isEncrypted: false,
     key: false,
     value: false,
   });
-
-  // console.log({ headers });
 
   const shouldShowForm = useBoolean(false);
   return (
@@ -305,10 +308,40 @@ const HeadersForm: React.FC<{
                         verticalAlign: 'top',
                       }}
                     >
+                      <Checkbox
+                        checked={header.isEncrypted}
+                        color='default'
+                        onChange={(e) => {
+                          setHeader((prev) => ({
+                            ...prev,
+                            isEncrypted: e.target.checked,
+                          }));
+                        }}
+                        inputProps={{ 'aria-label': 'isEncrypted' }}
+                      />
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        verticalAlign: 'top',
+                      }}
+                    >
                       <Field.Text
                         name="key"
                         value={header.key}
                         onChange={(e) => {
+                          const key = e.target.value;
+                          // check if key is in headers already
+                          if (headers.find((h) => h.key === key)) {
+                            setHeaderErrors((prev) => ({
+                              ...prev,
+                              key: true,
+                            }));
+                          } else {
+                            setHeaderErrors((prev) => ({
+                              ...prev,
+                              key: false,
+                            }));
+                          }
                           setHeader((prev) => ({
                             ...prev,
                             key: e.target.value,
@@ -357,14 +390,23 @@ const HeadersForm: React.FC<{
                               }));
                               isError = true;
                             }
-
+                            if(headers.find((h) => h.key === header.key)) {
+                              setHeaderErrors((prev) => ({
+                                ...prev,
+                                key: true,
+                              }));
+                              toast.error('Header key already exists!');
+                              isError = true;
+                            }
                             if (!isError) {
                               setHeaders((prev) => [...prev, header]);
                               setHeader({
+                                isEncrypted: false,
                                 key: '',
                                 value: '',
                               });
                               setHeaderErrors({
+                                isEncrypted: false,
                                 key: false,
                                 value: false,
                               });
@@ -385,10 +427,12 @@ const HeadersForm: React.FC<{
                           onClick={() => {
                             shouldShowForm.setValue(false);
                             setHeader({
+                              isEncrypted: false,
                               key: '',
                               value: '',
                             });
                             setHeaderErrors({
+                              isEncrypted: false,
                               key: false,
                               value: false,
                             });
@@ -405,6 +449,10 @@ const HeadersForm: React.FC<{
                     <HeaderTableRow
                       key={JSON.stringify(h) + index}
                       currentHeader={h}
+                      checkDuplicationKey={(key: string) => {
+                        // check if key is in headers already except for the current header
+                        return headers.find((h, i) => h.key === key && i !== index) ? true : false;
+                      }}
                       removeHeader={() => {
                         setHeaders((prev) => prev.filter((_, i) => i !== index));
                       }}
@@ -435,13 +483,15 @@ const HeadersForm: React.FC<{
 
 const HeaderTableRow: React.FC<{
   currentHeader: IApiEndpointHeaders;
+  checkDuplicationKey: (key: string) => boolean;
   removeHeader: () => void;
   updateHeader: (header: IApiEndpointHeaders) => void;
-}> = ({ currentHeader, removeHeader, updateHeader }) => {
+}> = ({ currentHeader, removeHeader, updateHeader, checkDuplicationKey }) => {
   const popover = usePopover();
   const editing = useBoolean(false);
   const [header, setHeader] = useState({ ...currentHeader });
   const [headerErrors, setHeaderErrors] = useState<Record<keyof IApiEndpointHeaders, boolean>>({
+    isEncrypted: false,
     key: false,
     value: false,
   });
@@ -449,6 +499,24 @@ const HeaderTableRow: React.FC<{
   return (
     <>
       <TableRow>
+        <TableCell
+          sx={{
+            verticalAlign: 'top',
+          }}
+        >
+          <Checkbox
+            checked={header.isEncrypted}
+            color='default'
+            disabled={!editing.value}
+            onChange={(e) => {
+              setHeader((prev) => ({
+                ...prev,
+                isEncrypted: e.target.checked,
+              }));
+            }}
+            inputProps={{ 'aria-label': 'isEncrypted' }}
+          />
+        </TableCell>
         <TableCell
           sx={{
             verticalAlign: 'top',
@@ -511,6 +579,14 @@ const HeaderTableRow: React.FC<{
                     }));
                     isError = true;
                   }
+                  if (header.key !== currentHeader.key && checkDuplicationKey(header.key)) {
+                    setHeaderErrors((prev) => ({
+                      ...prev,
+                      key: true,
+                    }));
+                    toast.error('Header key already exists!');
+                    isError = true;
+                  }
 
                   if (!isError) {
                     updateHeader(header);
@@ -518,6 +594,7 @@ const HeaderTableRow: React.FC<{
                       ...currentHeader,
                     });
                     setHeaderErrors({
+                      isEncrypted: false,
                       key: false,
                       value: false,
                     });
@@ -540,6 +617,7 @@ const HeaderTableRow: React.FC<{
                     ...currentHeader,
                   });
                   setHeaderErrors({
+                    isEncrypted: false,
                     key: false,
                     value: false,
                   });

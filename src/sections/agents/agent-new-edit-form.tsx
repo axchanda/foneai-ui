@@ -36,6 +36,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { TableHeadCustom, useTable } from 'src/components/table';
 import { Iconify } from 'src/components/iconify';
 import TriggerAction from 'src/components/agents/trigger-action';
+import { Chip } from '@mui/material';
+import VoiceDialog from 'src/components/agents/voice-dialog';
 
 export type NewAgentSchemaType = zod.infer<typeof NewAgentSchema>;
 
@@ -44,7 +46,7 @@ export const NewAgentSchema = zod.object({
   introduction: zod.string().min(1, { message: 'Introduction is required!' }),
   instructions: zod.string().min(1, { message: 'Instructions are required!' }),
   voiceId: zod.string().min(1, { message: 'Voice ID is required!' }),
-  isInterruptable: zod.boolean(),
+  isInterruptible: zod.boolean(),
   endpointing: zod
     .number()
     .min(0, { message: 'Endpointing must be a positive number!' })
@@ -61,17 +63,17 @@ type Props = {
 
 export function AgentNewEditForm({ currentAgent }: Props) {
   const router = useRouter();
-  const defaultValues = useMemo(
+  const defaultValues: NewAgentSchemaType = useMemo(
     () => ({
       name: currentAgent?.name || '',
       introduction: currentAgent?.introduction || '',
       instructions: currentAgent?.instructions || '',
       language: currentAgent?.language || 'en',
       voiceId: currentAgent?.voice?.voiceId || '',
-      isInterruptable: currentAgent?.isInterruptable || false,
+      isInterruptible: currentAgent?.isInterruptible || false,
       endpointing: currentAgent?.endpointing || 20,
-      timezone: currentAgent?.timezone || 'UTC-05:00',
-      daylightSavings: currentAgent?.daylightSavings || false      
+      timezone: currentAgent?.timezone || ' UTC-05:00',
+      daylightSavings: currentAgent?.daylightSavings || false 
     }),
     [currentAgent]
   );
@@ -96,7 +98,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
   const [loaded, setLoaded] = useState(false);
   // this actions is the list of actions that are available for the user
   const [actions, setActions] = useState<IActionListType>([]);
-
+  const [keywords, setKeywords] = useState<string[]>(currentAgent?.keywords || []);
   // this actionTriggers is the list of actions that are triggered by the agent
   const [actionTriggers, setActionTriggers] = useState<{ actionId: string; trigger: string }[]>(
     currentAgent?.actions || []
@@ -140,12 +142,12 @@ export function AgentNewEditForm({ currentAgent }: Props) {
             ttsProvider: 'AWS',
             voiceId: data.voiceId,
           },
-          isInterruptable: data.isInterruptable,
+          isInterruptible: data.isInterruptible,
           endpointing: data.endpointing,
           timezone: data.timezone,
           daylightSavings: data.daylightSavings,
           actions: actionTriggers,
-          
+          keywords: keywords          
         });
         reset();
         toast.success(currentAgent ? 'Update success!' : 'Create success!');
@@ -158,6 +160,8 @@ export function AgentNewEditForm({ currentAgent }: Props) {
       }
   });
 
+  const [keyWordInput, setKeyWordInput] = useState('');
+
   const renderDetails = (
     <Card>
       <CardHeader
@@ -167,6 +171,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
       />
 
       <Divider />
+
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
@@ -183,7 +188,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Agent Instructions</Typography>
+          <Typography variant="subtitle2">Agent Prompt Instructions</Typography>
           <Field.TextareaWithMaximize
             // height={200}
             // showToolbar={false}
@@ -196,7 +201,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
     </Card>
   );
 
-  const renderProperties = (
+  const renderVoiceCapabilities = (
     <Card>
       <CardHeader
         title="Speech settings"
@@ -208,7 +213,6 @@ export function AgentNewEditForm({ currentAgent }: Props) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Voice</Typography>
           <Stack spacing={1.5} direction="row" sx={{ gap: 4, width: '100%' }}>
             <Grid container spacing={6}>
               <Grid item xs={12} sm={6}>
@@ -233,7 +237,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
               <Grid item xs={12} sm={6}>
                 <Stack>
                   <Stack spacing={1}>
-                    <Typography variant="subtitle2">Voice Id</Typography>
+                    <Typography variant="subtitle2">Voice ID</Typography>
                     <Button
                       disabled={!values.language}
                       onClick={() => {
@@ -259,16 +263,18 @@ export function AgentNewEditForm({ currentAgent }: Props) {
                 </Stack>
               </Grid>
             </Grid>
+
           </Stack>
         </Stack>
         <Grid container spacing={6}>
           <Grid item xs={12} sm={6}>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Interruptable</Typography>
+              <Typography variant="subtitle2">Interruptible</Typography>
               <Field.Switch
-                name="isInterruptable"
+                name="isInterruptible"
+                
                 label={
-                  values.isInterruptable
+                  values.isInterruptible
                     ? 'The agent stops speaking when the user interrupts the agent'
                     : 'The agent continues to speak even when the user interrupts the agent'
                 }
@@ -277,10 +283,9 @@ export function AgentNewEditForm({ currentAgent }: Props) {
           </Grid>
           <Grid item xs={12} sm={6}>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Endpointing</Typography>
+              <Typography variant="subtitle2">Silence Threshold</Typography>
               <Field.Text
                 name="endpointing"
-                placeholder="Enter endpointing value"
                 type="number"
                 sx={{
                   width: {
@@ -296,6 +301,69 @@ export function AgentNewEditForm({ currentAgent }: Props) {
                   ),
                 }}
               />
+            </Stack>
+          </Grid>
+        </Grid>
+        <Grid container spacing={6}>
+
+          <Grid item xs={12} sm={12}>
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Keywords</Typography>
+              <Field.Text
+                name="keywords"
+                placeholder="Enter upto 20 keywords"
+                type="text"
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: '100%',
+                  },
+                }}
+                value={keyWordInput}
+                disabled={keywords.length > 20}
+                onKeyDown={(e: any) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if(keyWordInput.length > 0) {
+                      setKeywords([...keywords, keyWordInput]);
+                      setKeyWordInput('');
+                    }
+                  }
+                }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^[a-zA-Z]*$/.test(value)) {
+                    setKeyWordInput(value);
+                  }
+                }}
+              />
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 1,
+                  border: '1px solid',
+                  borderColor: (keywords.length > 20) ? 'error.main' : 'background.neutral',
+                  minHeight: 100,
+                  padding: 1,
+                  borderRadius: 1,
+                }}
+              >
+                {keywords.map((keyword, index) => (
+                  <Chip
+                    key={index}
+                    label={keyword}
+                    variant='soft'
+                    onDelete={() => {
+                      const newKeywords = keywords.filter((_, i) => i !== index);
+                      setKeywords(newKeywords);
+                    }}
+                  />
+                ))} 
+              </Box>
+              <Typography variant="caption" sx={{ color: 'error.main' }}>
+                {keywords.length > 20 ? 'Keywords limit reached' : ''}
+              </Typography>
             </Stack>
           </Grid>
         </Grid>
@@ -329,11 +397,12 @@ export function AgentNewEditForm({ currentAgent }: Props) {
   return (
     <>
       {loaded ? (
-        <Form methods={methods} onSubmit={onSubmit}>
+        <Form methods={methods} onSubmit={onSubmit}
+        >
           <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: '1100px' }}>
             {renderDetails}
 
-            {renderProperties}
+            {renderVoiceCapabilities}
 
             <TriggerAction
               actions={actions}
@@ -341,7 +410,6 @@ export function AgentNewEditForm({ currentAgent }: Props) {
               actionTriggers={actionTriggers}
               setActionTriggers={setActionTriggers}
             />
-            {renderMisc}
 
             <Box
               display="flex"
@@ -368,9 +436,9 @@ export function AgentNewEditForm({ currentAgent }: Props) {
         open={openVoiceDialog}
         onClose={() => setOpenVoiceDialog(false)}
         // voices={voiceIDs[values.agentLanguage || 'en']}
-        onSelect={(voice) => {
-          setSelectedVoice(voice);
-          setValue('voiceId', voice);
+        onSelect={(voiceId) => {
+          setSelectedVoice(voiceId);
+          setValue('voiceId', voiceId);
           setOpenVoiceDialog(false);
           errors.voiceId = undefined;
         }}
@@ -385,351 +453,3 @@ export function AgentNewEditForm({ currentAgent }: Props) {
     </>
   );
 }
-
-
-const voicesEn: {
-  provider: 'AWS' | 'GCP' | 'Azure';
-  gender: 'M' | 'F';
-  accent: string;
-  voice: string;
-  price: 'free' | 'paid';
-  file: string;
-}[] = [
-  {
-    provider: 'AWS',
-    gender: 'F',
-    accent: 'US',
-    voice: 'Joanna',
-    price: 'free',
-    file: '/voices/joanna.mp3',
-  },
-  {
-    provider: 'AWS',
-    gender: 'M',
-    accent: 'US',
-    voice: 'Joey',
-    price: 'free',
-    file: '/voices/joey.mp3',
-  },
-  {
-    provider: 'AWS',
-    gender: 'M',
-    accent: 'US',
-    voice: 'Matthew',
-    price: 'paid',
-    file: '/voices/matthew.mp3',
-  },
-];
-
-const voicesEs: {
-  provider: 'AWS' | 'GCP' | 'Azure';
-  gender: 'M' | 'F';
-  accent: string;
-  voice: string;
-  price: 'free' | 'paid';
-  file: string;
-}[] = [
-  {
-    provider: 'AWS',
-    gender: 'M',
-    accent: 'US',
-    voice: 'Miguel',
-    price: 'free',
-    file: '/voices/miguel.mp3',
-  },
-  {
-    provider: 'AWS',
-    gender: 'M',
-    accent: 'MX',
-    voice: 'Mia',
-    price: 'free',
-    file: '/voices/mia.mp3',
-  },
-  {
-    provider: 'AWS',
-    gender: 'F',
-    accent: 'ES',
-    voice: 'Lucia',
-    price: 'free',
-    file: '/voices/lucia.mp3',
-  },
-];
-
-const voicesRu: {
-  provider: 'AWS' | 'GCP' | 'Azure';
-  gender: 'M' | 'F';
-  accent: string;
-  voice: string;
-  price: 'free' | 'paid';
-  file: string;
-}[] = [
-  {
-    provider: 'AWS',
-    gender: 'F',
-    accent: 'RU',
-    voice: 'Tatyana',
-    price: 'free',
-    file: '/voices/tatyana.mp3',
-  },
-  {
-    provider: 'AWS',
-    gender: 'M',
-    accent: 'RU',
-    voice: 'Maxim',
-    price: 'free',
-    file: '/voices/maxim.mp3',
-  },
-];
-
-const voiceTableHead = [
-  { id: 'provider', label: 'Provider', width: 100 },
-  { id: 'gender', label: 'Gender', width: 100 },
-  { id: 'accent', label: 'Accent', width: 100 },
-  { id: 'voiceId', label: 'Voice ID', width: 200, align: 'center' },
-  { id: 'price', label: 'Price', width: 120, align: 'center' },
-  { id: 'preview', label: 'Preview', width: 150 },
-  { id: '', width: 80 },
-];
-const VoiceDialog: React.FC<{
-  open: boolean;
-  onClose: () => void;
-  // voices: string[];
-  onSelect: (voice: string) => void;
-  selectedVoice: string | null;
-  setSelectedVoice: React.Dispatch<React.SetStateAction<string | null>>;
-  language: string;
-  onConfirm: (voice: string) => void;
-}> = ({ open, onClose, onSelect, language, selectedVoice, setSelectedVoice }) => {
-  const table = useTable();
-  const [selected, setSelected] = useState<string | null>(selectedVoice);
-  const voices = useMemo(() => {
-    switch (language) {
-      case 'en':
-        return voicesEn;
-      case 'es':
-        return voicesEs;
-      case 'ru':
-        return voicesRu;
-      default:
-        return voicesEn;
-    }
-  }, [language]);
-
-  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
-
-  const handleClose = (event: {}, reason: string) => {
-    if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
-      setSelected(selectedVoice);
-    }
-    setCurrentlyPlaying(null);
-    onClose();
-  };
-
-  return (
-    <Dialog maxWidth="md" open={open} onClose={handleClose}>
-      <DialogTitle>Select Voice</DialogTitle>
-      <Divider />
-      <DialogContent>
-        <Card
-          sx={{
-            my: 2,
-          }}
-        >
-          <Table>
-            <TableHeadCustom
-              order={table.order}
-              orderBy={table.orderBy}
-              headLabel={voiceTableHead}
-              numSelected={table.selected.length}
-            />
-            <TableBody>
-              {voices.map((voice) => (
-                <VoicesTableRow
-                  key={voice.voice}
-                  voice={voice}
-                  selected={selected}
-                  setSelected={setSelected}
-                  currentlyPlaying={currentlyPlaying}
-                  setCurrentlyPlaying={setCurrentlyPlaying}
-                />
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
-      </DialogContent>
-      <Divider />
-      <DialogActions>
-        <Button
-          onClick={() => {
-            setSelectedVoice(null);
-            setSelected(selectedVoice);
-            onClose();
-          }}
-          variant="outlined"
-          color="error"
-        >
-          Close
-        </Button>
-        <Button
-          onClick={() => {
-            if (selected) {
-              setCurrentlyPlaying(null);
-              onSelect(selected);
-            }
-          }}
-          variant="contained"
-          disabled={!selected}
-          color="primary"
-        >
-          Submit
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
-const VoicesTableRow: React.FC<{
-  voice: {
-    provider: 'AWS' | 'GCP' | 'Azure';
-    gender: 'M' | 'F';
-    accent: string;
-    voice: string;
-    price: 'free' | 'paid';
-    file: string;
-  };
-  selected: string | null;
-  setSelected: React.Dispatch<React.SetStateAction<string | null>>;
-  currentlyPlaying: string | null;
-  setCurrentlyPlaying: React.Dispatch<React.SetStateAction<string | null>>;
-}> = ({ voice, selected, setSelected, currentlyPlaying, setCurrentlyPlaying }) => {
-  const audio = useMemo(() => {
-    return new Audio(voice.file);
-  }, [voice.file]);
-
-  const iconMap = {
-    US: 'twemoji:flag-united-states',
-    UK: 'twemoji:flag-united-kingdom',
-    ES: 'twemoji:flag-spain',
-    AU: 'twemoji:flag-australia',
-    RU: 'twemoji:flag-russia',
-    MX: 'twemoji:flag-mexico',
-  };
-
-  const AccentNamesMap = {
-    US: 'American',
-    UK: 'British',
-    ES: 'Castilian',
-    AU: 'Australian',
-    RU: 'Russian',
-    MX: 'Mexican',
-  };
-
-  // Narrow the type of accent to only valid keys
-  type Accent = keyof typeof iconMap;
-
-  useEffect(() => {
-    if (currentlyPlaying === voice.file) {
-      audio.play();
-    } else {
-      audio.pause();
-      audio.currentTime = 0;
-    }
-  }, [audio, currentlyPlaying, voice.file]);
-
-  return (
-    <TableRow
-      sx={{
-        backgroundColor: selected === voice.voice ? 'var(--palette-primary-main)' : 'transparent',
-        color: selected === voice.voice ? 'white' : 'inherit',
-        // '&:hover': {
-        //   backgroundColor:
-        //     selected === voice.voice ? 'var(--palette-primary-light)' : 'background.neutral',
-        // },
-        cursor: 'pointer',
-      }}
-      onClick={() => {
-        setSelected(voice.voice);
-      }}
-      key={voice.voice}
-    >
-      <TableCell
-        sx={{
-          textTransform: 'capitalize',
-        }}
-        // width={80}
-      >
-        <Stack justifyContent="center" alignItems="center" spacing={1.5}>
-          <Iconify
-            icon={voice.provider === 'AWS' ? 'skill-icons:aws-dark' : 'skill-icons:gcp-dark'}
-            width="2.5rem"
-          />
-          <Typography variant="subtitle2">{voice.provider}</Typography>
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Stack justifyContent="center" alignItems="center" spacing={1.5}>
-          <Iconify
-            icon={voice.gender === 'M' ? 'noto:male-sign' : 'noto:female-sign'}
-            width="2.5rem"
-          />
-          <Typography variant="subtitle2" textAlign="center">
-            {voice.gender === 'F' ? 'Female' : 'Male'}
-          </Typography>
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Stack spacing={1.5} justifyContent="center" alignItems="center">
-          <Iconify
-            icon={iconMap[voice.accent as Accent] || 'twemoji:flag-world'} // Fallback
-            width="2.5rem"
-          />
-          <Typography variant="subtitle2">
-            {AccentNamesMap[voice.accent as Accent] || 'English'}{' '}
-          </Typography>
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <Stack>
-          <Typography fontWeight="bold" textAlign="center">
-            {voice.voice}
-          </Typography>
-        </Stack>
-      </TableCell>
-      <TableCell align="center">
-        <Stack spacing={1.5}>
-          <Stack height="40px" justifyContent="center">
-            <Typography
-              sx={{
-                textTransform: 'capitalize',
-                transform: voice.price !== 'free' ? 'translateY(16px)' : '',
-              }}
-            >
-              {voice.price}
-            </Typography>
-          </Stack>
-          {voice.price !== 'free' && <Typography variant="subtitle2">+ $0.012/min</Typography>}
-        </Stack>
-      </TableCell>
-      <TableCell>
-        <IconButton
-          onClick={() => {
-            setCurrentlyPlaying((prev) => (prev === voice.file ? null : voice.file));
-          }}
-        >
-          <Iconify
-            icon={currentlyPlaying !== voice.file ? 'gravity-ui:play-fill' : 'solar:pause-bold'}
-          />
-        </IconButton>
-      </TableCell>
-      <TableCell>
-        <Iconify
-          icon={
-            selected === voice.voice
-              ? 'mdi:checkbox-marked-circle'
-              : 'ri:checkbox-blank-circle-line'
-          }
-        />
-      </TableCell>
-    </TableRow>
-  );
-};

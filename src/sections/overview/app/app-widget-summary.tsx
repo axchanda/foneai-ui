@@ -81,7 +81,7 @@ export function AppWidgetSummary({ title, percent, total, chart, rightIcon, righ
       <Box sx={{ flexGrow: 1 }}>
         <Box sx={{ typography: 'subtitle2' }}>{title}</Box>
         <Box sx={{ mt: 1.5, mb: 1, typography: 'h3' }}>{fNumber(total)}</Box>
-        {renderTrending}
+        {/* {renderTrending} */}
       </Box>
 
       {/* <Chart
@@ -91,15 +91,30 @@ export function AppWidgetSummary({ title, percent, total, chart, rightIcon, righ
         width={60}
         height={40}
       /> */}
+  <Tooltip title={rightIconTooltip} arrow>
+      <Box
+  sx={{
+    borderRadius: '100%', // Makes it circular
+    padding: '15px',       // Equal padding on all sides
+    display: 'flex',      // Enables flexbox
+    alignItems: 'center', // Vertically centers the content
+    justifyContent: 'center', // Horizontally centers the content
+    '&:hover': {
+      bgcolor: theme.vars.palette.background.default
+    },
+  }}
+>
+    <Iconify
+      icon={rightIcon}
+      style={{
+        color: theme.vars.palette.primary.main,
+      }}
+      width={40} // Adjusted to better fit the center
+      height={40} 
+    />
+</Box>
+</Tooltip>
 
-        <Tooltip title={rightIconTooltip} arrow>
-          <Iconify icon={rightIcon}
-            style={{
-              color: theme.vars.palette.primary.main
-            }}
-            width={40} height={20} 
-            />
-        </Tooltip>
     </Card>
   );
 }

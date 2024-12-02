@@ -2,16 +2,22 @@ import { da } from "@fullcalendar/core/internal-common";
 
 export type ILogType = {
     _id: string;
-    sessionStart: Date;
-    sessionEnd: Date;
-    sessionDuration: Float32Array;
-    chargeableDuration: Float32Array;
-    costPerMinute: any;
-    totalCost: Float32Array;
-    username: string;   
-    appId: any;
-    campaignId: any; 
-    appType?: string;
+    sessionParams?: {
+      sessionStart: Date;
+      sessionEnd: Date;
+      connectionType: string;
+      campaign: any;
+      linkedAppType?: string;
+      linkedApp: any;
+      language: string;
+      ttsProvider: string;
+      voiceId: string;
+    };
+    sessionDuration: number;
+    sessionDurationInMinutes: number;
+    creditsPerMinute: number;
+    sessionCreditsCharged: number;
+    sessionRates: any;
   };
   
   export type ISessionLogType = {

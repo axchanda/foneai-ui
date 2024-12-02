@@ -6,7 +6,7 @@ export type IAgentType = {
   language: 'en' | 'es' | 'ru';
   endpointing: number;
   daylightSavings: boolean;
-  isInterruptable: boolean;
+  isInterruptible: boolean;
   instructions: string;
   timezone: string;
   knowledgeBaseId: string;
@@ -16,6 +16,7 @@ export type IAgentType = {
     ttsProvider: string;
     voiceId: string;
   };
+  keywords?: string[];
   actions: {
     actionId: string;
     trigger: string;
@@ -28,8 +29,7 @@ export type IAgentListType = {
   name: string;
   updatedAt: string;
   language: 'en' | 'es' | 'ru';
-  timezone: string;
-  isInterruptable: boolean;
+  isInterruptible: boolean;
   voice: {
     ttsProvider: string;
     voiceId: string;

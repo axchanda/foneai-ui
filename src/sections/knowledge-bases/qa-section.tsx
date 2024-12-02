@@ -158,10 +158,14 @@ export function QaSection({
                                 name="question"
                                 value={qaPair.question}
                                 onChange={(e) => {
-                                setQaPair((prev) => ({
-                                    ...prev,
-                                    question: e.target.value,
-                                }));
+                                  setQaPairErrors((prev) => ({
+                                      ...prev,
+                                      question: false,
+                                  }));
+                                  setQaPair((prev) => ({
+                                      ...prev,
+                                      question: e.target.value,
+                                  }));
                                 }}
                                 placeholder="Question"
                                 error={qaPairErrors.question}
@@ -180,10 +184,10 @@ export function QaSection({
                                 name="answer"
                                 value={qaPair.answer}
                                 onChange={(e) => {
-                                setQaPair((prev) => ({
+                                  setQaPair((prev) => ({
                                     ...prev,
                                     answer: e.target.value,
-                                }));
+                                  }));
                                 }}
                                 placeholder="Answer"
                                 error={qaPairErrors.answer}
@@ -212,6 +216,17 @@ export function QaSection({
                                           ...prev,
                                           question: true,
                                       }));
+                                      isError = true;
+                                    }
+
+                                    // Validation for question duplicate
+                                    const isDuplicate = qaPairs.some((pair) => pair.question.trim() === qaPair.question.trim());
+                                    if (isDuplicate) {
+                                      setQaPairErrors((prev) => ({
+                                          ...prev,
+                                          question: true,
+                                      }));
+                                      toast.error('Question already exists');
                                       isError = true;
                                     }
 
@@ -283,13 +298,33 @@ export function QaSection({
                           <QaPairTableRow
                             key={qaPair._id || index} // Prefer using a unique key like `_id` if available
                             qaPair={qaPair}
-
-                            changeQuestion={(val) => {
-                              setQaPairs((prevQaPairs = []) => {
-                                return prevQaPairs.map((pair, i) => (
-                                  i === index ? { ...pair, question: val } : pair
-                                ));
+                            checkQuestionDuplicates={(val) => {
+                              const trimmedVal = val.trim().toLowerCase(); // Normalize input for case-insensitivity
+                            
+                              return qaPairs.some((pair, pairIndex) => {
+                                // Exclude the current qaPair based on _id or fallback to checking object reference or index
+                                const isSameItem =
+                                  qaPair._id && pair._id
+                                    ? pair._id === qaPair._id // Compare by _id if both have it
+                                    : pair === qaPair || pairIndex === index; // Fallback to object reference or index
+                            
+                                return !isSameItem && (pair.question?.trim().toLowerCase() || '') === trimmedVal;
                               });
+                            }}                            
+                            changeQuestion={(val) => {
+                              console.log('Question:', val);
+                              const isDuplicate = qaPairs.some((pair) => pair.question.trim() === val.trim());
+                              console.log('Is Duplicate:', isDuplicate);
+                              if (isDuplicate) {
+                                toast.error('Question already exists');
+                                return;
+                              } else {
+                                setQaPairs((prevQaPairs = []) => {
+                                  return prevQaPairs.map((pair, i) => (
+                                    i === index ? { ...pair, question: val } : pair
+                                  ));
+                                });
+                              }
                             }}
 
                             changeAnswer={(val) => {
@@ -355,12 +390,14 @@ export function QaSection({
   };
   const QaPairTableRow: React.FC<{
     qaPair: IKnowledgeBaseQaPairType;
+    checkQuestionDuplicates: (val: string) => boolean;
     changeQuestion: (val: string) => void;
     changeAnswer: (val: string) => void;
     removeQaPair: () => void;
     updateQaPair: (updatedQaPair: IKnowledgeBaseQaPairType) => void;
     }> = ({
       qaPair,
+      checkQuestionDuplicates,
       changeQuestion,
       changeAnswer,
       removeQaPair,
@@ -433,6 +470,16 @@ export function QaSection({
                           ...prev,
                           question: true,
                         }));
+                        isError = true;
+                      }
+                      // check for duplicate question
+                      const isDuplicate = checkQuestionDuplicates(qaPairState.question);
+                      if (isDuplicate) {
+                        setQaPairErrors((prev) => ({
+                          ...prev,
+                          question: true,
+                        }));
+                        toast.error('Question already exists');
                         isError = true;
                       }
                       if (

@@ -7,6 +7,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { KnowledgeBaseNewEditForm } from 'src/sections/knowledge-bases/knowledge-base-new-edit-form';
 import { Label } from 'src/components/label';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -31,11 +32,24 @@ export default function KnowledgeBaseEdit({ kb: currentKb }: Props) {
         return 'default';
     }
   }
+  function getLabelIcon(status: any) {
+    console.log('Status:', status);
+    switch (status) {
+      case 'active':
+        return "eva:checkmark-circle-2-fill";
+      case 'pending':
+        return "material-symbols-light:pending-outline";
+      case 'error':
+        return "material-symbols:error-outline";
+      default:
+        return '';
+    }
+  }
 
   const getKnowledgeBaseById = useCallback(async () => {
     const { data } = await API.get<IKnowledgeBaseItem>('/knowledgeBases/' + id);
     setKnowledgeBase(data);
-    // console.log(data);
+    console.log(data);
     setLoaded(true);
   }, [id]);
 
@@ -51,7 +65,8 @@ export default function KnowledgeBaseEdit({ kb: currentKb }: Props) {
           <Label
             height={50}
             width={75}
-            color={getLabelColor(knowledgeBase?.status || 'active')} >
+            color={getLabelColor(knowledgeBase?.status || 'pending')} 
+            startIcon={<Iconify icon={getLabelIcon(knowledgeBase?.status )} />}>
               {knowledgeBase?.status && knowledgeBase.status.toUpperCase()}
           </Label>
         }

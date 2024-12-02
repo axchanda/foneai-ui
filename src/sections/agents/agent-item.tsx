@@ -94,19 +94,19 @@ export function AgentItem({ agent, onView, onEdit, onDelete }: Props) {
         <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
           {[
             {
+              label: 'Voice',
+              icon: <Iconify width={16} icon="iconoir:voice" sx={{ flexShrink: 0 }} />,
+            },
+            {
               label: languages[agent.language],
-              icon: <Iconify width={16} icon="ion:language" sx={{ flexShrink: 0 }} />,
+              icon: <Iconify width={16} icon="iconoir:language" sx={{ flexShrink: 0 }} />,
             },
             {
-              label: agent.timezone,
-              icon: <Iconify width={16} icon="mingcute:clock-line" sx={{ flexShrink: 0 }} />,
-            },
-            {
-              label: agent.isInterruptable ? 'Interruptable' : 'Non-interruptable',
+              label: agent.isInterruptible ? 'Interruptible' : 'Non-interruptible',
               icon: (
                 <Iconify
                   width={16}
-                  icon="icon-park-outline:link-interrupt"
+                  icon={agent.isInterruptible ? "icon-park-outline:link-interrupt" : "icon-park-outline:link-four"}
                   sx={{ flexShrink: 0 }}
                 />
               ),

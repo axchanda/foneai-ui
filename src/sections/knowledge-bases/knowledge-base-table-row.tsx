@@ -45,6 +45,20 @@ export function KnowledgeBaseTableRow({
         return 'default';
     }
   }
+  function getLabelIcon(status: any) {
+    console.log(status);
+    switch (status) {
+      case 'active':
+        return "eva:checkmark-circle-2-fill";
+      case 'pending':
+        return "material-symbols-light:pending-outline";
+      case 'error':
+        return "material-symbols:error-outline";
+      default:
+        return '';
+    }
+  }
+  console.log(row);
   return (
     <>
       <TableRow
@@ -60,7 +74,7 @@ export function KnowledgeBaseTableRow({
         <TableCell>{row.knowledgeBaseName}</TableCell>
         <TableCell>{row.knowledgeBaseDescription}</TableCell>
         <TableCell>
-          <Label  color={getLabelColor(row?.status || 'active')} >
+          <Label color={getLabelColor(row?.status || 'pending')} startIcon={<Iconify icon={getLabelIcon(row?.status)} />}>
             {row?.status && row.status.toUpperCase()}
           </Label>
         </TableCell>

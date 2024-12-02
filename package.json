@@ -31,6 +31,7 @@
     "@fontsource/dm-sans": "^5.0.21",
     "@fontsource/inter": "^5.0.18",
     "@fontsource/nunito-sans": "^5.0.13",
+    "@fontsource/onest": "^5.1.0",
     "@fontsource/public-sans": "^5.0.18",
     "@fullcalendar/core": "^6.1.14",
     "@fullcalendar/daygrid": "^6.1.14",

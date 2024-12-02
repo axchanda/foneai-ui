@@ -17,6 +17,7 @@ import type { ContactsPopoverProps } from '../components/contacts-popover';
 import type { LanguagePopoverProps } from '../components/language-popover';
 import { type WorkspacesPopoverProps } from '../components/workspaces-popover';
 import type { NotificationsDrawerProps } from '../components/notifications-drawer';
+import { SettingsButton } from '../components/settings-button';
 
 // ----------------------------------------------------------------------
 

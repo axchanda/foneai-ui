@@ -68,7 +68,8 @@ export default function LogView() {
 
 
   const getSessionLog = useCallback(async () => {
-    const { data } = await API.get<ISessionLogType>('/logs/' + id);
+    const { data } = await API.get<any>('/logs/' + id);
+    console.log(data);
     setSessionLog(data.sessionLog);
     setLoaded(true);
   }, [id]);
@@ -81,7 +82,7 @@ export default function LogView() {
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading={`Session Log - ${id}`}
+          heading={`Log Id: ${id}`}
           // action={
             // <Button
             //   component={RouterLink}
@@ -96,37 +97,40 @@ export default function LogView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         />
         {loaded ? (
-          <Card>
-            <Box sx={{ position: 'relative' }}>
-              <Scrollbar>
-                <Table size={table.dense ? 'small' : 'medium'}  
-                  sx={{ 
-                    minWidth: 960,
-                    scrollBehavior: 'smooth',                    
-                  }}>
-                  <TableHeadCustom
-                    order={table.order}
-                    orderBy={table.orderBy}
-                    headLabel={TABLE_HEAD}
-                    numSelected={table.selected.length}
-                    checkBoxHidden={true}
-                    onSort={table.onSort}
-                  />
+          <>
 
-                  <TableBody>
-                    {sessionLog
-                      .map((row, index) => (
-                        <SessionLogTableRow
-                          key={index}
-                          sessionType={'agent'}
-                          row={row}
-                        />
-                      ))}
-                  </TableBody>
-                </Table>
-              </Scrollbar>
-            </Box>
-          </Card>
+            <Card>
+              <Box sx={{ position: 'relative' }}>
+                <Scrollbar>
+                  <Table size={table.dense ? 'small' : 'medium'}  
+                    sx={{ 
+                      minWidth: 960,
+                      scrollBehavior: 'smooth',                    
+                    }}>
+                    <TableHeadCustom
+                      order={table.order}
+                      orderBy={table.orderBy}
+                      headLabel={TABLE_HEAD}
+                      numSelected={table.selected.length}
+                      checkBoxHidden={true}
+                      onSort={table.onSort}
+                    />
+
+                    <TableBody>
+                      {sessionLog
+                        .map((row, index) => (
+                          <SessionLogTableRow
+                            key={index}
+                            sessionType={'agent'}
+                            row={row}
+                          />
+                        ))}
+                    </TableBody>
+                  </Table>
+                </Scrollbar>
+              </Box>
+            </Card>
+          </>
         ) : (
           <LoadingScreen />
         )}

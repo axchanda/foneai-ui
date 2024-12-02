@@ -31,10 +31,10 @@ type Props = CardProps & {
   };
 };
 
-export function AppMinutesUsed({ title, subheader, chart, ...other }: Props) {
+export function AppCreditsUsed({ title, subheader, chart, ...other }: Props) {
   const theme = useTheme();
 
-  const [selectedSeries, setSelectedSeries] = useState('Jul');
+  const [selectedSeries, setSelectedSeries] = useState(chart.data[0].name);
 
   const series = chart.data.filter((i) => i.name === selectedSeries)!;
 

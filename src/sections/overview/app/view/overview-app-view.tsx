@@ -5,14 +5,14 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import { useUsage } from 'src/context/usage.context';
 import { SplashScreen } from 'src/components/loading-screen';
-import { MinutesUsed } from '../MinutesUsed';
-import { AppMinutesUsed } from '../app-minutes-used';
+import { CreditsUsed } from '../CreditsUsed';
+import { AppCreditsUsed } from '../app-credits-used';
 import { AppWidgetSummary } from '../app-widget-summary';
 
 // ----------------------------------------------------------------------
 
 export function OverviewAppView() {
-  const { channels, costPerMinute, credits, loading } = useUsage();
+  const { channels, credits, loading } = useUsage();
 
   const availableCredits = Math.floor(credits.available);
 
@@ -74,7 +74,7 @@ export function OverviewAppView() {
             <AppWidgetSummary
               title="All users"
               percent={-0.1}
-              total={12}
+              total={0}
               chart={{
                 colors: [theme.vars.palette.error.main],
                 categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
@@ -99,7 +99,7 @@ export function OverviewAppView() {
             }}
           /> */}
             {/* <BookingAvailable
-            title="Minutes used"
+            title="Credits Used"
             chart={{
               series: [
                 { label: 'Used', value: 120 },
@@ -107,15 +107,14 @@ export function OverviewAppView() {
               ],
             }}
           /> */}
-            <MinutesUsed
-              total={120}
-              chart={{ series: { Jul: credits.used, Aug: credits.used, Sep: credits.used } }}
-            />
+            <CreditsUsed chart={{}} />
+              {/* chart={{ series: { Jul: credits.used, Aug: credits.used, Sep: credits.used } }}
+            /> */}
           </Grid>
 
           <Grid alignSelf="stretch" xs={12} md={6} lg={8}>
-            <AppMinutesUsed
-              title="Minutes used"
+            <AppCreditsUsed
+              title="Credits Usage chart"
               // subheader="(+43%) than last year"
               chart={{
                 categories: [
@@ -153,7 +152,7 @@ export function OverviewAppView() {
                 ],
                 data: [
                   {
-                    name: 'Jul',
+                    name: 'Sep',
                     data: Array.from(
                       { length: 30 },
                       () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
@@ -167,7 +166,7 @@ export function OverviewAppView() {
                     ),
                   },
                   {
-                    name: 'Sep',
+                    name: 'Jul',
                     data: Array.from(
                       { length: 30 },
                       () => Math.floor(Math.random() * (100 - 5 + 1)) + 5

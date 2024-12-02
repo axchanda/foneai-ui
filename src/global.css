@@ -34,6 +34,8 @@
 @import "@fontsource/nunito-sans/700.css";
 @import "@fontsource/nunito-sans/800.css";
 
+@import "@fontsource/onest/latin.css";
+
 /** **************************************
 * Plugins
 *************************************** */
@@ -67,6 +69,8 @@ body,
   flex: 1 1 auto;
   min-height: 100%;
   flex-direction: column;
+  font-family: 'Onest';
+  font-weight: 400;
 }
 
 img {

@@ -293,15 +293,20 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     }
   }
 
+  const onSubmit1 = handleSubmit(async (data) => {
+    console.log('Submitting data:', data);
+    console.log('Current KB:', currentKb);
+    console.log('Files to delete:', filesToDelete);
+    console.log('Files to upload:', filesToUpload);
+    console.log('QA pairs to delete:', qaPairsToDelete);
+    console.log('QA pairs to update:', qaPairsToUpdate);
+    console.log('QA pairs to create:', qaPairsToCreate);
+  });
+
   const onSubmit = handleSubmit(async (data) => {
     console.log('Submitting data:', data);
     console.log('Current KB:', currentKb);
     try {
-      console.log('Files to delete:', filesToDelete);
-      console.log('Files to upload:', filesToUpload);
-      console.log('QA pairs to delete:', qaPairsToDelete);
-      console.log('QA pairs to update:', qaPairsToUpdate);
-      console.log('QA pairs to create:', qaPairsToCreate);
 
       if(!currentKb || currentKb === undefined) {
         if(filesToUpload.length <= 0 && qaPairsToCreate.length <= 0) {
@@ -371,44 +376,15 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         return;
       } 
       else {
-        if(knowledgeBaseFilesLoaded.value === false && knowledgeBaseQaPairsLoaded.value === false) {
-          toast.error('Please wait for the files and QA pairs to load');
-          return;
-        } else if(knowledgeBaseFilesLoaded.value === false && knowledgeBaseQaPairsLoaded.value === true) {
-          const { data: filesData } = await API.get<{
-            knowledgeBaseFiles: string[];
-          }>(`/knowledgeBaseFilesList/${currentKb?._id}`);
-          if(filesData.knowledgeBaseFiles.length <= 0 && knowledgeBaseQaPairs.length <= 0) {
-            setError('knowledgeBaseFiles', {
-              type: 'manual',
-              message: 'Please upload at least one file or add at least one QA pair',
-            });
-            setError('knowledgeBaseQaPairs', {
-              type: 'manual',
-              message: 'Please upload at least one file or add at least one QA pair',
-            });
-            throw new Error('Please upload at least one file or add at least one QA pair');
-          }
-        } else if(knowledgeBaseFilesLoaded.value === true && knowledgeBaseQaPairsLoaded.value === false) {
-          const { data: qaPairsData } = await API.get<{
-            knowledgeBaseQaPairs: IKnowledgeBaseQaPairType[];
-          }>(`/knowledgeBaseQaPairsList/${currentKb?._id}`);
-          if(knowledgeBaseFiles.length <= 0 && qaPairsData.knowledgeBaseQaPairs.length <= 0) {
-            setError('knowledgeBaseFiles', {
-              type: 'manual',
-              message: 'Please upload at least one file or add at least one QA pair',
-            });
-            setError('knowledgeBaseQaPairs', {
-              type: 'manual',
-              message: 'Please upload at least one file or add at least one QA pair',
-            });
-            throw new Error('Please upload at least one file or add at least one QA pair');
-          }
-        } else {
-          console.log('knowledgeBaseFiles:', knowledgeBaseFiles);
-        }
-
-        if(knowledgeBaseFiles.length <= 0 && knowledgeBaseQaPairs.length <= 0) {
+        const { data: nonEmptyKb } = await API.post(`/validateNonEmptyKnowledgeBase/${currentKb._id}`, {
+          qaPairsToDelete,
+          qaPairsToUpdate,
+          qaPairsToCreate,
+          filesToDelete,
+          filesToCreate: (filesToUpload.length > 0) ? true : false,
+        });
+        
+        if(nonEmptyKb.valid === false) {
           setError('knowledgeBaseFiles', {
             type: 'manual',
             message: 'Please upload at least one file or add at least one QA pair',
@@ -418,63 +394,59 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
             message: 'Please upload at least one file or add at least one QA pair',
           });
           throw new Error('Please upload at least one file or add at least one QA pair');
-        }
-        // If updating an existing knowledge base, update the kb with the new data
-        const { data: updatedKb } = await API.put(`/knowledgeBases/${currentKb._id}`, {
-          knowledgeBaseName: data.knowledgeBaseName,
-          knowledgeBaseDescription: data.knowledgeBaseDescription,
-          qaPairsToDelete,
-          qaPairsToUpdate,
-          qaPairsToCreate,
-          filesToDelete,
-          filesToCreate: (filesToUpload.length > 0) ? true : false,
-        });
-
-        if (!updatedKb) throw new Error('Failed to update Knowledge Base');
-        
-        if(filesToUpload.length > 0) {
-          const { data: signedUrlsData } = await API.post(`/knowledgeBases/generatePreSignedUrls`, {
-            knowledgeBaseId: currentKb._id,
-            fileNames: filesToUpload.map((file) => file.name)
+        } else {
+          console.log('Data 398: ', data)
+          // If updating an existing knowledge base, update the kb with the new data
+          const { data: updatedKb } = await API.put(`/knowledgeBases/${currentKb._id}`, {
+            knowledgeBaseName: data.knowledgeBaseName,
+            knowledgeBaseDescription: data.knowledgeBaseDescription,
+            qaPairsToDelete,
+            qaPairsToUpdate,
+            qaPairsToCreate,
+            filesToDelete,
+            filesToCreate: (filesToUpload.length > 0) ? true : false,
           });
 
-          const uploadFilePromises = filesToUpload.map((file, index) =>
-            fetch(signedUrlsData.urls[index].url, {
-              method: 'PUT',
-              body: file,
-              headers: {
-                'Content-Type': file.type,
-              },
-            })
-          );
-
-          let fileNames: any[] = [];
-
-          try {
-            const responses = await Promise.all(uploadFilePromises);
-            responses.forEach((response, index) => {
-              console.log('Response:', response);
-              console.log('Index:', index);
-
-              if (!response.ok) {
-                throw new Error(`Failed to upload file ${filesToUpload[index].name}`);
-              }
-              console.log(filesToUpload[index])
-              console.log(filesToUpload[index].name)
-              fileNames.push(filesToUpload[index].name);
-            })
-            await API.put(`/knowledgeBases/${currentKb._id}/updateCreatedFiles`, {
-              fileNames
+          if (!updatedKb) throw new Error('Failed to update Knowledge Base');
+          
+          if(filesToUpload.length > 0) {
+            const { data: signedUrlsData } = await API.post(`/knowledgeBases/generatePreSignedUrls`, {
+              knowledgeBaseId: currentKb._id,
+              fileNames: filesToUpload.map((file) => file.name)
             });
-          } catch (error) {
-            console.error('Error uploading files:', error);
-            throw new Error('Failed to upload files');
+
+            const uploadFilePromises = filesToUpload.map((file, index) =>
+              fetch(signedUrlsData.urls[index].url, {
+                method: 'PUT',
+                body: file,
+                headers: {
+                  'Content-Type': file.type,
+                },
+              })
+            );
+
+            try {
+              const responses = await Promise.all(uploadFilePromises);
+              let fileNames: any[] = [];
+              responses.forEach((response, index) => {
+                if (!response.ok) {
+                  throw new Error(`Failed to upload file ${filesToUpload[index].name}`);
+                }
+                fileNames.push(filesToUpload[index].name);
+              })
+              await API.put(`/knowledgeBases/${currentKb._id}/updateCreatedFiles`, {
+                fileNames
+              });
+            } catch (error) {
+              console.error('Error uploading files:', error);
+              throw new Error('Failed to upload files');
+            }
           }
+          
+          toast.success('Update knowledge base success!');
+          router.push('/knowledge-bases');
+          return;
         }
-        // TODO: need to work on upload Files
-        toast.success('Update knowledge base success!');
-        router.push('/knowledge-bases');
-        return;
       }
     } catch (error) {
       console.error('error', error);
@@ -527,7 +499,6 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       </LoadingButton>
     </Box>
   );
-
 
   const renderFiles = <Card>
       <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">

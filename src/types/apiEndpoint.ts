@@ -14,6 +14,7 @@ export type IApiEndpointFilters = {
 };
 
 export type IApiEndpointHeaders = {
+  isEncrypted: boolean;
   key: string;
   value: string;
 };

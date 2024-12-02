@@ -258,7 +258,7 @@ const TriggerAction: React.FC<{
       <Card>
           <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
           <Stack>
-              <Typography variant="h5">Trigger Actions</Typography>
+              <Typography variant="h5">Connect Actions</Typography>
           </Stack>
           <Button
               onClick={() => {
@@ -268,7 +268,7 @@ const TriggerAction: React.FC<{
               variant="contained"
               disabled={triggerEditingInProgress}
           >
-              Add New Action Trigger
+              Add New Action Connector
           </Button>
           </Stack>
           <Divider />
@@ -444,7 +444,7 @@ const TriggerAction: React.FC<{
           ) : (
               <Stack>
               <Typography variant="h5" align="center">
-                  No Action Triggers
+                  No Actions Connected
               </Typography>
               </Stack>
           )}

@@ -7,23 +7,17 @@ type IUsageContext = {
   credits: {
     available: number;
     used: number;
-  };
-  costPerMinute: number;
-  costPerChannel: number;
+  }
   channels: number;
-  minutes: number;
   loading: boolean;
 };
 
 const UsageContext = createContext<IUsageContext>({
   channels: 0,
-  costPerChannel: 0,
-  costPerMinute: 0,
   credits: {
     available: 0,
     used: 0,
   },
-  minutes: 0,
   loading: true,
 });
 
@@ -32,55 +26,22 @@ export const UsageContextProvider: React.FC<PropsWithChildren> = ({ children }) 
 
   const [state, setState] = useState<IUsageContext>({
     channels: 0,
-    costPerChannel: 0,
-    costPerMinute: 0,
     credits: {
       available: 0,
       used: 0,
     },
-    minutes: 0,
     loading: true,
   });
 
   const getUsage = useCallback(async () => {
-    const planPromise = API.get<{
-      costPerMinute: number;
-      costPerChannel: number;
-    }>('/plans/getUserPlans');
-    const usagePromise = API.get<{
-      channels: number;
-      minutes: number;
-    }>('/usage');
-
-    const creditsPromise = API.get<{
-      available: number;
-      used: number;
-    }>('/credits');
-
-    // const [
-    //   {
-    //     data: { costPerChannel, costPerMinute },
-    //   },
-    //   {
-    //     data: { channels, minutes },
-    //   },
-    //   {
-    //     data: { available, used },
-    //   },
-    // ] = await Promise.all([planPromise, usagePromise, creditsPromise]);
-    // const plan = await planPromise;
-    let costPerMinute = 0.05,
-        costPerChannel = 5,
-        channels = 3,
-        minutes = 10000,
-        available = 5000,
-        used = 5000;
+    const {data} = await API.get('/usage');
+    console.log('Usage: ', data);
+    let channels = data.channels,
+        available = data.credits.available,
+        used = data.credits.used;
 
     setState({
-      costPerMinute,
-      costPerChannel,
       channels,
-      minutes,
       credits: {
         available,
         used,

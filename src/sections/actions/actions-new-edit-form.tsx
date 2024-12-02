@@ -58,6 +58,7 @@ export type NewActionSchemaType = zod.infer<typeof NewActionSchema>;
 
 export const NewActionSchema = zod.object({
   actionName: zod.string().min(1, 'Action name is required').regex(/^[a-zA-Z0-9]+$/, 'Action name should only contain letters and numbers without spaces or special characters'),
+  actionDescription: zod.string().optional(),
 });
 
 type Props = {
@@ -749,8 +750,6 @@ export function ActionsNewEditForm({ currentAction }: Props) {
   };
 
   const onSubmit = handleSubmit(async (data: any) => {
-    console.log('Form operation data', operation.data);
-
 
     if (operation.type === 'apiEndpoint') {
       console.log('Operation data', operation.data);
