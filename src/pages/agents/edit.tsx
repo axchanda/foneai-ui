@@ -10,6 +10,8 @@ import { useParams } from 'react-router';
 import API from 'src/utils/API';
 import type { IAgentType } from 'src/types/agent';
 import { AgentNewEditForm } from 'src/sections/agents/agent-new-edit-form';
+import { Button, Stack, Typography } from '@mui/material';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 

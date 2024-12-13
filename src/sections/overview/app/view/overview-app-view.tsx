@@ -2,12 +2,20 @@ import { useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-
+import { Dialog, DialogActions, DialogContent, DialogTitle, Button, Card, CardContent, Typography, Divider, Stack, Input } from '@mui/material';
 import { useUsage } from 'src/context/usage.context';
 import { SplashScreen } from 'src/components/loading-screen';
 import { CreditsUsed } from '../CreditsUsed';
 import { AppCreditsUsed } from '../app-credits-used';
 import { AppWidgetSummary } from '../app-widget-summary';
+import { useRouter } from 'src/routes/hooks';
+import { useBoolean } from 'src/hooks/use-boolean';
+import { Field } from 'src/components/hook-form';
+import { useState } from 'react';
+import { Iconify } from 'src/components/iconify';
+import { LoadingButton } from '@mui/lab';
+import API from 'src/utils/API';
+import { toast } from 'sonner';
 
 // ----------------------------------------------------------------------
 
@@ -17,6 +25,36 @@ export function OverviewAppView() {
   const availableCredits = Math.floor(credits.available);
 
   const theme = useTheme();
+
+  const router = useRouter();
+
+  const showChannelDialog = useBoolean(false);
+  const [channelCount, setChannelCount] = useState(0);
+  const channelReqInProgress = useBoolean(false);
+
+  const handleChannelIncrease = async (data: any) => {
+    try {
+      console.log(data);
+      channelReqInProgress.onTrue();
+      const {data: channelReq} = await API.post('/requests/increaseChannel', data);
+      if (channelReq) {
+        console.log(channelReq);
+        toast.success(channelReq.message);
+        channelReqInProgress.onFalse();
+        showChannelDialog.onFalse();
+      }
+    } catch (error) {
+      console.log(error)
+      if(error.response && error.response.status === 400) {
+        console.log(error.response.data.error);
+        toast.error(error.response.data.error);
+      } else {
+        console.log(error && error.message);
+      }
+      channelReqInProgress.onFalse();
+      showChannelDialog.onFalse();
+    }
+  }
 
   return (
     <DashboardContent maxWidth="xl">
@@ -51,7 +89,8 @@ export function OverviewAppView() {
                 series: [15, 18, 12, 51, 68, 11, 39, 37],
               }}
               rightIcon='material-symbols:add-shopping-cart-rounded'
-              rightIconTooltip='Buy more credits'
+              rightIconTooltip='Purchase credits'
+              invokeFunction={() => router.push('/checkout')}
             />
           </Grid>
 
@@ -67,7 +106,90 @@ export function OverviewAppView() {
               }}
               rightIcon='streamline:graph-arrow-increase'
               rightIconTooltip='Increase channels'
+              invokeFunction={showChannelDialog.onTrue}
             />
+            <Dialog open={showChannelDialog.value} onClose={() => {
+              showChannelDialog.onFalse();
+              setChannelCount(0);
+            }}>
+                <DialogTitle>Increase Channels</DialogTitle>
+                <Divider />
+                <DialogContent>
+                    <Card>
+                        <CardContent>
+                        <Stack spacing={2} direction="row" alignItems="center">
+                          <Typography variant="h6" gutterBottom>
+                            Channel Count:
+                          </Typography>
+                          <Button
+                            variant="contained"
+                            color="error"
+                            disabled={channelCount === 0}
+                            sx={{
+                              borderRadius: '50%',
+                              minWidth: '30px', // Reduced button size
+                              minHeight: '30px', // Reduced button size
+                              padding: 0, // Remove extra padding
+                            }}
+                            onClick={() => setChannelCount(Math.max(0, channelCount - 1))}
+                          >
+                            <Iconify icon="mdi:minus" fontSize="small" />
+                          </Button>
+
+                          <Input
+                            name="channel_count"
+                            type="number"
+                            placeholder="Enter number of channels"
+                            required
+                            value={channelCount}
+                            onChange={(e) => setChannelCount(parseInt(e.target.value))}
+                            sx={{
+                              textAlign: 'center', // Align input text to the right
+                              flex: 1, // Take up remaining space
+                              maxWidth: '100px', // Limit width of the input
+                            }}
+                          />
+
+                          <Button
+                            variant="contained"
+                            color="success"
+                            sx={{
+                              borderRadius: '50%',
+                              minWidth: '30px', // Reduced button size
+                              minHeight: '30px', // Reduced button size
+                              padding: 0, // Remove extra padding
+                            }}
+                            onClick={() => setChannelCount(channelCount + 1)}
+                          >
+                            <Iconify icon="mdi:plus" fontSize="small" />
+                          </Button>
+
+                          </Stack>
+                        </CardContent>
+                    </Card>
+                </DialogContent>
+                <DialogActions>
+                    <Button 
+                      variant='outlined'
+                      onClick={showChannelDialog.onFalse}
+                      color="error"
+
+                    >
+                      Cancel
+                    </Button>
+                    <LoadingButton 
+                      loading={channelReqInProgress.value}
+                      variant='contained'
+                      onClick={() => {
+                        handleChannelIncrease({channelCount});
+                      }}
+                      color="primary"
+                      disabled={channelCount === 0}
+                    >
+                      Request Increase
+                    </LoadingButton>
+                </DialogActions>
+            </Dialog>
           </Grid>
 
           <Grid xs={12} md={4}>
@@ -82,6 +204,7 @@ export function OverviewAppView() {
               }}
               rightIcon='mdi:user-add'
               rightIconTooltip='Add new user'
+              invokeFunction={() => router.push('/users/create')}
             />
           </Grid>
 

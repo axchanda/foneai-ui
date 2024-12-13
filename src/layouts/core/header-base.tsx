@@ -18,6 +18,7 @@ import type { LanguagePopoverProps } from '../components/language-popover';
 import { type WorkspacesPopoverProps } from '../components/workspaces-popover';
 import type { NotificationsDrawerProps } from '../components/notifications-drawer';
 import { SettingsButton } from '../components/settings-button';
+import { TalkToAgentButton } from '../components/talk-to-agent-button';
 
 // ----------------------------------------------------------------------
 
@@ -102,6 +103,10 @@ export function HeaderBase({
   ...other
 }: HeaderBaseProps) {
   const theme = useTheme();
+  const currentPath = window.location.pathname; // Fallback for browser environments
+  const isAgentEdit = /^\/agents\/[a-zA-Z0-9_-]+$/.test(currentPath);
+
+  console.log(currentPath);
 
   return (
     <HeaderSection
@@ -174,6 +179,9 @@ export function HeaderBase({
               {/* -- Contacts popover -- */}
               {/* {contacts && <ContactsPopover data-slot="contacts" data={data?.contacts} />} */}
 
+              {/* -- Talk to agent button -- */}
+              {/* {isAgentEdit && <TalkToAgentButton />} */}
+              
               {/* -- Settings button -- */}
               {/* {settings && <SettingsButton data-slot="settings" />} */}
 

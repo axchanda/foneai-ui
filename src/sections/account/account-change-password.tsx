@@ -13,6 +13,8 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { toast } from 'src/components/snackbar';
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
+import API from 'src/utils/API';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -23,9 +25,17 @@ export const ChangePassWordSchema = zod
     oldPassword: zod
       .string()
       .min(1, { message: 'Password is required!' })
-      .min(6, { message: 'Password must be at least 6 characters!' }),
-    newPassword: zod.string().min(1, { message: 'New password is required!' }),
-    confirmNewPassword: zod.string().min(1, { message: 'Confirm password is required!' }),
+      .min(8, { message: 'Password must be at least 8 characters!' })
+      .max(20, { message: 'Password must be at most 20 characters!' }),
+    newPassword: zod
+      .string().min(1, { message: 'New password is required!' })
+      .min(8, { message: 'New Password must be at least 8 characters!' })
+      .max(20, { message: 'New Password must be at most 20 characters!' }),
+    confirmNewPassword: zod
+      .string()
+      .min(1, { message: 'Confirm New password is required!' })
+      .min(8, { message: 'Confirm New Password must be at least 8 characters!' })
+      .max(20, { message: 'Confirm New Password must be at most 20 characters!' })
   })
   .refine((data) => data.oldPassword !== data.newPassword, {
     message: 'New password must be different than old password',
@@ -40,7 +50,7 @@ export const ChangePassWordSchema = zod
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(data.newPassword),
     {
       message:
-        'Password must be minimum 8+ and must contain one uppercase, one number, one special character.',
+        'Password must be minimum 8+ and must contain one uppercase, one number & one special character.',
     }
   );
 
@@ -48,6 +58,7 @@ export const ChangePassWordSchema = zod
 
 export function AccountChangePassword() {
   const password = useBoolean();
+  const router = useRouter();
 
   const defaultValues = { oldPassword: '', newPassword: '', confirmNewPassword: '' };
 
@@ -65,18 +76,18 @@ export function AccountChangePassword() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const {data: changePasswordData} = await API.post('/auth/changePassword', data);
       reset();
-      toast.success('Update success!');
-      // console.info('DATA', data);
+      toast.success(changePasswordData.message);
+      router.push('/dashboard');
     } catch (error) {
-      // console.error(error);
+      toast.error(error.message);
     }
   });
 
   return (
     <Form methods={methods} onSubmit={onSubmit}>
-      <Card sx={{ p: 3, gap: 3, display: 'flex', flexDirection: 'column' }}>
+      <Card sx={{ p: 3, gap: 3, display: 'flex', flexDirection: 'column', width: '60%', alignContent: 'center' }}>
         <Field.Text
           name="oldPassword"
           type={password.value ? 'text' : 'password'}
@@ -108,7 +119,7 @@ export function AccountChangePassword() {
           helperText={
             <Stack component="span" direction="row" alignItems="center">
               <Iconify icon="eva:info-fill" width={16} sx={{ mr: 0.5 }} /> Password must be minimum
-              8+ and must contain one uppercase, one number, one special character.
+              8+ and must contain one uppercase, one number & one special character.
             </Stack>
           }
         />
@@ -129,7 +140,7 @@ export function AccountChangePassword() {
         />
 
         <LoadingButton type="submit" variant="contained" loading={isSubmitting} sx={{ ml: 'auto' }}>
-          Save changes
+          Change Password
         </LoadingButton>
       </Card>
     </Form>

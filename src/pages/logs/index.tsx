@@ -216,7 +216,6 @@ export default function LogListView() {
                           row={row}
                           onOpenRow={() => { 
                             logParamsDialog.onTrue();
-                            // router.push(`/logs/${row._id}`);
                           }}
                           onDeleteRow={() => handleDeleteRow(row._id)}
                         />

@@ -9,7 +9,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { AuthGuard } from 'src/auth/guard';
 import { Helmet } from 'react-helmet-async';
 import PermissionGuard from 'src/auth/guard/permission-guard';
-
+import { Button, Stack, Typography } from '@mui/material';
+import { Iconify } from 'src/components/iconify';
 // ----------------------------------------------------------------------
 
 /** **************************************
@@ -26,6 +27,7 @@ const layoutContent = (
     <Suspense fallback={<LoadingScreen />}>
       <Outlet />
     </Suspense>
+
   </DashboardLayout>
 );
 

@@ -40,7 +40,7 @@ export const endpoints = {
   calendar: '/api/calendar',
   auth: {
     me: '/api/auth/me',
-    signIn: backendUrl + '/login',
+    signIn: backendUrl + '/auth/login',
     signUp: backendUrl + '/users/signup',
   },
   mail: {

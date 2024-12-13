@@ -13,11 +13,11 @@ export const _account = [
     href: '/',
     icon: <Iconify icon="hugeicons:dashboard-square-02" />,
   },
-  {
-    label: 'Billing',
-    href: '/billing',
-    icon: <Iconify icon="fluent:payment-16-regular" />,
-  },
+  // {
+  //   label: 'Billing',
+  //   href: '/billing',
+  //   icon: <Iconify icon="fluent:payment-16-regular" />,
+  // },
   {
     label: 'Security',
     href: '/account?tab=security',

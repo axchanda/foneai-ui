@@ -21,6 +21,7 @@ type Props = CardProps & {
   percent: number;
   rightIcon?: any;
   rightIconTooltip?: string;
+  invokeFunction?: any;
   chart: {
     colors?: string[];
     categories: string[];
@@ -29,7 +30,7 @@ type Props = CardProps & {
   };
 };
 
-export function AppWidgetSummary({ title, percent, total, chart, rightIcon, rightIconTooltip, sx, ...other }: Props) {
+export function AppWidgetSummary({ title, percent, total, chart, rightIcon, rightIconTooltip, invokeFunction, sx, ...other }: Props) {
   const theme = useTheme();
 
   const chartColors = chart.colors ?? [theme.palette.primary.main];
@@ -93,27 +94,28 @@ export function AppWidgetSummary({ title, percent, total, chart, rightIcon, righ
       /> */}
   <Tooltip title={rightIconTooltip} arrow>
       <Box
-  sx={{
-    borderRadius: '100%', // Makes it circular
-    padding: '15px',       // Equal padding on all sides
-    display: 'flex',      // Enables flexbox
-    alignItems: 'center', // Vertically centers the content
-    justifyContent: 'center', // Horizontally centers the content
-    '&:hover': {
-      bgcolor: theme.vars.palette.background.default
-    },
-  }}
->
-    <Iconify
-      icon={rightIcon}
-      style={{
-        color: theme.vars.palette.primary.main,
-      }}
-      width={40} // Adjusted to better fit the center
-      height={40} 
-    />
-</Box>
-</Tooltip>
+        sx={{
+          borderRadius: '100%', // Makes it circular
+          padding: '15px',       // Equal padding on all sides
+          display: 'flex',      // Enables flexbox
+          alignItems: 'center', // Vertically centers the content
+          justifyContent: 'center', // Horizontally centers the content
+          '&:hover': {
+            bgcolor: theme.vars.palette.background.default
+          },
+        }}
+        onClick={invokeFunction}
+      >
+          <Iconify
+            icon={rightIcon}
+            style={{
+              color: theme.vars.palette.primary.main,
+            }}
+            width={40} // Adjusted to better fit the center
+            height={40} 
+          />
+      </Box>
+    </Tooltip>
 
     </Card>
   );

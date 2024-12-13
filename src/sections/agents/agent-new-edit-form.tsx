@@ -38,6 +38,7 @@ import { Iconify } from 'src/components/iconify';
 import TriggerAction from 'src/components/agents/trigger-action';
 import { Chip } from '@mui/material';
 import VoiceDialog from 'src/components/agents/voice-dialog';
+import TestDialog from 'src/components/agents/test-dialog';
 
 export type NewAgentSchemaType = zod.infer<typeof NewAgentSchema>;
 
@@ -107,6 +108,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
     currentAgent?.voice?.voiceId || null
   );
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
+  const [openTestDialog, setOpenTestDialog] = useState(false);
 
   const getData = useCallback(async () => {
     const {data} = await API.get<any>('/actionsList');
@@ -414,7 +416,8 @@ export function AgentNewEditForm({ currentAgent }: Props) {
             <Box
               display="flex"
               alignItems="center"
-              justifyContent='end'
+              // justifyContent={currentAgent ? 'space-between' : 'flex-end'}
+              justifyContent='flex-end'
               flexWrap="wrap"
             >
               <LoadingButton
@@ -428,6 +431,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
               </LoadingButton>
             </Box>
           </Stack>
+
         </Form>
       ) : (
         <LoadingScreen />
@@ -449,6 +453,10 @@ export function AgentNewEditForm({ currentAgent }: Props) {
           setValue('voiceId', voiceId);
           setOpenVoiceDialog(false);
         }}
+      />
+      <TestDialog
+        open={openTestDialog}
+        onClose={() => setOpenTestDialog(false)}
       />
     </>
   );
