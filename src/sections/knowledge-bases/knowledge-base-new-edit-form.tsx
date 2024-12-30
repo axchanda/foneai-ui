@@ -6,36 +6,25 @@ import { useForm } from 'react-hook-form';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-
-import { TableHeadCustom, useTable } from 'src/components/table';
 import LoadingButton from '@mui/lab/LoadingButton';
-
 import { useRouter } from 'src/routes/hooks';
-
 import { toast } from 'src/components/snackbar';
 import { Field, Form } from 'src/components/hook-form';
-import { Button, CardHeader, Checkbox, Divider, Typography } from '@mui/material';
+import { CardHeader, Divider, Typography } from '@mui/material';
 import { IKnowledgeBaseQaPairType, type IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import API from 'src/utils/API';
 import { useBoolean } from 'src/hooks/use-boolean';
-import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useDropzone } from 'react-dropzone';
 import { RejectionFiles } from 'src/components/upload';
 import { UploadPlaceholder } from 'src/components/upload/components/placeholder';
 import { KbFilePreview } from 'src/components/knowledge-bases/kb-file-preview';
-import axios from 'axios';
-import { Scrollbar } from 'src/components/scrollbar';
-import { Table, TableBody, TableCell, TableRow } from '@mui/material';
-import { IconButton, MenuItem } from '@mui/material';
-import { CustomPopover, usePopover } from 'src/components/custom-popover';
-import { MenuList } from '@mui/material';
+
 import { Iconify } from 'src/components/iconify';
 import { Tabs } from '@mui/material';
 import { Tab } from '@mui/material';
 import { QaSection } from './qa-section';
-import { knowledgeBasesRoutes } from 'src/routes/sections/knowledge-base';
 import { LoadingScreen } from 'src/components/loading-screen';
-import { error } from 'console';
+import { useTranslate } from 'src/locales';
 
 const icon = (name: string) => (
   <Iconify width={24} icon={name} color="primary" sx={{ flexShrink: 0 }} />
@@ -47,23 +36,18 @@ const ICONS = {
   scrape: icon('gg:website')
 };
 
-const TABLE_HEAD = [
-  { id: 'question', label: 'Question', width: 200 },
-  { id: 'answer', label: 'Answer', width: 290 },
-  { id: '', width: 10  },
-];
 
-export type NewKbSchemaType = zod.infer<typeof NewKbSchema>;
+export type KbSchemaType = zod.infer<ReturnType<typeof KbSchema>>;
 
 
-export const NewKbSchema = zod
+export const KbSchema =  (t: any) => zod
   .object({
-    knowledgeBaseName: zod.string().min(1, { message: 'KnowledgeBase Name is required!' }),
+    knowledgeBaseName: zod.string().min(1, { message: t('Knowledge Base Name is required!') }),
     knowledgeBaseDescription: zod.string().optional(),
     knowledgeBaseFiles: zod.array(zod.string()).optional(),
     knowledgeBaseQaPairs: zod.array(zod.object({
-      question: zod.string().min(1, { message: 'Question is required!' }),
-      answer: zod.string().min(1, { message: 'Answer is required!' }),
+      question: zod.string().min(1, { message: t('Question is required!') }),
+      answer: zod.string().min(1, { message: t('Answer is required!') }),
     })).optional(),
   });
 
@@ -73,7 +57,7 @@ type Props = {
 
 export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
   const router = useRouter();
-
+  const {t} = useTranslate();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const showDropBox = useBoolean(true);
 
@@ -97,6 +81,12 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
 
   const knowledgeBaseQaPairsLoaded = useBoolean();
 
+
+  const TABLE_HEAD = [
+    { id: 'question', label: t('Question'), width: 200 },
+    { id: 'answer', label: t('Answer'), width: 290 },
+    { id: '', width: 10  },
+  ];
   const defaultValues = useMemo(
     () => ({
       knowledgeBaseName: currentKb?.knowledgeBaseName || '',
@@ -106,10 +96,10 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
     }),
     [currentKb]
   );
-
-  const methods = useForm<NewKbSchemaType>({
+  const schema = KbSchema(t);
+  const methods = useForm<KbSchemaType>({
     mode: 'all',
-    resolver: zodResolver(NewKbSchema),
+    resolver: zodResolver(schema),
     //@ts-ignore
     defaultValues,
   });
@@ -185,7 +175,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
   }, [setFilesToUpload]);
 
   const handleDrop = useCallback((acceptedFiles: File[]) => {
-    console.log('Accepted files:', acceptedFiles);
+    // console.log('Accepted files:', acceptedFiles);
     setKnowledgeBaseFiles([{
       name: acceptedFiles[0].name,
       new: true,
@@ -205,7 +195,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
 
     // Check if the file is new.
     const isFileNew = knowledgeBaseFiles.find((file) => file.name === fileName)?.new || false;
-    console.log('File to delete:', fileName, isFileNew);
+    // console.log('File to delete:', fileName, isFileNew);
 
     // Call the appropriate delete handler based on the file's status.
     if (isFileNew) {
@@ -228,20 +218,20 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       if (file.name.length > 255) {
         return {
           code: 'file-name-too-long',
-          message: 'File name should be less than 255 characters',
+          message: t('File name should be less than 255 characters!')
         };
       }
       if(knowledgeBaseFiles.find((f) => f.name === file.name)) {
         return {
           code: 'file-already-exists',
-          message: 'File already exists',
+          message: t('File already exists!')
         };
       }
       // file size should be less than 2MB
       if (file.size > 2 * 1024 * 1024) {
         return {
           code: 'file-too-large',
-          message: 'File should be less than 2MB',
+          message: t('File size should be less than 2MB!')
         };
       }
       return null;
@@ -252,13 +242,13 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
 
   // wrong since we need to filter based on index and not on teh question of the qaPair
   const handleQaPairToDelete = (qaPair: any, index: number) => {
-    console.log('Deleting QA pair:', qaPair);
+    // console.log('Deleting QA pair:', qaPair);
     if (!qaPair._id) {
-      console.log('QA pair is new, removing from QA create list:', qaPair);
+      // console.log('QA pair is new, removing from QA create list:', qaPair);
       // Remove the item from the list using the index
       setQaPairsToCreate((prev) => prev.filter((_, i) => i !== index));
     } else {
-      console.log('QA pair is existing, adding to delete list:', qaPair);
+      // console.log('QA pair is existing, adding to delete list:', qaPair);
       // remove from update list if it exists
       setQaPairsToUpdate((prev) => prev.filter((item) => item._id !== qaPair._id));
       setQaPairsToDelete((prev) => [...prev, qaPair._id]);
@@ -266,7 +256,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
   };
   
   const handleQaPairToUpdate = (qaPair: any, index: number) => {
-    console.log('Updating QA pair:', qaPair);
+    // console.log('Updating QA pair:', qaPair);
     if (!qaPair._id) {
       // Update the item in the list using the index
       setQaPairsToCreate((prev) => 
@@ -286,26 +276,26 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
   };
 
   const handleQaPairToCreate = (qaPair: any) => {
-    console.log('Creating QA pair:', qaPair);
+    // console.log('Creating QA pair:', qaPair);
     if(!qaPair._id) {
       setQaPairsToCreate((prev) => [...prev, qaPair]);
       return;
     }
   }
 
-  const onSubmit1 = handleSubmit(async (data) => {
-    console.log('Submitting data:', data);
-    console.log('Current KB:', currentKb);
-    console.log('Files to delete:', filesToDelete);
-    console.log('Files to upload:', filesToUpload);
-    console.log('QA pairs to delete:', qaPairsToDelete);
-    console.log('QA pairs to update:', qaPairsToUpdate);
-    console.log('QA pairs to create:', qaPairsToCreate);
-  });
+  // const onSubmit1 = handleSubmit(async (data) => {
+  //   console.log('Submitting data:', data);
+  //   console.log('Current KB:', currentKb);
+  //   console.log('Files to delete:', filesToDelete);
+  //   console.log('Files to upload:', filesToUpload);
+  //   console.log('QA pairs to delete:', qaPairsToDelete);
+  //   console.log('QA pairs to update:', qaPairsToUpdate);
+  //   console.log('QA pairs to create:', qaPairsToCreate);
+  // });
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('Submitting data:', data);
-    console.log('Current KB:', currentKb);
+    // console.log('Submitting data:', data);
+    // console.log('Current KB:', currentKb);
     try {
 
       if(!currentKb || currentKb === undefined) {
@@ -329,7 +319,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         });
 
         const newKbId = newKb._id;
-        if (!newKbId) throw new Error('Failed to create Knowledge Base');
+        if (!newKbId) throw new Error(t('Create failed'));
 
         if(filesToUpload.length > 0) {
           const { data: signedUrlsData } = await API.post(`/knowledgeBases/generatePreSignedUrls`, {
@@ -367,11 +357,12 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
             });
           } catch (error) {
             console.error('Error uploading files:', error);
-            throw new Error('Failed to upload files');
+            throw new Error(t('Upload failed!'));
           }
         }
 
-        toast.success('Create knowledge base success!');
+        toast.success(t('Upload success!'));
+        toast.success('Create success!');
         router.push('/knowledge-bases');
         return;
       } 
@@ -387,15 +378,14 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         if(nonEmptyKb.valid === false) {
           setError('knowledgeBaseFiles', {
             type: 'manual',
-            message: 'Please upload at least one file or add at least one QA pair',
+            message: t('Please upload at least one file or add at least one QA pair!'),
           });
           setError('knowledgeBaseQaPairs', {
             type: 'manual',
-            message: 'Please upload at least one file or add at least one QA pair',
+            message: t('Please upload at least one file or add at least one QA pair!'),
           });
-          throw new Error('Please upload at least one file or add at least one QA pair');
+          throw new Error(t('Please upload at least one file or add at least one QA pair!'));
         } else {
-          console.log('Data 398: ', data)
           // If updating an existing knowledge base, update the kb with the new data
           const { data: updatedKb } = await API.put(`/knowledgeBases/${currentKb._id}`, {
             knowledgeBaseName: data.knowledgeBaseName,
@@ -430,7 +420,8 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
               let fileNames: any[] = [];
               responses.forEach((response, index) => {
                 if (!response.ok) {
-                  throw new Error(`Failed to upload file ${filesToUpload[index].name}`);
+                  // throw new Error(`Failed to upload file ${filesToUpload[index].name}`);
+                  throw new Error(t('Upload failed!'));
                 }
                 fileNames.push(filesToUpload[index].name);
               })
@@ -439,11 +430,11 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
               });
             } catch (error) {
               console.error('Error uploading files:', error);
-              throw new Error('Failed to upload files');
+              throw new Error(t('Upload failed!'));
             }
           }
           
-          toast.success('Update knowledge base success!');
+          toast.success('Update success!');
           router.push('/knowledge-bases');
           return;
         }
@@ -466,16 +457,20 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" subheader="Knowledge Base name and description" sx={{ mb: 3 }} />
+      <CardHeader title={t("Details")} subheader={t("Knowledge Base name and description")} sx={{ mb: 3 }} />
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Knowledge Base Name</Typography>
+          <Typography variant="subtitle2">
+            {t('Knowledge Base Name')}
+          </Typography>
           <Field.Text name="knowledgeBaseName" />
         </Stack>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Knowledge Base Description</Typography>
+          <Typography variant="subtitle2">
+            {t('Description')}
+          </Typography>
           <Field.Text fullWidth multiline rows={3} name="knowledgeBaseDescription" />
         </Stack>
       </Stack>
@@ -495,7 +490,7 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         }}
         // disabled={currentKb?.status === 'pending'}
       >
-        {!currentKb ? 'Create Knowledge Base' : 'Update Knowledge Base'}
+        {!currentKb ? t('Create') : t('Update')}
       </LoadingButton>
     </Box>
   );
@@ -503,9 +498,11 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
   const renderFiles = <Card>
       <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
       <Stack>
-          <Typography variant="h6">Files</Typography>
+          <Typography variant="h6">
+            {t('Files')}
+          </Typography>
           <Typography mt="4px" color="var(--palette-text-secondary)" variant='body2'>
-            Upload PDF / DOCX / TXT file upto 2MB
+            {t('Upload PDF / DOCX / TXT file upto 2MB')}
           </Typography>
       </Stack>
       {/* <Button
@@ -523,7 +520,6 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
         <Stack spacing={1.5}>
 
           { knowledgeBaseFilesLoaded.value ? (<>
-            {console.log('knowledgeBaseFiles:', knowledgeBaseFiles)}
             <>
               <input
                 {...getInputProps()}
@@ -579,8 +575,8 @@ export function KnowledgeBaseNewEditForm({ currentKb }: Props) {
       <Stack spacing={{ xs: 3, md: 5 }} sx={{ mx: 'auto', maxWidth: { xs: 720, xl: '1100px' } }}>
         {renderDetails}
         <Tabs value={selectedTab} onChange={handleTabChange} sx={{pl: '18px'}}>
-          <Tab icon={ICONS.files} label="Files" />
-          <Tab icon={ICONS.qa} label="Q&A" />
+          <Tab icon={ICONS.files} label={t("Files")} />
+          <Tab icon={ICONS.qa} label={t("Q&A")} />
         </Tabs>
         <Box>
           {selectedTab === 0 && renderFiles}

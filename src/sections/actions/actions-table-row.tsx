@@ -14,6 +14,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import type { IActionItem } from 'src/types/action';
 import { Label } from 'src/components/label';
+import { useTranslate } from 'src/locales';
 
 type Props = {
   row: IActionItem;
@@ -25,13 +26,20 @@ type Props = {
 
 export function ActionTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
-
+  const {t, currentLang} = useTranslate();
   const popover = usePopover();
+  
+  const labelModifier = (labelKey: string) => {
+    const localizedLabel = t(labelKey);
+  
+    // Avoid uppercase for non-Latin scripts
+    if (currentLang.value === 'ar') {
+      return localizedLabel.replace(/\d+/g, (match) => `(${match})`);
+    } 
 
-  const labelModifier = (label: string) => {
-    // break the word when it encounters a capital letter, and add a space before it, then convert it to uppercase
-    return label.replace(/([A-Z])/g, ' $1').toUpperCase();
-  }
+    return localizedLabel.toUpperCase();
+  };
+  
 
   return (
     <>
@@ -43,7 +51,7 @@ export function ActionTableRow({ row, selected, onEditRow, onSelectRow, onDelete
         tabIndex={-1}
       >
         <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
+          {/* <Checkbox id={row._id} checked={selected} onClick={onSelectRow} /> */}
         </TableCell>
         <TableCell>{row.actionName}</TableCell>
         <TableCell>{row.actionDescription}</TableCell>
@@ -72,7 +80,7 @@ export function ActionTableRow({ row, selected, onEditRow, onSelectRow, onDelete
             }}
           >
             <Iconify icon="solar:pen-bold" />
-            Edit
+            {t('Edit')}
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -82,7 +90,7 @@ export function ActionTableRow({ row, selected, onEditRow, onSelectRow, onDelete
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            {t('Delete')}
           </MenuItem>
         </MenuList>
       </CustomPopover>
@@ -90,11 +98,11 @@ export function ActionTableRow({ row, selected, onEditRow, onSelectRow, onDelete
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete action"
-        content={`Are you sure want to delete the action: ${row.actionName}?`}
+        title={t('Delete?')}
+        content={t('Are you sure want to delete ') + ' : ' + row.actionName}
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            {t('Delete')}
           </Button>
         }
       />

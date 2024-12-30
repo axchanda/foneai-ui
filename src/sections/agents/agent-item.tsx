@@ -21,14 +21,10 @@ import { Iconify } from 'src/components/iconify';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { usePopover, CustomPopover } from 'src/components/custom-popover';
 import type { IAgentListType } from 'src/types/agent';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
-const languages = {
-  en: 'English',
-  ru: 'Russian',
-  es: 'Spanish',
-};
 
 type Props = {
   agent: IAgentListType;
@@ -40,6 +36,16 @@ type Props = {
 export function AgentItem({ agent, onView, onEdit, onDelete }: Props) {
   const popover = usePopover();
   const confirm = useBoolean();
+  const {t} = useTranslate();
+
+
+const languages = {
+  en: t('English'),
+  ru: t('Russian'),
+  es: t('Spanish'),
+  ar: t('Arabic'),
+};
+
   return (
     <>
       <Card onDoubleClick={onEdit}>
@@ -68,7 +74,7 @@ export function AgentItem({ agent, onView, onEdit, onDelete }: Props) {
                 {agent.name}
               </Link>
             }
-            secondary={`Update date: ${fDate(agent.updatedAt)}`}
+            secondary={`${t("Update date:")} ${fDate(agent.updatedAt)}`}
             primaryTypographyProps={{ typography: 'subtitle1' }}
             secondaryTypographyProps={{
               mt: 1,
@@ -94,7 +100,7 @@ export function AgentItem({ agent, onView, onEdit, onDelete }: Props) {
         <Box rowGap={1.5} display="grid" gridTemplateColumns="repeat(2, 1fr)" sx={{ p: 3 }}>
           {[
             {
-              label: 'Voice',
+              label: t('Voice'),
               icon: <Iconify width={16} icon="iconoir:voice" sx={{ flexShrink: 0 }} />,
             },
             {
@@ -102,7 +108,7 @@ export function AgentItem({ agent, onView, onEdit, onDelete }: Props) {
               icon: <Iconify width={16} icon="iconoir:language" sx={{ flexShrink: 0 }} />,
             },
             {
-              label: agent.isInterruptible ? 'Interruptible' : 'Non-interruptible',
+              label: agent.isInterruptible ? t('Interruptible') : t('Non-interruptible'),
               icon: (
                 <Iconify
                   width={16}
@@ -157,7 +163,7 @@ export function AgentItem({ agent, onView, onEdit, onDelete }: Props) {
             }}
           >
             <Iconify icon="solar:pen-bold" />
-            Edit
+            {t('Edit')}
           </MenuItem>
 
           <MenuItem
@@ -169,17 +175,17 @@ export function AgentItem({ agent, onView, onEdit, onDelete }: Props) {
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            {t('Delete')}
           </MenuItem>
         </MenuList>
       </CustomPopover>
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title={t("Delete")}
         content={
           <>
-            Are you sure want to delete <strong> {agent.name} </strong>?
+            {t('Are you sure want to delete ')}<strong> {agent.name} </strong>?
           </>
         }
         action={
@@ -191,7 +197,7 @@ export function AgentItem({ agent, onView, onEdit, onDelete }: Props) {
               confirm.onFalse();
             }}
           >
-            Delete
+            {t('Delete')}
           </Button>
         }
       />

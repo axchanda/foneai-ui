@@ -46,22 +46,10 @@ import { deleteCampaign } from 'src/utils/api/campaigns';
 import { ILogFilters, ILogType } from 'src/types/log';
 import { LogTableRow } from 'src/sections/logs/log-table-row';
 import { Dialog } from '@mui/material';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  // { id: 'checkbox', width: '' },
-  { id: 'id', label: 'Log ID', width: 100 },
-  { id: 'sessionStart', label: 'Start Time', width: 150 },
-  { id: 'sessionEnd', label: 'End Time', width: 150 },
-  { id: 'billedMins', label: 'Billed Mins', width: 75 },
-  { id: 'costPerMinute', label: 'CPM', width: 75 },
-  { id: 'chargedCredits', label: `Charged credits`, width: 100 },
-  { id: 'campaignId', label: 'Campaign', width: 200 },
-  { id: 'linkedAppId', label: 'App', width: 250 },
-  // { id: 'sessionLog', label: 'Session Log', width: 100 },
-  { id: '', width: 88 },
-];
 
 // ----------------------------------------------------------------------
 
@@ -72,13 +60,13 @@ export default function LogListView() {
 
   const table = useTable({
     defaultDense: true,
-    defaultOrder: 'desc',
+    defaultOrder: 'asc',
     defaultOrderBy: 'sessionStart',
     defaultRowsPerPage: 25,
   });
 
   const router = useRouter();
-
+  const {t} = useTranslate();
   const confirm = useBoolean();
   const logParamsDialog = useBoolean();
 
@@ -112,7 +100,7 @@ export default function LogListView() {
   const handleDeleteRows = useCallback(() => {
     const deleteRows = tableData.filter((row) => !table.selected.includes(row._id));
 
-    toast.success('Delete success!');
+    toast.success(t('Delete success!'));
 
     setTableData(deleteRows);
 
@@ -133,7 +121,7 @@ export default function LogListView() {
 
     setLogs(data.logs);
 
-    console.log('Logs = ', data.logs);
+    // console.log('Logs = ', data.logs);
     setTableData(data.logs);
     setLoaded(true);
   }, []);
@@ -142,11 +130,26 @@ export default function LogListView() {
     getLogs();
   }, [getLogs]);
 
+
+  const TABLE_HEAD = [
+    // { id: 'checkbox', width: '' },
+    { id: 'id', label: t('Log ID'), width: 150 },
+    { id: 'sessionStart', label: t('Start Time'), width: 150 },
+    { id: 'sessionEnd', label: t('End Time'), width: 150 },
+    { id: 'billedMins', label: t('Billed Mins'), width: 100 },
+    { id: 'costPerMinute', label: t('Cost Per Min'), width: 100 },
+    { id: 'chargedCredits', label: t('Charged Credits'), width: 100 },
+    { id: 'campaignId', label: t('Campaign'), width: 250 },
+    { id: 'linkedAppId', label: t('App'), width: 250 },
+    // { id: 'sessionLog', label: 'Session Log', width: 100 },
+    { id: '', width: 88 },
+  ];
+
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Logs"
+          heading={t("Logs")}
           // action={
             // <Button
             //   component={RouterLink}
@@ -174,7 +177,7 @@ export default function LogListView() {
                   )
                 }
                 action={
-                  <Tooltip title="Delete">
+                  <Tooltip title={t("Delete")}>
                     <IconButton color="primary" onClick={confirm.onTrue}>
                       <Iconify icon="solar:trash-bin-trash-bold" />
                     </IconButton>
@@ -195,7 +198,7 @@ export default function LogListView() {
                     rowCount={dataFiltered.length}
                     numSelected={table.selected.length}
                     checkBoxHidden={true}
-                    onSort={table.onSort}
+                    // onSort={table.onSort}
                     onSelectAllRows={(checked) =>
                       table.onSelectAllRows(
                         checked,
@@ -250,7 +253,7 @@ export default function LogListView() {
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete"
+        title={t("Delete?")}
         content={
           <>
             Are you sure want to delete the log <strong> {table.selected.length} </strong> ?

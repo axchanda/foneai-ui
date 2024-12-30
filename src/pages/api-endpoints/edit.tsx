@@ -11,6 +11,7 @@ import type { ICampaignType } from 'src/types/campaign';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { IApiEndpointItem } from 'src/types/apiEndpoint';
 import { ApiEndpointNewEditForm } from 'src/sections/api-endpoints/apiEndpoint-new-edit-form';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -20,7 +21,7 @@ type Props = {
 
 export default function ApiEndpointEdit({ apiEndpoint: currentApiEndpoint }: Props) {
   const [loaded, setLoaded] = useState(false);
-  
+  const {t} = useTranslate();
   const { id } = useParams();
   const [apiEndpoint, setApiEndpoint] = useState<IApiEndpointItem | null>(null);
 
@@ -38,7 +39,7 @@ export default function ApiEndpointEdit({ apiEndpoint: currentApiEndpoint }: Pro
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit API Definition"
+        heading={t("Edit API Definition")}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
       {loaded ? 

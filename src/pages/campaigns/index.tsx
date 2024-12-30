@@ -39,18 +39,10 @@ import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
 import type { IAgentListType } from 'src/types/agent';
 import { deleteCampaign } from 'src/utils/api/campaigns';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  // { id: 'checkbox', width: '' },
-  { id: 'campaignName', label: 'Campaign Name', width: 160 },
-  { id: 'campaignId', label: 'Campaign ID', width: 220 },
-  { id: 'linkedAppId', label: 'Linked App', width: 220 },
-  { id: 'description', label: 'Description', width: 180 },
-  // { id: 'status', label: 'Status', width: 100 },
-  { id: '', width: 88 },
-];
 
 // ----------------------------------------------------------------------
 
@@ -130,15 +122,28 @@ export default function CampaignListView() {
     setLoaded(true);
   }, []);
 
+  const {t} = useTranslate();
+
   useEffect(() => {
     getCampaigns();
   }, [getCampaigns]);
+  
+
+  const TABLE_HEAD = [
+    // { id: 'checkbox', width: '' },
+    { id: 'campaignName', label: t('Campaign Name'), width: 220 },
+    { id: 'campaignId', label: t('Campaign ID'), width: 180 },
+    { id: 'linkedAppId', label: t('Linked App'), width: 220 },
+    { id: 'description', label: t('Description'), width: 180 },
+    // { id: 'status', label: 'Status', width: 100 },
+    { id: '', width: 88 },
+  ];
 
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Campaigns"
+          heading={t('Campaigns')}
           action={
             <Button
               component={RouterLink}
@@ -146,7 +151,7 @@ export default function CampaignListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New campaign
+              {t('New Campaign')}
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -174,7 +179,7 @@ export default function CampaignListView() {
                   )
                 }
                 action={
-                  <Tooltip title="Delete">
+                  <Tooltip title={t('Delete')}>
                     <IconButton color="primary" onClick={confirm.onTrue}>
                       <Iconify icon="solar:trash-bin-trash-bold" />
                     </IconButton>
@@ -190,6 +195,7 @@ export default function CampaignListView() {
                     headLabel={TABLE_HEAD}
                     rowCount={dataFiltered.length}
                     numSelected={table.selected.length}
+                    checkBoxHidden={true}
                     onSort={table.onSort}
                     onSelectAllRows={(checked) =>
                       table.onSelectAllRows(
@@ -249,7 +255,7 @@ export default function CampaignListView() {
         title="Delete"
         content={
           <>
-            Are you sure want to delete the campaign <strong> {table.selected.length} </strong> ?
+            Are you sure want to delete <strong> {table.selected.length} </strong> ?
           </>
         }
         action={
@@ -261,7 +267,7 @@ export default function CampaignListView() {
               confirm.onFalse();
             }}
           >
-            Delete
+            {t('Delete')}
           </Button>
         }
       />

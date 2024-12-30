@@ -8,6 +8,7 @@ import type { IActionItem } from 'src/types/action';
 import { useParams } from 'react-router';
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -15,6 +16,7 @@ function ActionsEdit() {
   const [action, setAction] = useState<IActionItem | null>(null);
   const [loaded, setLoaded] = useState(false);
   const { id } = useParams();
+  const {t} = useTranslate();
 
   const getAction = useCallback(async () => {
     const { data } = await API.get<IActionItem>('/actions/' + id);
@@ -29,7 +31,7 @@ function ActionsEdit() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit Action"
+        heading={t('Edit action')}
         // links={[
         //   { name: 'Dashboard', href: paths.dashboard.root },
         //   { name: 'Job', href: paths.dashboard.job.root },

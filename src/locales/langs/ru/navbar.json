@@ -1,5 +1,7 @@
 {
   "app": "App",
+  "dashboard": "Панель управления",
+  "campaigns": "Кампании",
   "job": "Job",
   "user": "User",
   "travel": "Travel",

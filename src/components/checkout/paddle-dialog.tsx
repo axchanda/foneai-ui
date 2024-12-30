@@ -1,9 +1,11 @@
+import { cu } from '@fullcalendar/core/internal-common';
 import { Button } from '@mui/material';
 import { initializePaddle, Paddle } from '@paddle/paddle-js';
 import { set } from 'nprogress';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useAuth } from 'src/auth/context/jwt/hooks';
+import { useTranslate } from 'src/locales';
 import { useRouter } from 'src/routes/hooks';
 import { fCurrency } from 'src/utils/format-number';
 
@@ -14,7 +16,8 @@ const PaddleDialog: React.FC<{
 }) => {
   // Create a local state to store Paddle instance
   const [paddle, setPaddle] = useState<Paddle>();
-
+  const {currentLang, t} = useTranslate();
+  console.log(currentLang);
   const { user } = useAuth();
   const router = useRouter();
   // Download and initialize Paddle instance from CDN
@@ -62,6 +65,9 @@ const PaddleDialog: React.FC<{
           priceId: 'pri_01je9t74mycpwgfcvd6bbf1v6t', 
           quantity
         }],
+        settings: {
+          locale: currentLang.value ? currentLang.value : 'en'
+        },
         customData: {
           username: user?.username
         }
@@ -79,7 +85,7 @@ const PaddleDialog: React.FC<{
     disabled={quantity < 10}
     onClick={()=>openCheckout()}
   >
-    Pay {fCurrency(quantity)}
+    {t('Pay $')} {(quantity)}
   </Button>
 }
 

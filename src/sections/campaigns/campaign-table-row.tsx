@@ -17,6 +17,7 @@ import { Checkbox, Typography } from '@mui/material';
 import useClipboard from 'react-use-clipboard';
 import type { IAgentListType } from 'src/types/agent';
 import { Label } from 'src/components/label';
+import { useTranslate } from 'src/locales';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -37,7 +38,7 @@ export function CampaignTableRow({
   agents,
 }: Props) {
   const confirm = useBoolean();
-
+  const { t } = useTranslate();
   const popover = usePopover();
 
   const quickEdit = useBoolean();
@@ -57,7 +58,7 @@ export function CampaignTableRow({
         tabIndex={-1}
       >
         <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
+          {/* <Checkbox id={row._id} checked={selected} onClick={onSelectRow} /> */}
         </TableCell>
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{row.campaignName}</TableCell>
@@ -83,7 +84,7 @@ export function CampaignTableRow({
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Stack direction={'row'} gap={1}>
             <Label>
-              AGENT
+              {t('Agent')}
             </Label>
             {linkedAgent}
           </Stack>
@@ -132,7 +133,7 @@ export function CampaignTableRow({
             }}
           >
             <Iconify icon="solar:pen-bold" />
-            Edit
+            {t('Edit')}
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -142,7 +143,7 @@ export function CampaignTableRow({
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            {t('Delete')}
           </MenuItem>
         </MenuList>
       </CustomPopover>
@@ -150,11 +151,11 @@ export function CampaignTableRow({
       <ConfirmDialog
         open={confirm.value}
         onClose={confirm.onFalse}
-        title="Delete campaign"
-        content={`Are you sure want to delete the campaign: ${row.campaignName}?`}
+        title={t('Delete?')}
+        content={t('Are you sure want to delete') + ' : ' + row.campaignName }
         action={
           <Button variant="contained" color="error" onClick={onDeleteRow}>
-            Delete
+            {t('Delete')}
           </Button>
         }
       />

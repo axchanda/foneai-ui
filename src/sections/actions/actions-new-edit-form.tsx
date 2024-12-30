@@ -42,6 +42,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { Scrollbar } from 'src/components/scrollbar';
 import { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { I } from '@fullcalendar/core/internal-common';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -50,14 +51,15 @@ const TABLE_HEAD = [
   { id: 'required', label: 'Required', width: 80 },
   { id: 'name', label: 'Name', width: 220 },
   { id: 'type', label: 'Type', width: 180 },
-  { id: 'description', label: 'Description', width: 270 },
+  { id: 'description', label: 'Instructions', width: 270 },
   { id: '', width: 88 },
 ];
 
-export type NewActionSchemaType = zod.infer<typeof NewActionSchema>;
+export type ActionSchemaType = zod.infer<ReturnType<typeof ActionSchema>>;
 
-export const NewActionSchema = zod.object({
-  actionName: zod.string().min(1, 'Action name is required').regex(/^[a-zA-Z0-9]+$/, 'Action name should only contain letters and numbers without spaces or special characters'),
+export const ActionSchema = (t: any) => zod.object({
+  actionName: zod.string().min(1, t('Action name is required!'))
+                  .regex(/^[a-zA-Z0-9]+$/, t('Action name should only contain letters and numbers without spaces or special characters!')),
   actionDescription: zod.string().optional(),
 });
 
@@ -74,9 +76,11 @@ export function ActionsNewEditForm({ currentAction }: Props) {
     }),
     [currentAction]
   );
-  const methods = useForm<NewActionSchemaType>({
+  const {t} = useTranslate();
+  const schema = ActionSchema(t);
+  const methods = useForm<ActionSchemaType>({
     mode: 'all',
-    resolver: zodResolver(NewActionSchema),
+    resolver: zodResolver(schema),
     //@ts-ignore
     defaultValues,
   });
@@ -269,16 +273,18 @@ export function ActionsNewEditForm({ currentAction }: Props) {
       });
 
       const shouldShowParameterForm = useBoolean(false);
-
+      const {t} = useTranslate();
 
       return (
         <Card>
           <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
             <Stack>
-              <Typography variant="h6">Action Parameters</Typography>
+              <Typography variant="h6">
+                {t('Action Parameters')}
+              </Typography>
               <Typography mt="4px" color="var(--palette-text-secondary)" variant='body2'>
-                Add parameters to the action. These parameters will be used to pass data to the
-                action.
+                {t('These parameters will be extracted as per instructions, and passed dynamically to the operation.')} <br/>
+                {t('You can access these parameters by enclosing the parameter name in curly braces.')}
               </Typography>
             </Stack>
             <Button
@@ -287,7 +293,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
               }}
               variant="contained"
             >
-              Add New Parameter
+              {t('Add New Parameter')}
             </Button>
           </Stack>
 
@@ -342,7 +348,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                                   parameterName: e.target.value,
                                 }));
                               }}
-                              placeholder="Parameter name"
+                              placeholder={t('Parameter name')}
                               error={parameterErrors.parameterName}
                             />
                           </TableCell>
@@ -362,9 +368,15 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                               name="type"
                               error={parameterErrors.parameterType}
                             >
-                              <MenuItem value="string">String</MenuItem>
-                              <MenuItem value="number">Number</MenuItem>
-                              <MenuItem value="boolean">Boolean</MenuItem>
+                              <MenuItem value="string">
+                                {t('Word')}
+                              </MenuItem>
+                              <MenuItem value="number">
+                                {t('Number')}
+                              </MenuItem>
+                              <MenuItem value="boolean">
+                                {t('True/False')}
+                              </MenuItem>
                             </Field.Select>
                           </TableCell>
                           <TableCell>
@@ -377,7 +389,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                                 }));
                               }}
                               name="description"
-                              placeholder="Parameter description"
+                              placeholder={t("Instructions")}
                               error={parameterErrors.parameterDescription}
                               multiline                              
                               minRows={4}
@@ -440,7 +452,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                                 color="primary"
                                 startIcon={<Iconify icon="ic:round-check" />}
                               >
-                                Submit
+                                {t('Add')}
                               </Button>
                               <Button
                                 variant="outlined"
@@ -463,7 +475,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                                   });
                                 }}
                               >
-                                Cancel
+                                {t('Cancel')}
                               </Button>
                             </Stack>
                           </TableCell>
@@ -506,8 +518,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                               setParameters((prev) => (prev ?? []).filter((_, i) => i !== index));
                             }}
                             updateParameter={(params: IActionParameterItem) => {
-                              // console.log(params);
-                              setParameters((prev) => {
+                                setParameters((prev) => {
                                 const newParams = [...(prev ?? [])];
                                 newParams[index] = params;
                                 return newParams;
@@ -523,7 +534,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
             ) : (
               <Stack>
                 <Typography variant="h5" align="center">
-                  No Parameters
+                  {t('No Parameters')}
                 </Typography>
               </Stack>
             )}
@@ -560,7 +571,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
         parameterName: false,
         parameterType: false,
       });
-
+      const {t} = useTranslate();
       return (
         <>
           <TableRow>
@@ -594,7 +605,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                   // changeName(e.target.value);
                   setParameter({ ...param, parameterName: e.target.value });
                 }}
-                placeholder="Action name"
+                placeholder={t('Parameter name')}
                 disabled={!editing.value}
                 error={parameterErrors.parameterName}
               />
@@ -614,9 +625,15 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                 disabled={!editing.value}
                 error={parameterErrors.parameterType}
               >
-                <MenuItem value="string">String</MenuItem>
-                <MenuItem value="number">Number</MenuItem>
-                <MenuItem value="boolean">Boolean</MenuItem>
+                <MenuItem value="string">
+                  {t('Word')}
+                </MenuItem>
+                <MenuItem value="number">
+                  {t('Number')}
+                </MenuItem>
+                <MenuItem value="boolean">
+                  {t('True/False')}
+                </MenuItem>
               </Field.Select>
             </TableCell>
             <TableCell
@@ -627,11 +644,10 @@ export function ActionsNewEditForm({ currentAction }: Props) {
               <Field.Text
                 value={parameter.parameterDescription}
                 onChange={(e) => {
-                  // changeDescription(e.target.value);
                   setParameter({ ...param, parameterDescription: e.target.value });
                 }}
                 name="description"
-                placeholder="Parameter description"
+                placeholder={t('Instructions')}
                 disabled={!editing.value}
                 error={parameterErrors.parameterDescription}
                 multiline
@@ -687,7 +703,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                     color="primary"
                     startIcon={<Iconify icon="ic:round-check" />}
                   >
-                    Update
+                    {t('Update')}
                   </Button>
                   <Button
                     variant="outlined"
@@ -707,7 +723,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                       });
                     }}
                   >
-                    Cancel
+                    {t('Cancel')}
                   </Button>
                 </Stack>
               ) : (
@@ -731,7 +747,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                 }}
               >
                 <Iconify icon="solar:pen-bold" />
-                Edit
+                {t('Edit')}
               </MenuItem>
               <MenuItem
                 onClick={() => {
@@ -741,7 +757,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
                 sx={{ color: 'error.main' }}
               >
                 <Iconify icon="solar:trash-bin-trash-bold" />
-                Delete
+                {t('Delete')}
               </MenuItem>
             </MenuList>
           </CustomPopover>
@@ -783,7 +799,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
         actionParameters: parameters,
       });
       reset();
-      toast.success(currentAction ? 'Update success!' : 'Create success!');
+      toast.success(currentAction ? t('Update success!') : t('Create success!')); 
       router.push('/actions');
     } catch (error) {
       // console.error(error);
@@ -796,19 +812,26 @@ export function ActionsNewEditForm({ currentAction }: Props) {
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" subheader="Action name and description" sx={{ mb: 3 }} />
+      <CardHeader 
+        title={t("Details" )}
+        subheader={t("Action name and description")}
+        sx={{ mb: 3 }} />
 
       <Divider />
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Action Name</Typography>
-          <Field.Text name="actionName" placeholder="Name your action" />
+          <Typography variant="subtitle2">
+            {t('Action Name')}
+          </Typography>
+          <Field.Text name="actionName" />
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Action Description</Typography>
-          <Field.Text name="actionDescription" placeholder="Describe your action..."
+          <Typography variant="subtitle2">
+            {t('Description')}
+          </Typography>
+          <Field.Text name="actionDescription" 
             multiline
             minRows={4}
             maxRows={4}
@@ -820,7 +843,10 @@ export function ActionsNewEditForm({ currentAction }: Props) {
 
   const renderOperations = (
     <Card>
-      <CardHeader title="Operation" subheader="Action operation settings" sx={{ mb: 3 }} />
+      <CardHeader 
+        title={t("Operation" )}
+        subheader={t("Define the operation to be performed")}
+        sx={{ mb: 3 }} />
 
       <Divider />
 
@@ -857,15 +883,21 @@ export function ActionsNewEditForm({ currentAction }: Props) {
           name="operation"
         >
           <Stack direction="row">
-            <FormControlLabel control={<Radio />} label="Search through a Knowledge base" value="knowledgeBase" />
-            <FormControlLabel control={<Radio />} label="Call an API Endpoint" value="apiEndpoint" />
+            <FormControlLabel control={<Radio />} 
+              label={t("Search through a Knowledge base")} 
+              value="knowledgeBase" />
+            <FormControlLabel control={<Radio />} 
+            label={t("Invoke an API Endpoint")} 
+            value="apiEndpoint" />
             {/* <FormControlLabel control={<Radio />} label="Transfer" value="transfer" /> */}
-            <FormControlLabel control={<Radio />} label="Hangup the call" value="hangup" />
+            <FormControlLabel control={<Radio />} label={t("Hangup the call")} value="hangup" />
           </Stack>
         </RadioGroup>
         {operation.type === 'apiEndpoint' && (
           <Box display="grid" gridTemplateColumns="0.5fr 1fr" gap={4}>
-            <Typography alignSelf="center">API Endpoint</Typography>
+            <Typography alignSelf="center">
+              {t("API Endpoint")}
+            </Typography>
             <Box>
               <Field.Select
                 error={Boolean(operationErrors.linkedApiEndpoint)}
@@ -903,7 +935,9 @@ export function ActionsNewEditForm({ currentAction }: Props) {
               )}
             </Box>
 
-            <Typography alignSelf="center">Additional Path</Typography>
+            <Typography alignSelf="center">
+              {t("Path")}
+            </Typography>
             <Box
               border="1px solid"
               borderColor={
@@ -960,13 +994,14 @@ export function ActionsNewEditForm({ currentAction }: Props) {
             </Box>
 
             
-            <Typography alignSelf="center">Request JSON Body</Typography>
+            <Typography alignSelf="center">
+              {t("Request JSON Body")}
+            </Typography>
             <Box>
               <Editor 
                   ref={jsonEditorRef}
                   value={payloadJsonData} 
                   onChange={(updatedJson: any) => {
-                    console.log('Updated JSON', updatedJson);
                     setPayloadJsonData(updatedJson);
                     setOperation((pre) => ({
                       type: 'apiEndpoint',
@@ -987,7 +1022,9 @@ export function ActionsNewEditForm({ currentAction }: Props) {
               )}
             </Box>
             
-            <Typography alignSelf="center">Response Instructions</Typography>
+            <Typography alignSelf="center">
+              {t("Response Instructions")}
+            </Typography>
             <Box
               border="1px solid"
               borderColor={
@@ -1049,7 +1086,9 @@ export function ActionsNewEditForm({ currentAction }: Props) {
 
         {operation.type === 'knowledgeBase' && (
           <Box display="grid" gridTemplateColumns="0.5fr 1fr" gap={4}>
-            <Typography alignSelf="center">Knowledge Base</Typography>
+            <Typography alignSelf="center">
+              {t("Knowledge Base")}
+            </Typography>
             <Box>
               <Field.Select
                 error={Boolean(operationErrors.linkedKnowledgeBase)}
@@ -1085,7 +1124,9 @@ export function ActionsNewEditForm({ currentAction }: Props) {
               )}
             </Box>
 
-            <Typography alignSelf="center">Response Instructions</Typography>
+            <Typography alignSelf="center">
+              {t("Response Instructions")}
+            </Typography>
             <Box
               border="1px solid"
               borderColor={
@@ -1160,7 +1201,7 @@ export function ActionsNewEditForm({ currentAction }: Props) {
         loading={isSubmitting}
         sx={{ ml: 2 }}
       >
-        {!currentAction ? 'Create Action' : 'Update Action'}
+        {!currentAction ? t('Create') : t('Update')}
       </LoadingButton>
     </Box>
   );

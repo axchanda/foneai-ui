@@ -13,6 +13,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import type { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { Label } from 'src/components/label';
+import { useTranslate } from 'src/locales';
 
 type Props = {
   row: IKnowledgeBaseItem;
@@ -58,7 +59,7 @@ export function KnowledgeBaseTableRow({
         return '';
     }
   }
-  console.log(row);
+  const {t} = useTranslate();
   return (
     <>
       <TableRow
@@ -69,13 +70,13 @@ export function KnowledgeBaseTableRow({
         tabIndex={-1}
       >
         <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
+          {/* <Checkbox id={row._id} checked={selected} onClick={onSelectRow} /> */}
         </TableCell>
         <TableCell>{row.knowledgeBaseName}</TableCell>
         <TableCell>{row.knowledgeBaseDescription}</TableCell>
         <TableCell>
           <Label color={getLabelColor(row?.status || 'pending')} startIcon={<Iconify icon={getLabelIcon(row?.status)} />}>
-            {row?.status && row.status.toUpperCase()}
+            {t(row?.status || 'pending')}
           </Label>
         </TableCell>
         <TableCell align="right">
@@ -98,7 +99,7 @@ export function KnowledgeBaseTableRow({
             }}
           >
             <Iconify icon="solar:pen-bold" />
-            Edit
+            {t('Edit')}
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -108,7 +109,7 @@ export function KnowledgeBaseTableRow({
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            {t('Delete')}
           </MenuItem>
         </MenuList>
       </CustomPopover>

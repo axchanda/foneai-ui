@@ -8,6 +8,7 @@ import { useRouter } from 'src/routes/hooks';
 import { useAuth } from 'src/auth/context/jwt/hooks';
 import { useCallback } from 'react';
 import { toast } from 'sonner';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -20,6 +21,7 @@ type Props = ButtonProps & {
 
 export function SignOutButton({ onClose, ...other }: Props) {
   const router = useRouter();
+  const { t } = useTranslate();
 
   const { checkUserSession } = useAuth();
 
@@ -38,7 +40,7 @@ export function SignOutButton({ onClose, ...other }: Props) {
 
   return (
     <Button fullWidth variant="soft" size="large" color="error" onClick={handleLogout} {...other}>
-      Logout
+      {t('Logout')}
     </Button>
   );
 }

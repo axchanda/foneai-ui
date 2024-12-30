@@ -39,23 +39,24 @@ import TriggerAction from 'src/components/agents/trigger-action';
 import { Chip } from '@mui/material';
 import VoiceDialog from 'src/components/agents/voice-dialog';
 import TestDialog from 'src/components/agents/test-dialog';
+import { useTranslate } from 'src/locales';
 
-export type NewAgentSchemaType = zod.infer<typeof NewAgentSchema>;
+export type AgentSchemaType = zod.infer<ReturnType<typeof AgentSchema>>;
 
-export const NewAgentSchema = zod.object({
-  name: zod.string().min(1, { message: 'Name is required!' }),
-  introduction: zod.string().min(1, { message: 'Introduction is required!' }),
-  instructions: zod.string().min(1, { message: 'Instructions are required!' }),
-  voiceId: zod.string().min(1, { message: 'Voice ID is required!' }),
+export const AgentSchema = (t: any) => zod.object({
+  name: zod.string().min(1, { message: t('Name is required!') }),
+  introduction: zod.string().min(1, { message: t('Introduction is required!') }),
+  instructions: zod.string().min(1, { message: t('Prompt is required!') }),
+  language: zod.string().min(1, { message: t('Language is required!') }),
+  voiceId: zod.string().min(1, { message: t('Voice ID is required!') }),
   isInterruptible: zod.boolean(),
   endpointing: zod
     .number()
-    .min(0, { message: 'Endpointing must be a positive number!' })
-    .max(3000, { message: 'Endpointing must be less than 3000!' })
-    .refine((value) => value % 1 === 0, { message: 'Endpointing must be an integer!' }),
-  timezone: zod.string().min(1, { message: 'Timezone is required!' }),
+    .min(0, { message:  t('Silence Timeout must be greater than 0!') })
+    .max(1001, { message: t('Silence Timeout must be less than 1000!') })
+    .refine((value) => value % 1 === 0, { message: t('Silence Timeout must be an integer!') }),
+  timezone: zod.string().min(1, { message: t('Timezone is required!') }),
   daylightSavings: zod.boolean(),
-  language: zod.string().min(1, { message: 'Language is required!' }),
 });
 
 type Props = {
@@ -64,7 +65,8 @@ type Props = {
 
 export function AgentNewEditForm({ currentAgent }: Props) {
   const router = useRouter();
-  const defaultValues: NewAgentSchemaType = useMemo(
+  const {t} = useTranslate();
+  const defaultValues: AgentSchemaType = useMemo(
     () => ({
       name: currentAgent?.name || '',
       introduction: currentAgent?.introduction || '',
@@ -72,15 +74,17 @@ export function AgentNewEditForm({ currentAgent }: Props) {
       language: currentAgent?.language || 'en',
       voiceId: currentAgent?.voice?.voiceId || '',
       isInterruptible: currentAgent?.isInterruptible || false,
-      endpointing: currentAgent?.endpointing || 20,
+      endpointing: currentAgent?.endpointing || 500,
       timezone: currentAgent?.timezone || ' UTC-05:00',
       daylightSavings: currentAgent?.daylightSavings || false 
     }),
     [currentAgent]
   );
-  const methods = useForm<NewAgentSchemaType>({
+
+  const schema = AgentSchema(t);
+  const methods = useForm<AgentSchemaType>({
     mode: 'all',
-    resolver: zodResolver(NewAgentSchema),
+    resolver: zodResolver(schema),
     //@ts-ignore
     defaultValues,
   });
@@ -107,6 +111,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
   const [selectedVoice, setSelectedVoice] = useState<string | null>(
     currentAgent?.voice?.voiceId || null
   );
+
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
   const [openTestDialog, setOpenTestDialog] = useState(false);
 
@@ -131,8 +136,6 @@ export function AgentNewEditForm({ currentAgent }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
       try {
-        console.log('data', data)
-        console.log('Action Triggers 141: ', actionTriggers);
         const url = currentAgent ? `/agents/${currentAgent._id}` : '/agents/create';
         const method = currentAgent ? API.put : API.post;
         await method(url, {
@@ -152,7 +155,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
           keywords: keywords          
         });
         reset();
-        toast.success(currentAgent ? 'Update success!' : 'Create success!');
+        toast.success(currentAgent ? t('Update success!') : t('Create success!'));
         router.push('/agents');
       } catch (error) {
         const messages = Object.values(error.response.data.errors || {}) as string[];
@@ -167,8 +170,8 @@ export function AgentNewEditForm({ currentAgent }: Props) {
   const renderDetails = (
     <Card>
       <CardHeader
-        title="Details"
-        subheader="Agent name, introduction and prompt instructions"
+        title={t("Details")}
+        subheader={t("Agent name, introduction and prompt instructions")}
         sx={{ mb: 3 }}
       />
 
@@ -177,26 +180,32 @@ export function AgentNewEditForm({ currentAgent }: Props) {
 
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Agent Name</Typography>
-          <Field.Text name="name" placeholder="Ex: Sales agent..." />
+          <Typography variant="subtitle2">
+            {t("Agent Name")}
+          </Typography>
+          <Field.Text name="name" placeholder={t("Eg: My AI agent")} />
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Introduction Line</Typography>
+          <Typography variant="subtitle2">
+            {t("Introduction Line")}
+          </Typography>
           <Field.Text
             name="introduction"
-            placeholder="Hi, I'm an AI assistant that would like to ..."
+            placeholder={t("Hi, I'm an AI agent that can assist you ...")}
           />
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">Agent Prompt Instructions</Typography>
+          <Typography variant="subtitle2">
+            {t("Prompt Instructions")}
+          </Typography>
           <Field.TextareaWithMaximize
             // height={200}
             // showToolbar={false}
             // rows={6}
             name="instructions"
-            placeholder="Enter detailed instructions..."
+            placeholder={t("Enter the prompt instructions here")}
           />
         </Stack>
       </Stack>
@@ -206,8 +215,8 @@ export function AgentNewEditForm({ currentAgent }: Props) {
   const renderVoiceCapabilities = (
     <Card>
       <CardHeader
-        title="Speech settings"
-        subheader="Speech functions and attributes"
+        title={t("Voice Capabilities")}
+        subheader={t("Voice settings for the agent")}
         sx={{ mb: 3 }}
       />
 
@@ -219,10 +228,12 @@ export function AgentNewEditForm({ currentAgent }: Props) {
             <Grid container spacing={6}>
               <Grid item xs={12} sm={6}>
                 <Stack spacing={1}>
-                  <Typography variant="subtitle2">Language</Typography>
+                  <Typography variant="subtitle2">
+                    {t("Language")}
+                  </Typography>
                   <Field.Select
                     onChange={(e) => {
-                      setValue('language', e.target.value as 'en' | 'es');
+                      setValue('language', e.target.value as string);
                       setValue('voiceId', '');
                       setSelectedVoice(null);
                       // voiceRef.current?.focus();
@@ -230,16 +241,28 @@ export function AgentNewEditForm({ currentAgent }: Props) {
                     defaultValue={values.language}
                     name="language"
                   >
-                    <MenuItem value="en">English</MenuItem>
-                    <MenuItem value="es">Spanish</MenuItem>
-                    <MenuItem value="ru">Russian</MenuItem>
+                    <MenuItem value="en">
+                      {t("English")}
+                    </MenuItem>
+                    <MenuItem value="es">
+                      {t("Spanish")}
+                    </MenuItem>
+                    <MenuItem value="ru">
+                      {t("Russian")}
+                    </MenuItem>
+                    <MenuItem value="ar">
+                      {t("Arabic")}
+                    </MenuItem>
                   </Field.Select>
                 </Stack>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <Stack>
                   <Stack spacing={1}>
-                    <Typography variant="subtitle2">Voice ID</Typography>
+                    <Typography variant="subtitle2">
+                      {t("Voice ID")}
+
+                    </Typography>
                     <Button
                       disabled={!values.language}
                       onClick={() => {
@@ -252,7 +275,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
                       variant="contained"
                       size="large"
                     >
-                      {values.voiceId || 'Select Voice'}
+                      {values.voiceId || t("Select a voice ID")}
                       <Iconify icon="eva:arrow-ios-downward" />
                     </Button>
                     {/* error message when agentVoiceId is empty */}
@@ -271,21 +294,25 @@ export function AgentNewEditForm({ currentAgent }: Props) {
         <Grid container spacing={6}>
           <Grid item xs={12} sm={6}>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Interruptible</Typography>
+              <Typography variant="subtitle2">
+                {t("Interruptible")}
+              </Typography>
               <Field.Switch
                 name="isInterruptible"
                 
                 label={
                   values.isInterruptible
-                    ? 'The agent stops speaking when the user interrupts the agent'
-                    : 'The agent continues to speak even when the user interrupts the agent'
+                    ? t('The agent stops speaking when the user interrupts the agent')
+                    : t('The agent continues to speak even when the user interrupts the agent')
                 }
               />
             </Stack>
           </Grid>
           <Grid item xs={12} sm={6}>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Silence Threshold</Typography>
+              <Typography variant="subtitle2">
+                {t("Silence Timeout")}
+              </Typography>
               <Field.Text
                 name="endpointing"
                 type="number"
@@ -298,7 +325,9 @@ export function AgentNewEditForm({ currentAgent }: Props) {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>ms</Box>
+                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>
+                        {t('ms')}
+                      </Box>
                     </InputAdornment>
                   ),
                 }}
@@ -310,10 +339,12 @@ export function AgentNewEditForm({ currentAgent }: Props) {
 
           <Grid item xs={12} sm={12}>
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Keywords</Typography>
+              <Typography variant="subtitle2">
+                {t("Keywords")}
+              </Typography>
               <Field.Text
                 name="keywords"
-                placeholder="Enter upto 20 keywords"
+                placeholder={t("Enter upto 20 keywords")}
                 type="text"
                 sx={{
                   width: {
@@ -334,9 +365,9 @@ export function AgentNewEditForm({ currentAgent }: Props) {
                 }}
                 onChange={(e) => {
                   const value = e.target.value;
-                  if (/^[a-zA-Z]*$/.test(value)) {
+                  if (/^[\p{Script=Latin}\p{Script=Arabic}]+$/u.test(value)) {
                     setKeyWordInput(value);
-                  }
+                  }                  
                 }}
               />
               <Box
@@ -364,7 +395,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
                 ))} 
               </Box>
               <Typography variant="caption" sx={{ color: 'error.main' }}>
-                {keywords.length > 20 ? 'Keywords limit reached' : ''}
+                {keywords.length > 20 ? t('Keywords limit reached') : ''}
               </Typography>
             </Stack>
           </Grid>
@@ -427,7 +458,7 @@ export function AgentNewEditForm({ currentAgent }: Props) {
                 loading={isSubmitting}
                 sx={{ ml: 2 }}
               >
-                {!currentAgent ? 'Create Agent' : 'Update Agent'}
+                {!currentAgent ? t('Create') : t('Update')}
               </LoadingButton>
             </Box>
           </Stack>

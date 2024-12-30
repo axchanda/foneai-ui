@@ -29,6 +29,7 @@ import { Iconify } from 'src/components/iconify';
 import { Carousel, useCarousel, CarouselArrowFloatButtons } from 'src/components/carousel';
 import Card from '@mui/material/Card';
 import { PaddleDialog } from 'src/components/checkout/paddle-dialog';
+import { useTranslation } from 'react-i18next';
 
 // ----------------------------------------------------------------------
 
@@ -53,8 +54,9 @@ type Props = CardProps & {
 
 export default function Checkout({ title, subheader, list, sx, ...other }: Props) {
   const theme = useTheme();
+  const {t} = useTranslation();
 
-  const [amount, setAmount] = useState(50);
+  const [amount, setAmount] = useState(100);
 
   const [autoWidth, setAutoWidth] = useState(24);
 
@@ -112,7 +114,7 @@ export default function Checkout({ title, subheader, list, sx, ...other }: Props
     >
       
       <Typography variant="overline" sx={{ color: 'text.secondary' }}>
-        Top Up account with 
+        {t('Top Up account with') }
       </Typography>
 
       <InputAmount
@@ -124,7 +126,7 @@ export default function Checkout({ title, subheader, list, sx, ...other }: Props
       />
 
       <Slider
-        value={typeof amount === 'number' ? amount : 50}
+        value={typeof amount === 'number' ? amount : 100}
         valueLabelDisplay="auto"
         step={STEP}
         marks
@@ -135,15 +137,15 @@ export default function Checkout({ title, subheader, list, sx, ...other }: Props
 
       <Box sx={{ display: 'flex', alignItems: 'center', typography: 'subtitle5' }}>
         <Box component="span" sx={{ flexGrow: 1, marginRight: 5 }}>
-          Cost per credit (USD) : 
+          {t('Cost per credit (USD)')} :
         </Box>
         <Typography>
-          {fCurrency(costPerCredit)}
+          $ {(costPerCredit)}
         </Typography>
       </Box>
       <Box sx={{ mt: 4, display: 'flex', alignItems: 'center', typography: 'subtitle1' }}>
         <Box component="span" sx={{ flexGrow: 1, marginRight: 5 }}>
-          Credits you will get : 
+          {t('Credits you will get')} : 
         </Box>
         <Typography variant="h3" sx={{ color: 'primary.main' }}>
           {credits}
@@ -152,14 +154,14 @@ export default function Checkout({ title, subheader, list, sx, ...other }: Props
       <PaddleDialog quantity={amount} />
 
       {(amount < 10) && <Typography variant="caption" sx={{ color: 'error.main' }}>
-        Minimum top up amount is 10 USD
+        {t('Minimum top up amount is 10 USD')}
       </Typography>}
     </Card>
   );
 
   return (
       <Box sx={{ margin: 'auto', borderRadius: 2, bgcolor: 'background.neutral', justifyContent: 'center', ...sx }} {...other}>
-        <CardHeader title={'Purchase Credits'} subheader={'Adjust the amount to purchase credits'} />
+        <CardHeader title={t('buyCredits')} subheader={t('Adjust_the_amount_to_buy_credits')} />
 
         <Box sx={{ p: 3 }}>
           {renderInput}

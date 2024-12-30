@@ -14,6 +14,7 @@ import { useSettingsContext } from 'src/components/settings';
 import { createTheme } from './create-theme';
 import { RTL } from './with-settings/right-to-left';
 import { schemeConfig } from './color-scheme-script';
+import { ThemeLocaleComponents } from './types';
 
 // ----------------------------------------------------------------------
 
@@ -23,10 +24,12 @@ type Props = {
 
 export function ThemeProvider({ children }: Props) {
   const { currentLang } = useTranslate();
-
+  const RTLLangs = ['ar', 'he'];
   const settings = useSettingsContext();
-
-  const theme = createTheme(currentLang?.systemValue, settings);
+  const defaultThemeLocale: ThemeLocaleComponents = {
+    components: {} // Provide at least an empty object for components
+  };
+  const theme = createTheme(currentLang?.systemValue ?? defaultThemeLocale, settings);
 
   return (
     <CssVarsProvider
@@ -35,7 +38,10 @@ export function ThemeProvider({ children }: Props) {
       modeStorageKey={schemeConfig.modeStorageKey}
     >
       <CssBaseline />
-      <RTL direction={settings.direction}>{children}</RTL>
+      <RTL direction={RTLLangs.includes(currentLang?.value || 'en') ? 'rtl' : 'ltr'}>
+        {children}
+      </RTL>
+      {/* <RTL direction={settings.direction}>{children}</RTL> */}
     </CssVarsProvider>
   );
 }

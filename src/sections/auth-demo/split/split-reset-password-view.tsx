@@ -15,13 +15,14 @@ import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
 import API from 'src/utils/API';
 import { toast } from 'sonner';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
 export type ResetPasswordSchemaType = zod.infer<typeof ResetPasswordSchema>;
 
 export const ResetPasswordSchema = zod.object({
-  username: zod.string().min(1, { message: 'Email is required!' }),
+  username: zod.string().min(1, { message: 'Username is required!' }),
   // .email({ message: 'Email must be a valid email address!' }),
 });
 
@@ -29,6 +30,7 @@ export const ResetPasswordSchema = zod.object({
 
 export function SplitResetPasswordView() {
   const defaultValues = { username: '' };
+  const router = useRouter();
 
   const methods = useForm<ResetPasswordSchemaType>({
     resolver: zodResolver(ResetPasswordSchema),
@@ -43,13 +45,14 @@ export function SplitResetPasswordView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await API.post('/users/forgotPassword', {
+      console.log(data);
+      await API.post('/auth/forgotPassword', {
         username: data.username,
       });
       toast.success('An email has been sent to you');
       reset();
+      router.push('/auth/update-password?username=' + data.username);
     } catch (error) {
-      // console.error(error);
       toast.error('Something went wrong');
     }
   });
@@ -59,10 +62,10 @@ export function SplitResetPasswordView() {
       <PasswordIcon sx={{ mx: 'auto' }} />
 
       <Stack spacing={1} sx={{ mt: 3, mb: 5, textAlign: 'center', whiteSpace: 'pre-line' }}>
-        <Typography variant="h5">Forgot your password?</Typography>
+        <Typography variant="h5">Forgot your password ?</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {`Please enter the email address associated with your account and we'll email you a link to reset your password.`}
+          {`Please enter your username and we will email you an otp`}
         </Typography>
       </Stack>
     </>
@@ -74,7 +77,6 @@ export function SplitResetPasswordView() {
         autoFocus
         name="username"
         label="Username"
-        placeholder="USER1"
         InputLabelProps={{ shrink: true }}
       />
 
@@ -84,9 +86,9 @@ export function SplitResetPasswordView() {
         type="submit"
         variant="contained"
         loading={isSubmitting}
-        loadingIndicator="Send request..."
+        loadingIndicator="Sending OTP..."
       >
-        Send request
+        Send OTP
       </LoadingButton>
 
       <Link

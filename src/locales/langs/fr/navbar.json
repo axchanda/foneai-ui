@@ -1,5 +1,7 @@
 {
   "app": "Application",
+  "dashboard": "Tableau de bord",
+  "campaigns": "Campagnes",
   "job": "Emploi",
   "user": "Utilisateur",
   "travel": "Voyage",

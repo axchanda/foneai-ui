@@ -32,12 +32,8 @@ import { MenuList } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { set } from 'nprogress';
+import { useTranslate } from 'src/locales';
 
-const TABLE_HEAD = [
-  { id: 'question', label: 'Question', width: 200 },
-  { id: 'answer', label: 'Answer', width: 290 },
-  { id: '', width: 10  },
-];
 
 type Props = {
   currentKb?: IKnowledgeBaseItem;
@@ -62,12 +58,18 @@ export function QaSection({
 }: Props) {
    
     const [qaPairs, setQaPairs] = useState<any[]>(knowledgeBaseQaPairs);
-
+    const { t } = useTranslate();
     const table = useTable();
     const [qaPair, setQaPair] = useState<IKnowledgeBaseQaPairType>({
       question: '',
       answer: ''
     });
+
+    const TABLE_HEAD = [
+      { id: 'question', label: t('Question'), width: 200 },
+      { id: 'answer', label: t('Answer'), width: 290 },
+      { id: '', width: 10  },
+    ];
 
     const [qaPairErrors, setQaPairErrors] = useState<
       Partial<Record<keyof IKnowledgeBaseQaPairType, boolean | undefined>>
@@ -118,9 +120,11 @@ export function QaSection({
     <Card>
         <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
         <Stack>
-            <Typography variant="h6">Q&A Pairs</Typography>
+            <Typography variant="h6">
+              {t('Knowledge base Q&A pairs')}
+            </Typography>
             <Typography mt="4px" color="var(--palette-text-secondary)" variant='body2'>
-              Knowledge Base Question and Answer Pairs
+              {t('Add Question-Answer pairs to your knowledge base')}
             </Typography>
         </Stack>
         <Button
@@ -129,7 +133,7 @@ export function QaSection({
             }}
             variant="contained"
         >
-            Add New QA Pair
+            {t('Add New Q&A Pair')}
         </Button>
         </Stack>
 
@@ -167,7 +171,7 @@ export function QaSection({
                                       question: e.target.value,
                                   }));
                                 }}
-                                placeholder="Question"
+                                placeholder={t('Question')}
                                 error={qaPairErrors.question}
                                 multiline
                                 minRows={2}
@@ -189,7 +193,7 @@ export function QaSection({
                                     answer: e.target.value,
                                   }));
                                 }}
-                                placeholder="Answer"
+                                placeholder={t('Answer')}
                                 error={qaPairErrors.answer}
                                 multiline
                                 minRows={2}
@@ -226,7 +230,7 @@ export function QaSection({
                                           ...prev,
                                           question: true,
                                       }));
-                                      toast.error('Question already exists');
+                                      toast.error(t('Question already exists'));
                                       isError = true;
                                     }
 
@@ -268,7 +272,7 @@ export function QaSection({
                                 color="primary"
                                 startIcon={<Iconify icon="ic:round-check" />}
                                 >
-                                Submit
+                                  {t('Add')}
                                 </Button>
                                 <Button
                                   variant="outlined"
@@ -288,7 +292,7 @@ export function QaSection({
                                     shouldShowQaPairForm.setValue(false);
                                 }}
                                 >
-                                Cancel
+                                {t('Cancel')}
                                 </Button>
                             </Stack>
                             </TableCell>
@@ -298,6 +302,7 @@ export function QaSection({
                           <QaPairTableRow
                             key={qaPair._id || index} // Prefer using a unique key like `_id` if available
                             qaPair={qaPair}
+                            t={t}
                             checkQuestionDuplicates={(val) => {
                               const trimmedVal = val.trim().toLowerCase(); // Normalize input for case-insensitivity
                             
@@ -316,7 +321,7 @@ export function QaSection({
                               const isDuplicate = qaPairs.some((pair) => pair.question.trim() === val.trim());
                               console.log('Is Duplicate:', isDuplicate);
                               if (isDuplicate) {
-                                toast.error('Question already exists');
+                                toast.error(t('Question already exists'));
                                 return;
                               } else {
                                 setQaPairs((prevQaPairs = []) => {
@@ -371,7 +376,7 @@ export function QaSection({
             ) : (
                 <Stack>
                   <Typography variant="h5" align="center">
-                      No Qa Pairs
+                      {t('No Q&A Pairs')}
                   </Typography>
                 </Stack>
             )}
@@ -395,6 +400,7 @@ export function QaSection({
     changeAnswer: (val: string) => void;
     removeQaPair: () => void;
     updateQaPair: (updatedQaPair: IKnowledgeBaseQaPairType) => void;
+    t: any;
     }> = ({
       qaPair,
       checkQuestionDuplicates,
@@ -402,6 +408,7 @@ export function QaSection({
       changeAnswer,
       removeQaPair,
       updateQaPair,
+      t
     }) => {
 
       const popover = usePopover();
@@ -414,7 +421,7 @@ export function QaSection({
         question: false,
         answer: false,
       });
-
+      
       return (
         <>
           <TableRow>
@@ -430,7 +437,7 @@ export function QaSection({
                   console.log('e.target.value', e.target.value);
                   setQaPairState({ ...qaPairState, question: e.target.value });
                 }}
-                placeholder="Question"
+                placeholder={t('Question')}
                 disabled={!editing.value}
                 error={qaPairErrors.question}
                 multiline
@@ -450,7 +457,7 @@ export function QaSection({
                   setQaPairState({ ...qaPairState, answer: e.target.value });
                 }}
                 name="answer"
-                placeholder="Answer"
+                placeholder={t('Answer')}
                 disabled={!editing.value}
                 error={qaPairErrors.answer}
                 multiline
@@ -479,7 +486,7 @@ export function QaSection({
                           ...prev,
                           question: true,
                         }));
-                        toast.error('Question already exists');
+                        toast.error(t('Question already exists'));
                         isError = true;
                       }
                       if (
@@ -507,7 +514,7 @@ export function QaSection({
                     color="primary"
                     startIcon={<Iconify icon="ic:round-check" />}
                   >
-                    Update
+                    {t('Update')}
                   </Button>
                   <Button
                     variant="outlined"
@@ -523,7 +530,7 @@ export function QaSection({
                       });
                     }}
                   >
-                    Cancel
+                    {t('Cancel')}
                   </Button>
                 </Stack>
               ) : (
@@ -547,7 +554,7 @@ export function QaSection({
                 }}
               >
                 <Iconify icon="solar:pen-bold" />
-                Edit
+                {t('Edit')}
               </MenuItem>
               <MenuItem
                 onClick={() => {
@@ -557,7 +564,7 @@ export function QaSection({
                 sx={{ color: 'error.main' }}
               >
                 <Iconify icon="solar:trash-bin-trash-bold" />
-                  Delete
+                  {t('Delete')}
               </MenuItem>
             </MenuList>
           </CustomPopover>

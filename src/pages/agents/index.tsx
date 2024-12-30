@@ -14,10 +14,12 @@ import { AgentList } from 'src/sections/agents/agents-list';
 import API from 'src/utils/API';
 import { IAgentListType } from 'src/types/agent';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { useTranslate } from 'src/locales';
 
 function Agents() {
   const [loaded, setLoaded] = useState(false);
   const [agents, setAgents] = useState<IAgentListType[]>([]);
+  const {t} = useTranslate();
 
   const getData = useCallback(async () => {
     const agentsPromise = API.get<{
@@ -36,7 +38,7 @@ function Agents() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Agents"
+        heading={t('Agents')}
         action={
           <Button
             component={RouterLink}
@@ -44,7 +46,7 @@ function Agents() {
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            New Agent
+            {t('New Agent')}
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}

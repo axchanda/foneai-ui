@@ -8,6 +8,7 @@ import { IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { KnowledgeBaseNewEditForm } from 'src/sections/knowledge-bases/knowledge-base-new-edit-form';
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -17,7 +18,7 @@ type Props = {
 
 export default function KnowledgeBaseEdit({ kb: currentKb }: Props) {
   const [loaded, setLoaded] = useState(false);
-
+  const {t} = useTranslate();
   const { id } = useParams();
   const [knowledgeBase, setKnowledgeBase] = useState<IKnowledgeBaseItem | null>(null);
   function getLabelColor(status: string) {
@@ -60,14 +61,14 @@ export default function KnowledgeBaseEdit({ kb: currentKb }: Props) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs 
-        heading="Edit Knowledge Base" 
+        heading={t("Edit knowledge base" )}
         action={          
           <Label
             height={50}
             width={75}
             color={getLabelColor(knowledgeBase?.status || 'pending')} 
             startIcon={<Iconify icon={getLabelIcon(knowledgeBase?.status )} />}>
-              {knowledgeBase?.status && knowledgeBase.status.toUpperCase()}
+              {t(knowledgeBase?.status || 'pending')}
           </Label>
         }
         sx={{ mb: { xs: 3, md: 5 } }} />

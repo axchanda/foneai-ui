@@ -19,7 +19,8 @@ const lng = localStorageGetItem('i18nextLng', fallbackLng);
 i18next
   .use(LanguageDetector)
   .use(initReactI18next)
-  .use(resourcesToBackend((lang: string, ns: string) => import(`./langs/${lang}/${ns}.json`)))
+  // .use(resourcesToBackend((lang: string, ns: string) => import(`./langs/${lang}/${ns}.json`)))
+  .use(resourcesToBackend((lang: string, ns: string) => import(`./langs/${lang}/index.js`)))
   .init({ ...i18nOptions(lng), detection: { caches: ['localStorage'] } });
 
 // ----------------------------------------------------------------------

@@ -11,6 +11,7 @@ import { fileData, FileThumbnail } from '../file-thumbnail';
 
 import type { KbFilePreviewProps } from './types';
 import { Skeleton, Tooltip } from '@mui/material';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -48,7 +49,9 @@ export function KbFilePreview({
       {lastNode}
     </Box>
   );
-  console.log('File names:', fileNames);
+
+  const {t} = useTranslate();
+  
   return (
     <Box
       component="ul"
@@ -66,7 +69,6 @@ export function KbFilePreview({
       {renderFirstNode}
 
       {fileNames.map((fileName: string) => {
-        console.log('File name:', fileName);
         return (
           <Box
             component="li"
@@ -89,7 +91,7 @@ export function KbFilePreview({
             <ListItemText primary={fileName} />
 
             {onRemove && (
-              <Tooltip title="Delete" arrow placement='right'>
+              <Tooltip title={t('Delete')} arrow placement='right'>
                 <IconButton size="small" onClick={() => onRemove(fileName)}>
                   <Iconify icon="fluent:delete-20-regular" color="error.main" width={26} />
                 </IconButton>

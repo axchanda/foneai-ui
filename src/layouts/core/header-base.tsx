@@ -14,7 +14,7 @@ import { AccountDrawer } from '../components/account-drawer';
 import type { HeaderSectionProps } from './header-section';
 import type { AccountDrawerProps } from '../components/account-drawer';
 import type { ContactsPopoverProps } from '../components/contacts-popover';
-import type { LanguagePopoverProps } from '../components/language-popover';
+import { LanguagePopover, type LanguagePopoverProps } from '../components/language-popover';
 import { type WorkspacesPopoverProps } from '../components/workspaces-popover';
 import type { NotificationsDrawerProps } from '../components/notifications-drawer';
 import { SettingsButton } from '../components/settings-button';
@@ -169,7 +169,7 @@ export function HeaderBase({
               {/* {searchbar && <Searchbar data-slot="searchbar" data={data?.nav} />} */}
 
               {/* -- Language popover -- */}
-              {/* {localization && <LanguagePopover data-slot="localization" data={data?.langs} />} */}
+              {localization && <LanguagePopover data-slot="localization" data={data?.langs} />}
 
               {/* -- Notifications popover -- */}
               {/* {notifications && (

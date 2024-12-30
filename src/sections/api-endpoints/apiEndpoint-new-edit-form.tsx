@@ -35,24 +35,25 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { Iconify } from 'src/components/iconify';
 import { CustomPopover, usePopover } from 'src/components/custom-popover';
 import { Checkbox } from '@mui/material';
+import { useTranslate } from 'src/locales';
 
-export type NewApiEndpointSchemaType = zod.infer<typeof NewApiEndpointSchema>;
+export type ApiEndpointSchemaType = zod.infer<ReturnType<typeof ApiEndpointSchema>>;
 
-export const NewApiEndpointSchema = zod.object({
-  apiEndpointName: zod.string().min(1, { message: 'Api Endpoint Name is required!' }),
-  apiEndpointURI: zod.string().min(1, { message: 'Api Endpoint URI is required!' })
+export const ApiEndpointSchema = (t: any) => zod.object({
+  apiEndpointName: zod.string().min(1, { message: t('Api Endpoint Name is required!') }),
+  apiEndpointURI: zod.string().min(1, { message: t('Api Endpoint URI is required!') })
                   .regex(/^https?:\/\/[a-zA-Z0-9\-\.]+(:[0-9]+)?(\/[a-zA-Z0-9\-._~%!$&'()*+,;=:@]+)*(\/)?(\?[a-zA-Z0-9\-._~%!$&'()*+,;=:@\/?]*)?(#[a-zA-Z0-9\-._~%!$&'()*+,;=:@\/?]*)?$/, {
-                    message: 'Invalid URL format!',
+                    message: t('Invalid URI format!')
                   }),
   apiEndpointDescription: zod.string(),
   apiEndpointMethod: zod.enum(['GET', 'POST', 'PUT', 'DELETE'], {
-    required_error: 'Api Endpoint method is required!',
+    required_error: t('Method is required!'),
   }),
   apiEndpointTimeout: zod
     .number()
-    .min(1, { message: 'timeout is required!' })
+    .min(1, { message: t('Timeout must be greater than 0!') })
     .refine((value) => Number.isInteger(value), {
-      message: 'Timeout must be a whole number!',
+      message: t('Timeout must be an integer!'),
     })
 });
 
@@ -62,6 +63,7 @@ type Props = {
 
 export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
   const router = useRouter();
+  const {t} = useTranslate();
   const [headers, setHeaders] = useState<
     {
       isEncrypted: boolean;
@@ -81,9 +83,10 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
     [currentApiEndpoint]
   );
 
-  const methods = useForm<NewApiEndpointSchemaType>({
+  const schema = ApiEndpointSchema(t);
+  const methods = useForm<ApiEndpointSchemaType>({
     mode: 'all',
-    resolver: zodResolver(NewApiEndpointSchema),
+    resolver: zodResolver(schema),
     //@ts-ignore
     defaultValues,
   });
@@ -116,7 +119,7 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
         apiEndpointHeaders : headers,
       });
       reset();
-      toast.success(currentApiEndpoint ? 'Updating API Definition success!' : 'Defining API Endpoint success!');
+      toast.success(currentApiEndpoint ? t('Update success!') : t('Create success!'));
       router.push('/apiEndpoints');
     } catch (error) {
       const messages = Object.values(error.response.data.errors || {}) as string[];
@@ -128,17 +131,22 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
 
   const renderDetails = (
     <Card>
-      <CardHeader title="Details" subheader="API Endpoint name and description" sx={{ mb: 3 }} />
+      <CardHeader title={t("Details")} 
+        subheader={t("API Endpoint name and description")} sx={{ mb: 3 }} />
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">API Endpoint Name</Typography>
+          <Typography variant="subtitle2">
+            {t('API Endpoint Name')}
+          </Typography>
           <Field.Text label="" name="apiEndpointName" />
         </Stack>
 
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">API Endpoint Description</Typography>
+          <Typography variant="subtitle2">
+            {t('Description')}
+          </Typography>
 
           <Field.Text fullWidth label="" multiline rows={4} name="apiEndpointDescription" />
         </Stack>
@@ -149,33 +157,40 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
 
   const renderSpecs = (
     <Card>
-      <CardHeader title="Specifications" subheader="API Endpoint Specifications" sx={{ mb: 3 }} />
+      <CardHeader title={t("Specifications")}
+       subheader={t("API Endpoint Specifications")} sx={{ mb: 3 }} />
 
       <Divider />
       <Stack spacing={3} sx={{ p: 3 }}>
 
         <Stack sx={{ px: 1 }}>
-          <Typography variant="subtitle2">Method</Typography>
+          <Typography variant="subtitle2">
+            {t('API Endpoint Method')}
+          </Typography>
 
           <Field.RadioGroup
             name="apiEndpointMethod"
             sx={{ flexDirection: 'row' }} // Add this to make it horizontal
             options={[
-              { label: 'GET', value: 'GET' },
-              { label: 'POST', value: 'POST' },
-              { label: 'PUT', value: 'PUT' },
-              { label: 'DELETE', value: 'DELETE' },
+              { label: t('GET'), value: 'GET' },
+              { label: t('POST'), value: 'POST' },
+              { label: t('PUT'), value: 'PUT' },
+              { label: t('DELETE'), value: 'DELETE' },
             ]}
           />
         </Stack>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle2">API Endpoint URI</Typography>
+          <Typography variant="subtitle2">
+            {t("URI")}
+          </Typography>
 
           <Field.Text label="" name="apiEndpointURI" />
         </Stack>
         <Stack spacing={4} direction="row">
           <Stack flex={1} spacing={1.5}>
-            <Typography variant="subtitle2">Timeout</Typography>
+            <Typography variant="subtitle2">
+              {t("API Endpoint Timeout")}
+            </Typography>
             <Field.Text
               sx={{
                 '.MuiInputBase-root': {
@@ -193,7 +208,7 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
                     }}
                     position="end"
                   >
-                    seconds
+                    {t('Seconds')}
                   </InputAdornment>
                 ),
               }}
@@ -220,7 +235,7 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
           marginLeft: 'auto',
         }}
       >
-        {!currentApiEndpoint ? 'Create API Definition' : 'Update API Definition'}
+        {!currentApiEndpoint ? t('Create') : t('Update')}
       </LoadingButton>
     </Box>
   );
@@ -237,12 +252,6 @@ export function ApiEndpointNewEditForm({ currentApiEndpoint }: Props) {
   );
 }
 
-const TABLE_HEAD = [
-  { id: 'checkbox', label: 'Encryption', width: '' },
-  { id: 'key', label: 'Key', width: 255 },
-  { id: 'value', label: 'Value', width: 255 },
-  { id: '', width: 200 },
-];
 
 const HeadersForm: React.FC<{
   headers: IApiEndpointItem['apiEndpointHeaders'];
@@ -256,6 +265,13 @@ const HeadersForm: React.FC<{
     >
   >;
 }> = ({ headers, setHeaders }) => {
+  const {t} = useTranslate();
+  const TABLE_HEAD = [
+    { id: 'checkbox', label: t('Encryption'), width: 100 },
+    { id: 'key', label: t('Key'), width: 200 },
+    { id: 'value', label: t('Value'), width: 200 },
+    { id: '', width: 200 },
+  ];
   const table = useTable();
   const [header, setHeader] = useState<IApiEndpointHeaders>({
     isEncrypted: false,
@@ -273,7 +289,9 @@ const HeadersForm: React.FC<{
     <Card>
       <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
         <Stack>
-          <Typography variant="h5">API Headers</Typography>
+          <Typography variant="h5">
+            {t('API Headers')}
+          </Typography>
           {/* <Typography mt="4px" color="var(--palette-text-secondary)" variant="subtitle2">
             Add parameters to the function. These parameters will be used to pass data to the
             function.
@@ -285,7 +303,7 @@ const HeadersForm: React.FC<{
           }}
           variant="contained"
         >
-          Add New Header
+          {t('Add New Header')}
         </Button>
       </Stack>
 
@@ -347,7 +365,7 @@ const HeadersForm: React.FC<{
                             key: e.target.value,
                           }));
                         }}
-                        placeholder="Header key"
+                        placeholder={t('Header Key')}
                         error={headerErrors.key}
                       />
                     </TableCell>
@@ -366,7 +384,7 @@ const HeadersForm: React.FC<{
                           }));
                         }}
                         name="value"
-                        placeholder="Header value"
+                        placeholder={t('Header Value')}
                         error={headerErrors.value}
                       />
                     </TableCell>
@@ -395,7 +413,7 @@ const HeadersForm: React.FC<{
                                 ...prev,
                                 key: true,
                               }));
-                              toast.error('Header key already exists!');
+                              toast.error(t('Header key already exists!'));
                               isError = true;
                             }
                             if (!isError) {
@@ -417,7 +435,7 @@ const HeadersForm: React.FC<{
                           color="primary"
                           startIcon={<Iconify icon="ic:round-check" />}
                         >
-                          Submit
+                          {t('Add')}
                         </Button>
                         <Button
                           variant="outlined"
@@ -438,7 +456,7 @@ const HeadersForm: React.FC<{
                             });
                           }}
                         >
-                          Cancel
+                          {t('Cancel')}
                         </Button>
                       </Stack>
                     </TableCell>
@@ -447,6 +465,7 @@ const HeadersForm: React.FC<{
                 {headers.map((h: IApiEndpointHeaders, index: number) => {
                   return (
                     <HeaderTableRow
+                      t={t}
                       key={JSON.stringify(h) + index}
                       currentHeader={h}
                       checkDuplicationKey={(key: string) => {
@@ -472,7 +491,7 @@ const HeadersForm: React.FC<{
         ) : (
           <Stack>
             <Typography variant="h5" align="center">
-              No API Headers
+              {t('No Headers')}
             </Typography>
           </Stack>
         )}
@@ -486,7 +505,8 @@ const HeaderTableRow: React.FC<{
   checkDuplicationKey: (key: string) => boolean;
   removeHeader: () => void;
   updateHeader: (header: IApiEndpointHeaders) => void;
-}> = ({ currentHeader, removeHeader, updateHeader, checkDuplicationKey }) => {
+  t: any;
+}> = ({ currentHeader, removeHeader, updateHeader, checkDuplicationKey, t }) => {
   const popover = usePopover();
   const editing = useBoolean(false);
   const [header, setHeader] = useState({ ...currentHeader });
@@ -532,7 +552,7 @@ const HeaderTableRow: React.FC<{
                 key: e.target.value,
               }));
             }}
-            placeholder="Header key"
+            placeholder={t('Header Key')}
             error={headerErrors.key}
             key={currentHeader.key}
           />
@@ -553,7 +573,7 @@ const HeaderTableRow: React.FC<{
               }));
             }}
             name="value"
-            placeholder="Header value"
+            placeholder={t('Header Value')}
             error={headerErrors.value}
             // key={currentHeader.value}
           />
@@ -584,7 +604,7 @@ const HeaderTableRow: React.FC<{
                       ...prev,
                       key: true,
                     }));
-                    toast.error('Header key already exists!');
+                    toast.error(t('Header key already exists!'));
                     isError = true;
                   }
 
@@ -605,7 +625,7 @@ const HeaderTableRow: React.FC<{
                 color="primary"
                 startIcon={<Iconify icon="ic:round-check" />}
               >
-                Update
+                {t('Update')}
               </Button>
               <Button
                 variant="outlined"
@@ -624,7 +644,7 @@ const HeaderTableRow: React.FC<{
                   editing.setValue(false);
                 }}
               >
-                Cancel
+                {t('Cancel')}
               </Button>
             </Stack>
           ) : (
@@ -648,7 +668,7 @@ const HeaderTableRow: React.FC<{
             }}
           >
             <Iconify icon="solar:pen-bold" />
-            Edit
+            {t('Edit')}
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -658,7 +678,7 @@ const HeaderTableRow: React.FC<{
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            {t('Delete')}
           </MenuItem>
         </MenuList>
       </CustomPopover>

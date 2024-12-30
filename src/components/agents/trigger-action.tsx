@@ -27,12 +27,8 @@ import { Iconify } from 'src/components/iconify';
 import { IActionItem } from 'src/types/action';
 import { set } from 'nprogress';
 import { Scrollbar } from '../scrollbar';
+import { useTranslate } from 'src/locales';
 
-const TABLE_HEAD = [
-  { id: 'action', label: 'Action', width: 255 },
-  { id: 'trigger', label: 'Trigger', width: 255 },
-  { id: '', width: 200 },
-];
 
 
 const ActionTriggerDialog: React.FC<{
@@ -45,7 +41,8 @@ const ActionTriggerDialog: React.FC<{
     const instructionLines = instructions.split('.').filter((line) => line.trim().length > 0);
     const [selectedAction, setSelectedAction] = useState<string | undefined>(undefined);
     const [tab, setTab] = useState(1);
-  
+    const { t } = useTranslate();
+
     const renderTriggerByBotInstructions = (
       <Box>
         <Button
@@ -59,7 +56,7 @@ const ActionTriggerDialog: React.FC<{
             setTab(1);
           }}
         >
-          Go Back
+          {t('Go back')}
         </Button>
         <Box
           my={2}
@@ -121,7 +118,7 @@ const ActionTriggerDialog: React.FC<{
             setTab(1);
           }}
         >
-          Go Back
+          {t('Go back')}
         </Button>
         <TextField
           sx={{
@@ -130,7 +127,7 @@ const ActionTriggerDialog: React.FC<{
           multiline
           rows={10}
           fullWidth
-          placeholder="Write instructions to trigger the action"
+          placeholder={t("Write instructions to trigger the action")}
           onChange={(e) => setSelectedAction(e.target.value.trim())}
         />
       </Box>
@@ -155,7 +152,9 @@ const ActionTriggerDialog: React.FC<{
             px={2}
             py={4}
           >
-            <Typography>Custom Instructions</Typography>
+            <Typography>
+              {t('Custom Instructions')}
+            </Typography>
           </Box>
         </Card>
         <Card
@@ -174,7 +173,9 @@ const ActionTriggerDialog: React.FC<{
             px={2}
             py={4}
           >
-            <Typography>Highlight Agent Instructions</Typography>
+            <Typography>
+              {t('Highlight Prompt Instructions')}
+            </Typography>
           </Box>
         </Card>
       </Box>
@@ -184,7 +185,9 @@ const ActionTriggerDialog: React.FC<{
   
     return (
       <Dialog open={open} onClose={onClose}>
-        <DialogTitle>Trigger the Action by: </DialogTitle>
+        <DialogTitle>
+          {t('Trigger the Action by:')}  
+        </DialogTitle>
         <Divider />
         <DialogContent>
           {tab === 1 ? renderRadios : selected === 'highlight' ? renderTriggerByBotInstructions : renderCustomInstructions}
@@ -192,7 +195,7 @@ const ActionTriggerDialog: React.FC<{
         <Divider />
         <DialogActions>
           <Button onClick={onClose} variant="outlined" color="error">
-            Close
+            {t('Cancel')}
           </Button>
           <Button
             disabled={isDisabled}
@@ -209,7 +212,7 @@ const ActionTriggerDialog: React.FC<{
             }}
             variant="contained"
           >
-            {tab === 1 ? 'Next' : 'Submit'}
+            {tab === 1 ? t('Next') : t('Submit')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -246,19 +249,28 @@ const TriggerAction: React.FC<{
   });
 
   const [openActionDialog, setOpenActionDialog] = useState(false);
-
+  const {t} = useTranslate();
   useEffect(() => {
       if (actionTrigger) {
       setOpenActionDialog(false);
       }
   }, [actionTrigger]);
 
+
+  const TABLE_HEAD = [
+    { id: 'action', label: t('Action'), width: 255 },
+    { id: 'trigger', label: t('Trigger'), width: 255 },
+    { id: '', width: 200 },
+  ];
+
   return (
       <>
       <Card>
           <Stack p={3} direction="row" alignItems="start" justifyContent="space-between">
           <Stack>
-              <Typography variant="h5">Connect Actions</Typography>
+              <Typography variant="h5">
+              {t('Action Triggers')}
+              </Typography>
           </Stack>
           <Button
               onClick={() => {
@@ -268,7 +280,7 @@ const TriggerAction: React.FC<{
               variant="contained"
               disabled={triggerEditingInProgress}
           >
-              Add New Action Connector
+              {t('Add New Action Trigger')}
           </Button>
           </Stack>
           <Divider />
@@ -301,12 +313,11 @@ const TriggerAction: React.FC<{
                                   action: e.target.value,
                                   }));
                               }}
-                              placeholder="Select a Action"
                               error={errors.action}
                               >
                               {actions.map((actionItem) => (
                                   <MenuItem key={actionItem._id} value={actionItem._id}>
-                                  {actionItem.actionName}
+                                    {actionItem.actionName}
                                   </MenuItem>
                               ))}
                               </Field.Select>
@@ -328,7 +339,7 @@ const TriggerAction: React.FC<{
                                   size="large"
                                   variant="contained"
                               >
-                                  Set Trigger event
+                                  {t('Set Trigger event')}
                               </Button>
                               )}
                           </TableCell>
@@ -378,7 +389,7 @@ const TriggerAction: React.FC<{
                                   color="primary"
                                   startIcon={<Iconify icon="ic:round-check" />}
                               >
-                                  Submit
+                                  {t('Add')}
                               </Button>
                               <Button
                                   variant="outlined"
@@ -398,7 +409,7 @@ const TriggerAction: React.FC<{
                                     });
                                   }}
                               >
-                                  Cancel
+                                  {t('Cancel')}
                               </Button>
                               </Stack>
                           </TableCell>
@@ -444,7 +455,7 @@ const TriggerAction: React.FC<{
           ) : (
               <Stack>
               <Typography variant="h5" align="center">
-                  No Actions Connected
+                  {t('No Action Triggers')}
               </Typography>
               </Stack>
           )}
@@ -455,7 +466,6 @@ const TriggerAction: React.FC<{
           onClose={() => setOpenActionDialog(false)}
           instructions={instructions}
           onSubmit={(trigger) => {
-            console.log(455)
             setActionTrigger((prev) => ({
                 ...prev,
                 trigger
@@ -494,7 +504,7 @@ const [errors, setErrors] = useState<{
 
 
 const [openActionDialog, setOpenActionDialog] = useState(false);
-
+const {t} = useTranslate();
 useEffect(() => {
     if (actionTrigger && actionTrigger?.trigger.trim().length > 0) {
       updateActionTrigger(actionTrigger); 
@@ -547,7 +557,7 @@ return (
             }}
             variant="contained"
             >
-            Set Trigger event
+              {t('Set Trigger event')}
             </Button>
         )}
         </TableCell>
@@ -587,7 +597,7 @@ return (
                 color="primary"
                 startIcon={<Iconify icon="ic:round-check" />}
             >
-                Update
+                {t('Update')}
             </Button>
             <Button
                 variant="outlined"
@@ -606,7 +616,7 @@ return (
                   setTriggerEditingInProgress(false);
                 }}
             >
-                Cancel
+                {t('Cancel')}
             </Button>
             </Stack>
         ) : (
@@ -635,7 +645,7 @@ return (
                 }}
             >
                 <Iconify icon="solar:pen-bold" />
-                Edit
+                {t('Edit')}
             </MenuItem>
             <MenuItem
                 onClick={() => {
@@ -645,7 +655,7 @@ return (
                 sx={{ color: 'error.main' }}
             >
                 <Iconify icon="solar:trash-bin-trash-bold" />
-                Delete
+                {t('Remove')}
             </MenuItem>
         </MenuList>
     </CustomPopover>
@@ -654,7 +664,6 @@ return (
         onClose={() => setOpenActionDialog(false)}
         instructions={instructions}
         onSubmit={(trigger) => {
-          console.log(653)
           setActionTrigger((prev) => ({
               ...prev,
               trigger

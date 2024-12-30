@@ -63,7 +63,7 @@ export function ChatNavAccount() {
             secondaryTypographyProps={{ component: 'span' }}
           />
 
-          <Tooltip title="Log out">
+          <Tooltip title="Logout">
             <IconButton color="error">
               <Iconify icon="ic:round-power-settings-new" />
             </IconButton>

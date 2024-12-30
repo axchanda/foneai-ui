@@ -8,182 +8,258 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
-
 import { RouterLink } from 'src/routes/components';
-
 import { useBoolean } from 'src/hooks/use-boolean';
-
 import { SentIcon } from 'src/assets/icons';
-
 import { Iconify } from 'src/components/iconify';
 import { Form, Field } from 'src/components/hook-form';
-import { useSearchParams } from 'react-router-dom';
 import API from 'src/utils/API';
 import { toast } from 'sonner';
+// urlparams search
+import { useSearchParams } from 'react-router-dom';
+import { useState } from 'react';
 import { useRouter } from 'src/routes/hooks';
-
-// ----------------------------------------------------------------------
-
-export type UpdatePasswordSchemaType = zod.infer<typeof UpdatePasswordSchema>;
-
-export const UpdatePasswordSchema = zod
-  .object({
-    // code: zod
-    //   .string()
-    //   .min(1, { message: 'Code is required!' })
-    //   .min(6, { message: 'Code must be at least 6 characters!' }),
-    // email: zod
-    //   .string()
-    //   .min(1, { message: 'Email is required!' })
-    //   .email({ message: 'Email must be a valid email address!' }),
-    password: zod
-      .string()
-      .min(1, { message: 'Password is required!' })
-      .min(6, { message: 'Password must be at least 6 characters!' }),
-    confirmPassword: zod.string().min(1, { message: 'Confirm password is required!' }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match!',
-    path: ['confirmPassword'],
-  });
-
-// ----------------------------------------------------------------------
-
 export function SplitUpdatePasswordView() {
-  const password = useBoolean();
-  const [searchParams] = useSearchParams();
+  const [step, setStep] = useState<"enterOTP" | "updatePassword">("enterOTP");
+  const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const passwordVisible = useBoolean(false);
+  const [error, setError] = useState("");
+  const searchParams = new URLSearchParams(window.location.search);
+  const username =  searchParams.get('username');
   const router = useRouter();
+  const isSubmittingOTP = useBoolean(false);
+  const isSubmittingPassword = useBoolean(false);
+  // Regex for password validation
+  const passwordRegex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
-  const token = searchParams.get('token');
+  // Mock API call for verifying code
+  const verifyCode = async (code: string) => {
+    try {
+      isSubmittingOTP.onTrue();
+      if(!username) {
+        throw new Error('Username is required');
+      }
+      if(Number(code) < 100000 || Number(code) > 999999 || isNaN(Number(code))) {
+        throw new Error('Invalid OTP');
+      }
 
-  const defaultValues = {
-    // code: '',
-    // email: '',
-    password: '',
-    confirmPassword: '',
+      const response = await API.post('/auth/verify-otp', {
+        username,
+        otp: Number(code)
+      });
+
+      console.log(response);
+      if(response.data && response.status === 200) {
+        toast.success('OTP verified successfully');
+        isSubmittingOTP.onFalse();
+        setStep("updatePassword");
+      }
+    } catch (error) {
+      toast.error('Invalid OTP');
+      isSubmittingOTP.onFalse();
+    }
   };
 
-  const methods = useForm<UpdatePasswordSchemaType>({
-    resolver: zodResolver(UpdatePasswordSchema),
-    defaultValues,
-  });
-
-  const {
-    handleSubmit,
-    formState: { isSubmitting },
-  } = methods;
-
-  const onSubmit = handleSubmit(async (data) => {
+  // Mock API call for updating password
+  const updatePasswordAPI = async (password: string, confirmPassword: string) => {
     try {
-      await API.post('/users/resetPassword', {
-        token,
-        newPassword: data.password,
+      isSubmittingPassword.onTrue();
+      if(!username) {
+        throw new Error('Username is required');
+      }
+      if(!password) {
+        throw new Error('Password is required');
+      }
+      if(!confirmPassword) {
+        throw new Error('Confirm password is required');
+      }
+      if(password !== confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
+      const response = await API.post('/auth/update-password', {
+        username,
+        password,
+        confirmPassword
       });
-      toast.success('Password reset success!');
-      router.push('/auth/login');
+
+      console.log(response);
+      if(response.data && response.status === 200) {
+        isSubmittingPassword.onFalse();
+        toast.success('Password updated successfully');
+      } else {
+        isSubmittingPassword.onFalse();
+        toast.error('Failed to update password');
+      }
     } catch (error) {
-      // console.error(error);
-      toast.error('Something went wrong');
+      isSubmittingPassword.onFalse();
+      toast.error('Failed to update password');
+      throw new Error('Failed to update password');
     }
-  });
+  };
 
-  const renderHead = (
-    <>
-      <SentIcon sx={{ mx: 'auto' }} />
+  // Handle code submission
+  const handleOTPSubmit = async () => {
+    setError("");
+    try {
+      await verifyCode(code);
+    } catch (err) {
+      setError(String(err));
+    }
+  };
 
-      <Stack spacing={1} sx={{ mt: 3, mb: 5, textAlign: 'center', whiteSpace: 'pre-line' }}>
-        <Typography variant="h5">Request sent successfully!</Typography>
+  const handleCodeChange = (e: any) => {
+    setCode(e);
+  }
 
-        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {`We've sent a 6-digit confirmation email to your email. \nPlease enter the code in below box to verify your email.`}
-        </Typography>
-      </Stack>
-    </>
-  );
+  // Handle password update
+  const handlePasswordUpdate = async () => {
+    setError("");
+    if (!passwordRegex.test(newPassword)) {
+      setError(
+        "Password must be 8-20 characters long, include at least 1 uppercase letter, 1 number, and 1 special character."
+      );
+      return;
+    }
 
-  const renderForm = (
-    <Stack spacing={3}>
-      {/* <Field.Text
-        name="email"
-        label="Email address"
-        placeholder="example@gmail.com"
-        InputLabelProps={{ shrink: true }}
-      />
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
-      <Field.Code name="code" /> */}
-
-      <Field.Text
-        name="password"
-        label="Password"
-        placeholder="6+ characters"
-        type={password.value ? 'text' : 'password'}
-        InputLabelProps={{ shrink: true }}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={password.onToggle} edge="end">
-                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
-
-      <Field.Text
-        name="confirmPassword"
-        label="Confirm new password"
-        type={password.value ? 'text' : 'password'}
-        InputLabelProps={{ shrink: true }}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={password.onToggle} edge="end">
-                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
-
-      <LoadingButton
-        fullWidth
-        size="large"
-        type="submit"
-        variant="contained"
-        loading={isSubmitting}
-        loadingIndicator="Update password..."
-        disabled={!token}
-      >
-        Update password
-      </LoadingButton>
-
-      {/* <Typography variant="body2" sx={{ mx: 'auto' }}>
-        {`Don’t have a code? `}
-        <Link variant="subtitle2" sx={{ cursor: 'pointer' }}>
-          Resend code
-        </Link>
-      </Typography> */}
-
-      <Link
-        component={RouterLink}
-        href="/auth/login"
-        color="inherit"
-        variant="subtitle2"
-        sx={{ mx: 'auto', alignItems: 'center', display: 'inline-flex' }}
-      >
-        <Iconify icon="eva:arrow-ios-back-fill" width={16} sx={{ mr: 0.5 }} />
-        Return to sign in
-      </Link>
-    </Stack>
-  );
+    try {
+      const response = await updatePasswordAPI(newPassword, confirmPassword);
+      router.push('/auth/login');
+    } catch (err) {
+      setError("Failed to update password. Please try again.");
+    }
+  };
 
   return (
-    <>
-      {renderHead}
+    <Stack spacing={2} sx={{ maxWidth: 600, margin: "auto" }}>
+      <Form methods={useForm()}>
+      {step === "enterOTP" && (
 
-      <Form methods={methods} onSubmit={onSubmit}>
-        {renderForm}
+        <Stack spacing={3}>
+          <SentIcon sx={{ mx: 'auto' }} />
+          <Stack spacing={1} sx={{ mt: 3, mb: 5, textAlign: 'center', whiteSpace: 'pre-line' }}>
+            <Typography variant="h5">Request sent successfully!</Typography>
+
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              {`We've sent a 6-digit OTP to your email. \nPlease enter the OTP in below box to verify your email.`}
+            </Typography>
+          </Stack>
+          <Field.Text
+            name="username"
+            label="Username"
+            placeholder="Username"
+            InputLabelProps={{ shrink: true }}
+            value={username}
+            disabled
+          />
+          <Typography variant="body2" sx={{ textAlign: 'center' }}>
+            {`Please enter the 6-digit code sent to `}
+            <br />
+            <b>
+            {username}
+            </b>
+          </Typography>
+          <Field.Code name="code" value={code} onChange={handleCodeChange} />
+          <LoadingButton
+            fullWidth
+            size="large"
+            onClick={handleOTPSubmit}
+            variant="contained"
+            loading={isSubmittingOTP.value}
+            loadingIndicator="Verifying OTP..."
+          >
+            Verify OTP
+          </LoadingButton>
+          {/* <Typography variant="body2" sx={{ mx: 'auto' }}>
+            {`Don’t have a code? `}
+            <Link variant="subtitle2" sx={{ cursor: 'pointer' }}>
+              Resend code
+            </Link>
+          </Typography> */}
+        </Stack>
+      )}
+
+      {step === "updatePassword" && (
+        <Stack spacing={3} sx={{ minWidth: 500 }}>
+          <Typography variant="h5" sx={{ textAlign: 'center' }}>
+            Reset your password
+          </Typography>
+          <Field.Text
+            name="newPassword"
+            label="New password"
+            type={passwordVisible.value ? 'text' : 'password'}
+            placeholder="New password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            inputProps={{
+              pattern: passwordRegex.source,
+              title: "Password must be 8-20 characters long, include at least 1 uppercase letter, 1 number, and 1 special character."
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton edge="end" onClick={() => passwordVisible.onToggle()}>
+                    <Iconify icon={ passwordVisible.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+          <Field.Text
+            name="confirmPassword"
+            label="Confirm password"
+            type={passwordVisible.value ? 'text' : 'password'}
+            placeholder="Confirm password"
+            value={confirmPassword}
+            onChange={(e: any) => setConfirmPassword(e.target.value)}
+            inputProps={{
+              pattern: passwordRegex.source,
+              title: "Password must be 8-20 characters long, include at least 1 uppercase letter, 1 number, and 1 special character."
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton edge="end" onClick={() => passwordVisible.onToggle()}>
+                    <Iconify icon={ passwordVisible.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+          <Typography variant="body2" sx={{ color: 'error.main', textAlign: 'center' }}>
+            {error}
+          </Typography>
+          <LoadingButton
+            fullWidth
+            size="large"
+            onClick={handlePasswordUpdate}
+            variant="contained"
+            loading={isSubmittingPassword.value}
+            loadingIndicator="Updating password..."
+          >
+
+            Update password
+          </LoadingButton>
+
+          <Link
+            component={RouterLink}
+            href="/auth/login"
+            color="inherit"
+            variant="subtitle2"
+            sx={{ mx: 'auto', alignItems: 'center', display: 'inline-flex' }}
+          >
+            <Iconify icon="eva:arrow-ios-back-fill" width={16} sx={{ mr: 0.5 }} />
+            Return to sign in
+          </Link>
+        </Stack>
+      )}
       </Form>
-    </>
+    </Stack>
   );
-}
+};

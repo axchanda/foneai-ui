@@ -6,7 +6,7 @@ import { SplitUpdatePasswordView } from 'src/sections/auth-demo/split';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Update password | Layout split - ${CONFIG.site.name}` };
+const metadata = { title: `Update password` };
 
 export default function Page() {
   return (

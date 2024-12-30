@@ -15,6 +15,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import type { IApiEndpointItem } from 'src/types/apiEndpoint';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { Label } from 'src/components/label';
+import { useTranslate } from 'src/locales';
 
 type Props = {
   row: IApiEndpointItem;
@@ -26,7 +27,7 @@ type Props = {
 
 export function ApiEndpointTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }: Props) {
   const confirm = useBoolean();
-
+  const {t} = useTranslate();
   const popover = usePopover();
 
   return (
@@ -39,14 +40,14 @@ export function ApiEndpointTableRow({ row, selected, onEditRow, onSelectRow, onD
         tabIndex={-1}
       >
         <TableCell padding="checkbox">
-          <Checkbox id={row._id} checked={selected} onClick={onSelectRow} />
+          {/* <Checkbox id={row._id} checked={selected} onClick={onSelectRow} /> */}
         </TableCell>
         <TableCell>{row.apiEndpointName}</TableCell>
         <TableCell>{row.apiEndpointDescription}</TableCell>
         <TableCell>
           <Stack direction={'row'} gap={3}>
             <Label>
-              {row.apiEndpointMethod}
+              {t(row.apiEndpointMethod)}
             </Label>
             {row.apiEndpointURI}
           </Stack>
@@ -75,7 +76,7 @@ export function ApiEndpointTableRow({ row, selected, onEditRow, onSelectRow, onD
             }}
           >
             <Iconify icon="solar:pen-bold" />
-            Edit
+            {t('Edit')}
           </MenuItem>
           <MenuItem
             onClick={() => {
@@ -85,7 +86,7 @@ export function ApiEndpointTableRow({ row, selected, onEditRow, onSelectRow, onD
             sx={{ color: 'error.main' }}
           >
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            {t('Delete')}
           </MenuItem>
         </MenuList>
       </CustomPopover>

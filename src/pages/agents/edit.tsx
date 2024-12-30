@@ -12,6 +12,8 @@ import type { IAgentType } from 'src/types/agent';
 import { AgentNewEditForm } from 'src/sections/agents/agent-new-edit-form';
 import { Button, Stack, Typography } from '@mui/material';
 import { Iconify } from 'src/components/iconify';
+import { t } from 'i18next';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +25,7 @@ function AgentEdit({ job }: Props) {
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
   const [agent, setAgent] = useState<IAgentType | null>(null);
-
+  const { t } = useTranslate();
 
   const getAgent = useCallback(async () => {
     const agentPromise = API.get<any>(`/agents/${id}`);
@@ -39,7 +41,7 @@ function AgentEdit({ job }: Props) {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Edit agent"
+        heading={t("Edit agent")}
         sx={{ mb: { xs: 3, md: 5 } }}
       />
       {loading ? (

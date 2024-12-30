@@ -28,6 +28,7 @@ import IconButton from '@mui/material/IconButton';
 import { TableHeadCustom } from 'src/components/table';
 import { Iconify } from '../iconify';
 import { Form, Field } from '../hook-form';
+import { useTranslate } from 'src/locales';
 
 const voicesEn: {
     provider: 'AWS' | 'GCP' | 'Azure';
@@ -123,15 +124,40 @@ file: string;
 },
 ];
 
-const TABLE_HEAD = [
-    { id: 'provider', label: 'Provider', width: 70 },
-    { id: 'gender', label: 'Gender', width: 70 },
-    { id: 'accent', label: 'Accent', width: 100 },
-    { id: 'voiceId', label: 'Voice ID', width: 150, align: 'center' },
-    { id: 'price', label: 'Extra Credits / minute', width: 150, align: 'center' },
-    { id: 'preview', label: 'Preview', width: 70 },
-    { id: '', width: 80 },
+const voicesAr: {
+    provider: 'AWS' | 'GCP' | 'Azure';
+    gender: 'M' | 'F';
+    accent: string;
+    voiceId: string;
+    price: 'free' | 'paid';
+    file: string;
+}[] = [
+    {
+        provider: 'AWS',
+        gender: 'F',
+        accent: 'ARB',
+        voiceId: 'Zeina',
+        price: 'free',
+        file: '/voices/zeina.mp3',
+    },
+    {
+        provider: 'AWS',
+        gender: 'F',
+        accent: 'AE',
+        voiceId: 'Hala',
+        price: 'paid',
+        file: '/voices/hala.mp3',
+    },
+    {
+        provider: 'AWS',
+        gender: 'M',
+        accent: 'AE',
+        voiceId: 'Zayd',
+        price: 'paid',
+        file: '/voices/zayd.mp3',
+    },
 ];
+
 
 const VoicesTableRow: React.FC<{
     voice: {
@@ -150,7 +176,7 @@ setCurrentlyPlaying: React.Dispatch<React.SetStateAction<string | null>>;
 const audio = useMemo(() => {
     return new Audio(voice.file);
 }, [voice.file]);
-
+const { t } = useTranslate();
 const iconMap = {
     US: 'twemoji:flag-united-states',
     UK: 'twemoji:flag-united-kingdom',
@@ -158,15 +184,19 @@ const iconMap = {
     AU: 'twemoji:flag-australia',
     RU: 'twemoji:flag-russia',
     MX: 'twemoji:flag-mexico',
+    ARB: 'twemoji:flag-saudi-arabia',
+    AE: 'twemoji:flag-united-arab-emirates',
 };
 
 const AccentNamesMap = {
-    US: 'American',
-    UK: 'British',
-    ES: 'Castilian',
-    AU: 'Australian',
-    RU: 'Russian',
-    MX: 'Mexican',
+    US: t('American'),
+    UK: t('British'),
+    ES: t('Spanish'),
+    AU: t('Australian'),
+    RU: t('Russian'),
+    MX: t('Mexican'),
+    ARB: t('Arabic'),
+    AE: t('Arabic (Gulf)'),
 };
 
 // Narrow the type of accent to only valid keys
@@ -310,6 +340,7 @@ const VoiceDialog: React.FC<{
         en: voicesEn,
         es: voicesEs,
         ru: voicesRu,
+        ar: voicesAr,
       }[language] || voicesEn;
   
       return voiceList.filter((voice) =>
@@ -326,6 +357,7 @@ const VoiceDialog: React.FC<{
     }, [selectedVoice, open]);
   
     const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+    const { t } = useTranslate();
 
     const handleClose = () => {
         setCurrentlyPlaying(null);
@@ -333,6 +365,16 @@ const VoiceDialog: React.FC<{
         onClose();
     };
 
+    const TABLE_HEAD = [
+        { id: 'provider', label: t('Provider'), width: 70 },
+        { id: 'gender', label: t('Gender'), width: 70 },
+        { id: 'accent', label: t('Accent'), width: 100 },
+        { id: 'voiceId', label: t('Voice ID'), width: 150, align: 'center' },
+        { id: 'price', label: t('Extra Credits / minute'), width: 150, align: 'center' },
+        { id: 'preview', label: t('Preview'), width: 70 },
+        { id: '', width: 80 },
+    ];
+    
   
     return (
       <Dialog maxWidth="md" open={open} onClose={(event, reason) => {
@@ -343,7 +385,9 @@ const VoiceDialog: React.FC<{
         resetFilters();
         onClose();
       }}>
-        <DialogTitle>Select Voice</DialogTitle>
+        <DialogTitle>
+            {t('Select a voice')}
+        </DialogTitle>
         <Divider />
         <DialogContent 
         sx={{
@@ -361,55 +405,72 @@ const VoiceDialog: React.FC<{
             {/* Filters Section */}
                 <Field.Select
                     name="provider"
-                    label="Provider"
+                    label={t('Provider')}
                     value={filterProvider}
                     onChange={(e) => setFilterProvider(e.target.value)}
                 >
-                    <MenuItem value="">All</MenuItem>
-                    <MenuItem value="AWS">AWS</MenuItem>
-                    <MenuItem value="GCP">GCP</MenuItem>
+                    <MenuItem value="">
+                        {t('All')}
+                    </MenuItem>
+                    <MenuItem value="AWS">AWS Polly</MenuItem>
+                    <MenuItem value="GCP">GCP TTS</MenuItem>
                     <MenuItem value="Azure">Azure</MenuItem>
                     {/* Add more options as needed */}
                 </Field.Select>
                 <Field.Select
                     name="gender"
-                    label="Gender"
+                    label={t("Gender")}
                     value={filterGender}
                     onChange={(e) => setFilterGender(e.target.value)}
                 >
-                    <MenuItem value="">All</MenuItem>
-                    <MenuItem value="M">Male</MenuItem>
-                    <MenuItem value="F">Female</MenuItem>
+                    <MenuItem value="">
+                        {t('All')}
+                    </MenuItem>
+                    <MenuItem value="M">
+                        {t("Male")}
+                    </MenuItem>
+                    <MenuItem value="F">
+                        {t("Female")}
+                    </MenuItem>
                 </Field.Select>
                 <Field.Select
                     name="accent"
-                    label="Accent"
+                    label={t("Accent")}
                     value={filterAccent}
                     onChange={(e) => setFilterAccent(e.target.value)}
                 >
                     <MenuItem value="">All</MenuItem>
-                    <MenuItem value="US">American</MenuItem>
-                    <MenuItem value="UK">British</MenuItem>
-                    <MenuItem value="ES">Castilian</MenuItem>
-                    <MenuItem value="AU">Australian</MenuItem>
-                    <MenuItem value="RU">Russian</MenuItem>
-                    <MenuItem value="MX">Mexican</MenuItem>
+                    <MenuItem value="US">
+                        {t("American")}
+                    </MenuItem>
+                    <MenuItem value="UK">
+                        {t("British")}
+                    </MenuItem>
+                    <MenuItem value="AU">
+                        {t("Australian")}
+                    </MenuItem>
                 </Field.Select>
                 <Field.Text
                     name="voiceId"
-                    label="Voice ID"
+                    label={t("Voice ID")}
                     value={filterVoiceId}
                     onChange={(e) => setFilterVoiceId(e.target.value)}
                 />
                 <Field.Select
                     name="price"
-                    label="Price"
+                    label={t("Price")}
                     value={filterPrice}
                     onChange={(e) => setFilterPrice(e.target.value)}
                 >
-                    <MenuItem value="">All</MenuItem>
-                    <MenuItem value="free">Free</MenuItem>
-                    <MenuItem value="paid">Paid</MenuItem>
+                    <MenuItem value="">
+                        {t('All')}
+                    </MenuItem>
+                    <MenuItem value="free">
+                        {t("Free")}
+                    </MenuItem>
+                    <MenuItem value="paid">
+                        {t("Paid")}
+                    </MenuItem>
                 </Field.Select>
             </FormProvider>
           </Stack>
@@ -435,7 +496,7 @@ const VoiceDialog: React.FC<{
         <Divider />
         <DialogActions>
           <Button onClick={handleClose} variant="outlined" color="error">
-            Close
+            {t('Cancel')}
           </Button>
           <Button
             onClick={() => selected && onSelect(selected)}
@@ -443,7 +504,7 @@ const VoiceDialog: React.FC<{
             color="primary"
             disabled={!selected}
           >
-            Submit
+            {t('Select')}
           </Button>
         </DialogActions>
       </Dialog>

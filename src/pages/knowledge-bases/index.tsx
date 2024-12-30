@@ -38,23 +38,17 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import type { IKnowledgeBaseFilters, IKnowledgeBaseItem } from 'src/types/knowledge-base';
 import { deleteKnowledgeBase } from 'src/utils/api/knowledge-bases';
 import { KnowledgeBaseTableRow } from 'src/sections/knowledge-bases/knowledge-base-table-row';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  // { id: 'checkbox', width: '' },
-  { id: 'knowledgeBaseName', label: 'Knowledge Base Name', width: 200 },
-  { id: 'knowledgeBaseDescription', label: 'Description', width: 360 },
-  { id: 'status', label: 'Status', width: 100 },
-  { id: '', width: 88 },
-];
 
 // ----------------------------------------------------------------------
 
 export default function KnowledgeBasesListView() {
   const [loaded, setLoaded] = useState(false);
   const [knowledgeBases, setKnowledgeBases] = useState<IKnowledgeBaseItem[]>([]);
-
+  const {t} = useTranslate();
   const table = useTable();
 
   const router = useRouter();
@@ -125,11 +119,18 @@ export default function KnowledgeBasesListView() {
     getKnowledgeBases();
   }, [getKnowledgeBases]);
 
+  const TABLE_HEAD = [
+    // { id: 'checkbox', width: '' },
+    { id: 'knowledgeBaseName', label: t('Knowledge Base Name'), width: 200 },
+    { id: 'knowledgeBaseDescription', label: t('Description'), width: 360 },
+    { id: 'status', label: t('Status'), width: 100 },
+    { id: '', width: 88 },
+  ];
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="Knowledge Bases"
+          heading={t('Knowledge Bases')}
           action={
             <Button
               component={RouterLink}
@@ -137,7 +138,7 @@ export default function KnowledgeBasesListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Knowledge Base
+              {t('New Knowledge Base')}
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -148,6 +149,7 @@ export default function KnowledgeBasesListView() {
               <TableSelectedAction
                 dense={table.dense}
                 numSelected={table.selected.length}
+                checkBoxHidden={true}
                 rowCount={dataFiltered.length}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
@@ -156,7 +158,7 @@ export default function KnowledgeBasesListView() {
                   )
                 }
                 action={
-                  <Tooltip title="Delete">
+                  <Tooltip title={t('Delete')}>
                     <IconButton color="primary" onClick={confirm.onTrue}>
                       <Iconify icon="solar:trash-bin-trash-bold" />
                     </IconButton>
@@ -169,6 +171,7 @@ export default function KnowledgeBasesListView() {
                   <TableHeadCustom
                     order={table.order}
                     orderBy={table.orderBy}
+                    checkBoxHidden={true}
                     headLabel={TABLE_HEAD}
                     rowCount={dataFiltered.length}
                     numSelected={table.selected.length}
@@ -211,6 +214,7 @@ export default function KnowledgeBasesListView() {
 
             <TablePaginationCustom
               page={table.page}
+              
               // dense={table.dense}
               count={dataFiltered.length}
               rowsPerPage={table.rowsPerPage}

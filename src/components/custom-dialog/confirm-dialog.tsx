@@ -5,6 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
 import type { ConfirmDialogProps } from './types';
+import { t } from 'i18next';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +15,7 @@ export function ConfirmDialog({
   action,
   open,
   onClose,
-  closeText = 'Cancel',
+  closeText = t('Cancel'),
   ...other
 }: ConfirmDialogProps) {
   return (

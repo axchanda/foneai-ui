@@ -38,16 +38,9 @@ import { ApiEndpointTableRow } from 'src/sections/api-endpoints/apiEndpoint-tabl
 import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { deleteApiEndpoint } from 'src/utils/api/apiEndpoints';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
-
-const TABLE_HEAD = [
-  // { id: 'checkbox', width: '' },
-  { id: 'apiEndpointName', label: 'API Endpoint Name', width: 160 },
-  { id: 'apiEndpointDescription', label: 'Description', width: 250 },
-  { id: 'apiEndpointURI', label: 'API URI', width: 250 },
-  { id: '', width: 88 },
-];
 
 // ----------------------------------------------------------------------
 
@@ -125,11 +118,21 @@ export default function ApiEndpointListView() {
     getApiEndpoints();
   }, [getApiEndpoints]);
 
+  const {t} = useTranslate();
+
+  const TABLE_HEAD = [
+    // { id: 'checkbox', width: '' },
+    { id: 'apiEndpointName', label: t('API Endpoint Name'), width: 160 },
+    { id: 'apiEndpointDescription', label: t('Description'), width: 250 },
+    { id: 'apiEndpointURI', label: t('URI'), width: 250 },
+    { id: '', width: 88 },
+  ];
+
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="API Manager"
+          heading={t("API Manager")}
           action={
             <Button
               component={RouterLink}
@@ -137,7 +140,7 @@ export default function ApiEndpointListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              Define a new API Endpoint
+              {t('Define a new API Endpoint')}
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
@@ -165,7 +168,7 @@ export default function ApiEndpointListView() {
                   )
                 }
                 action={
-                  <Tooltip title="Delete">
+                  <Tooltip title= {t('Delete')}>
                     <IconButton color="primary" onClick={confirm.onTrue}>
                       <Iconify icon="solar:trash-bin-trash-bold" />
                     </IconButton>
@@ -176,6 +179,7 @@ export default function ApiEndpointListView() {
               <Scrollbar>
                 <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
                   <TableHeadCustom
+                    checkBoxHidden={true}
                     order={table.order}
                     orderBy={table.orderBy}
                     headLabel={TABLE_HEAD}

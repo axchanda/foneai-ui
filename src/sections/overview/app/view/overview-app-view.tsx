@@ -16,6 +16,7 @@ import { Iconify } from 'src/components/iconify';
 import { LoadingButton } from '@mui/lab';
 import API from 'src/utils/API';
 import { toast } from 'sonner';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +26,7 @@ export function OverviewAppView() {
   const availableCredits = Math.floor(credits.available);
 
   const theme = useTheme();
-
+  const {t} = useTranslate();
   const router = useRouter();
 
   const showChannelDialog = useBoolean(false);
@@ -81,7 +82,7 @@ export function OverviewAppView() {
 
           <Grid xs={12} md={4}>
             <AppWidgetSummary
-              title="Available credits"
+              title={t('availableCredits')}
               percent={2.6}
               total={availableCredits}
               chart={{
@@ -89,14 +90,14 @@ export function OverviewAppView() {
                 series: [15, 18, 12, 51, 68, 11, 39, 37],
               }}
               rightIcon='material-symbols:add-shopping-cart-rounded'
-              rightIconTooltip='Purchase credits'
+              rightIconTooltip={t('buyCredits')}
               invokeFunction={() => router.push('/checkout')}
             />
           </Grid>
 
           <Grid xs={12} md={4}>
             <AppWidgetSummary
-              title="Concurrent Channels"
+              title={t('concurrentChannels')}
               percent={0.2}
               total={channels}
               chart={{
@@ -105,14 +106,16 @@ export function OverviewAppView() {
                 series: [20, 41, 63, 33, 28, 35, 50, 46],
               }}
               rightIcon='streamline:graph-arrow-increase'
-              rightIconTooltip='Increase channels'
+              rightIconTooltip={t('increaseChannels')}
               invokeFunction={showChannelDialog.onTrue}
             />
             <Dialog open={showChannelDialog.value} onClose={() => {
               showChannelDialog.onFalse();
               setChannelCount(0);
             }}>
-                <DialogTitle>Increase Channels</DialogTitle>
+                <DialogTitle>
+                  {t('increaseChannels')}
+                </DialogTitle>
                 <Divider />
                 <DialogContent>
                     <Card>
@@ -194,7 +197,7 @@ export function OverviewAppView() {
 
           <Grid xs={12} md={4}>
             <AppWidgetSummary
-              title="All users"
+              title={t('totalUsersCount')}
               percent={-0.1}
               total={0}
               chart={{
@@ -203,7 +206,7 @@ export function OverviewAppView() {
                 series: [18, 19, 31, 8, 16, 37, 12, 33],
               }}
               rightIcon='mdi:user-add'
-              rightIconTooltip='Add new user'
+              rightIconTooltip={t('addNewUser')}
               invokeFunction={() => router.push('/users/create')}
             />
           </Grid>
@@ -237,7 +240,7 @@ export function OverviewAppView() {
 
           <Grid alignSelf="stretch" xs={12} md={6} lg={8}>
             <AppCreditsUsed
-              title="Credits Usage chart"
+              title= {t('creditsUsageChart')}
               // subheader="(+43%) than last year"
               chart={{
                 categories: [
@@ -275,21 +278,21 @@ export function OverviewAppView() {
                 ],
                 data: [
                   {
-                    name: 'Sep',
+                    name: 'Dec',
                     data: Array.from(
                       { length: 30 },
                       () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
                     ),
                   },
                   {
-                    name: 'Aug',
+                    name: 'Nov',
                     data: Array.from(
                       { length: 30 },
                       () => Math.floor(Math.random() * (100 - 5 + 1)) + 5
                     ),
                   },
                   {
-                    name: 'Jul',
+                    name: 'Oct',
                     data: Array.from(
                       { length: 30 },
                       () => Math.floor(Math.random() * (100 - 5 + 1)) + 5

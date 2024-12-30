@@ -10,7 +10,7 @@ import { iconButtonClasses } from '@mui/material/IconButton';
 
 import { useBoolean } from 'src/hooks/use-boolean';
 
-import { allLangs } from 'src/locales';
+import { allLangs, useTranslate } from 'src/locales';
 import { _contacts, _notifications } from 'src/_mock';
 import { varAlpha, stylesMode } from 'src/theme/styles';
 
@@ -50,14 +50,16 @@ export function DashboardLayout({ sx, children, data, compact = false }: Dashboa
 
   const layoutQuery: Breakpoint = 'lg';
 
-  const navData = data?.nav ?? dashboardNavData;
+  const { t } = useTranslate();
+
+  const navData = data?.nav ?? dashboardNavData(t);
 
   const isNavMini = settings.navLayout === 'mini';
 
   const isNavHorizontal = settings.navLayout === 'horizontal';
 
   const isNavVertical = isNavMini || settings.navLayout === 'vertical';
-
+  const accountItems = _account();
   return (
     <>
       <NavMobile
@@ -81,7 +83,7 @@ export function DashboardLayout({ sx, children, data, compact = false }: Dashboa
               data={{
                 nav: navData,
                 langs: allLangs,
-                account: _account,
+                account: accountItems,
                 contacts: _contacts,
                 workspaces: _workspaces,
                 notifications: _notifications,

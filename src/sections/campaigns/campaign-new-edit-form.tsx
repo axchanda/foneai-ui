@@ -16,13 +16,14 @@ import type { IAgentListType } from 'src/types/agent';
 import API from 'src/utils/API';
 import type { ICampaignType } from 'src/types/campaign';
 import { LoadingScreen } from 'src/components/loading-screen';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
-export type NewUserSchemaType = zod.infer<typeof NewUserSchema>;
+export type CampaignSchemaType = zod.infer<ReturnType<typeof CampaignSchema>>;
 
-export const NewUserSchema = zod.object({
-  campaignName: zod.string().min(3, { message: 'Campaign Name must be at least 3 characters' }),
+export const CampaignSchema = (t: any) => zod.object({
+  campaignName: zod.string().min(3, { message: t('Campaign Name must be at least 3 characters') }),
   campaignDescription: zod.string(),
   linkedAppId: zod.string(),
 });
@@ -54,6 +55,8 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
     getAgents();
   }, [getAgents]);
   
+  const { t } = useTranslate();
+
   const defaultValues = useMemo(
     () => ({
       campaignName: currentCampaign?.campaignName || '',
@@ -62,10 +65,10 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
     }),
     [currentCampaign]
   );
-
-  const methods = useForm<NewUserSchemaType>({
+  const schema = CampaignSchema(t);
+  const methods = useForm<CampaignSchemaType>({
     mode: 'onSubmit',
-    resolver: zodResolver(NewUserSchema),
+    resolver: zodResolver(schema),
     defaultValues,
   });
 
@@ -88,9 +91,8 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
 
       await method(url, data);
       reset();
-      toast.success(currentCampaign ? 'Update success!' : 'Create success!');
+      toast.success(currentCampaign ? t('Update success!') : t('Create success!'));
       router.push('/campaigns');
-      // console.info('DATA', data);
     } catch (error) {
       // console.error(error);
       const messages = Object.values(error.response.data.errors || {}) as string[];
@@ -99,8 +101,6 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
       });
     }
   });
-
-  // console.log({ defaultValues });
 
   return (
     <>
@@ -119,19 +119,20 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
                 display="grid"
                 gridTemplateColumns={{ xs: 'repeat(1, 1fr)' }}
               >
-                <Field.Text name="campaignName" label="Campaign name" />
+                <Field.Text name="campaignName" 
+                  label={t('Campaign Name')} />
                 <Field.Text
                   multiline
                   rows={7}
                   name="campaignDescription"
-                  placeholder="Campaign Description"
+                  placeholder={t('Description')}
                 />
 
                 <Field.Autocomplete
                   fullWidth
                   name="linkedAppId"
-                  label="Linked Agent"
-                  placeholder="Choose a agent to link"
+                  label={t("Linked Agent")}
+                  placeholder={t("Choose an agent to link")}
                   autoHighlight
                   options={agents}
                   onChange={(event, newValue) => {
@@ -143,7 +144,7 @@ export function CampaignNewEditForm({ currentCampaign }: Props) {
 
               <Stack alignItems="flex-end" sx={{ mt: 3 }}>
                 <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                  {!currentCampaign ? 'Create campaign' : 'Update campaign'}
+                  {!currentCampaign ? t('Create') : t('Update')}
                 </LoadingButton>
               </Stack>
             </Card>

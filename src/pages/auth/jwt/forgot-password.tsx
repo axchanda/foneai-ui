@@ -6,7 +6,8 @@ import { SplitResetPasswordView } from 'src/sections/auth-demo/split';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `Reset password | Layout split - ${CONFIG.site.name}` };
+// const metadata = { title: `Reset password | Layout split - ${CONFIG.site.name}` };
+const metadata = { title: `Reset password` };
 
 export default function Page() {
   return (

@@ -25,18 +25,14 @@ import API from 'src/utils/API';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { useRouter } from 'src/routes/hooks';
 import { deleteAction } from 'src/utils/api/actions';
+import { useTranslate } from 'src/locales';
 
-const TABLE_HEAD = [
-  { id: 'actionName', label: 'Action Name', width: 200 },
-  { id: 'actionDescription', label: 'Description', width: 220 },
-  { id: 'actionOperation', label: 'Operation', width: 200 },
-  { id: '', width: 88 },
-];
 
 function Actions() {
   const table = useTable();
   const confirm = useBoolean();
   const router = useRouter();
+  const {t} = useTranslate();
 
   const handleEditRow = useCallback(
     (id: string) => {
@@ -47,6 +43,13 @@ function Actions() {
 
   const [actions, setActions] = useState<IActionItem[]>([]);
   const [loaded, setLoaded] = useState(false);
+
+const TABLE_HEAD = [
+  { id: 'actionName', label: t('Action Name'), width: 200 },
+  { id: 'actionDescription', label: t('Description'), width: 220 },
+  { id: 'actionOperation', label: t('Operation'), width: 200 },
+  { id: '', width: 88 },
+];
 
   const getActions = useCallback(async () => {
     const { data } = await API.get<{
@@ -74,7 +77,7 @@ function Actions() {
   return (
     <DashboardContent>
       <CustomBreadcrumbs
-        heading="Actions"
+        heading={t('Actions')}
         action={
           <Button
             component={RouterLink}
@@ -82,7 +85,7 @@ function Actions() {
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            New Action
+            {t('New Action')}
           </Button>
         }
         sx={{ mb: { xs: 3, md: 5 } }}
@@ -101,7 +104,7 @@ function Actions() {
                 )
               }
               action={
-                <Tooltip title="Delete">
+                <Tooltip title={t('Delete')}>
                   <IconButton color="primary" onClick={confirm.onTrue}>
                     <Iconify icon="solar:trash-bin-trash-bold" />
                   </IconButton>
@@ -118,6 +121,7 @@ function Actions() {
                   rowCount={actions.length}
                   numSelected={table.selected.length}
                   onSort={table.onSort}
+                  checkBoxHidden={true}
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,

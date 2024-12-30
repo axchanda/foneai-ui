@@ -25,6 +25,7 @@ import { Typography } from '@mui/material';
 import { ILogType } from 'src/types/log';
 import { Label } from 'src/components/label';
 import { useRouter } from 'src/routes/hooks';
+import { useTranslate } from 'src/locales';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -44,6 +45,7 @@ export function LogTableRow({
   const logParamsDialog = useBoolean();
   const popover = usePopover();
   const quickEdit = useBoolean();
+  const { t } = useTranslate();
 
   function transformDate(dateInput: Date | string): string {
     const now = new Date(dateInput);  
@@ -111,7 +113,7 @@ export function LogTableRow({
         <TableCell>
           <Stack direction="row" alignItems="center" spacing={2}>
             <Label>
-              {row.sessionParams?.linkedAppType?.toUpperCase() || 'AGENT'}
+              {row.sessionParams?.linkedAppType?.toUpperCase() || t('agent')}
             </Label>
             <Typography variant="subtitle2" noWrap>
               {row.sessionParams?.linkedApp?.name || 'N/A'}

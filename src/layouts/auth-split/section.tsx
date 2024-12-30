@@ -32,7 +32,7 @@ export function Section({
   method,
   layoutQuery,
   methods,
-  title = 'Manage the job',
+  title = 'Hello there 👋',
   imgUrl = `${CONFIG.site.basePath}/assets/illustrations/illustration-dashboard.webp`,
   subtitle = 'Create AI voice agents like a PRO without coding.',
   ...other

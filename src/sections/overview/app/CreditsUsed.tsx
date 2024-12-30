@@ -9,6 +9,7 @@ import { Box, CardHeader } from '@mui/material';
 import { varAlpha } from 'src/theme/styles';
 import { useCallback, useState } from 'react';
 import { useUsage } from 'src/context/usage.context';
+import { useTranslate } from 'src/locales';
 
 // ----------------------------------------------------------------------
 
@@ -22,6 +23,7 @@ type Props = CardProps & {
 
 export function CreditsUsed({ chart, ...other }: Props) {
   const theme = useTheme();
+  const { t } = useTranslate();
   const { credits } = useUsage();
   
   let availableMeter = Math.floor((credits.available / (credits.used + credits.available) )* 100);
@@ -61,7 +63,7 @@ export function CreditsUsed({ chart, ...other }: Props) {
           name: { offsetY: 8 },
           value: { offsetY: -36 },
           total: {
-            label: `Used ${credits.used} credits / ${credits.used + credits.available} `,
+            label: t('used') +" " + credits.used + ' / ' + (credits.used + credits.available) + " " + t('credits'),
             color: theme.vars.palette.text.disabled,
             fontSize: theme.typography.caption.fontSize as string,
             fontWeight: theme.typography.caption.fontWeight,
@@ -86,7 +88,7 @@ export function CreditsUsed({ chart, ...other }: Props) {
         //     onChange={handleChangeSeries}
         //   />
         // }
-        title="Credits Meter"
+        title={t('creditsMeter')}
         subheader=""
         sx={{ mb: 5 }}
       />
@@ -124,7 +126,7 @@ export function CreditsUsed({ chart, ...other }: Props) {
                         }}
           />
           <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>
-            Available
+            {t('available')}
           </Box>
           {credits.available}
         </Box>
@@ -138,7 +140,7 @@ export function CreditsUsed({ chart, ...other }: Props) {
             }}
           />
           <Box sx={{ color: 'text.secondary', flexGrow: 1 }}>
-            Used
+            {t('used')}
           </Box>
           {credits.used}
         </Box>

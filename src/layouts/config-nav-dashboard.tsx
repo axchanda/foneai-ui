@@ -2,6 +2,7 @@ import path from 'path';
 import { Iconify } from 'src/components/iconify';
 import { FsIcon } from 'src/assets/icons';
 import { freemem } from 'os';
+import { TFunction } from 'i18next';
 // ----------------------------------------------------------------------
 
 const icon = (name: string) => (
@@ -50,118 +51,120 @@ const ICONS = {
 
 // ----------------------------------------------------------------------
 
-export const navData = [
-  {
-    subheader: 'Overview',
-    permission: 'dashboard.view',
-    items: [
-      // {
-      //   title: 'Get Started',
-      //   path: '/get-started',
-      //   icon: ICONS.getStarted,
-      // },
-      {
-        title: 'Dashboard',
-        path: '/dashboard',
-        icon: ICONS.dashboard,
-      },
-    ],
-  },
-  {
-    subheader: 'App',
-    items: [
-      {
-        title: 'Agents',
-        path: '/agents',
-        icon: ICONS.agents,
-      },
-      {
-        title: 'Campaigns',
-        path: '/campaigns',
-        icon: ICONS.campaigns,
-      },
-      {
-        title: 'Knowledge Bases',
-        path: '/knowledge-bases',
-        icon: ICONS.knowledgeBase,
-      },
-      {
-        title: 'API Manager',
-        path: '/apiEndpoints',
-        icon: ICONS.apiManager,
-      },
-      {
-        title: 'Actions',
-        path: '/actions',
-        icon: ICONS.actions,
-      },
-    ],
-  },
-  {
-    subheader: 'Management',
-    items: [
-      {
-        title: 'Integrations',
-        path: '/integrations',
-        icon: ICONS.integrations,
-        children: [
-          { 
-            title: 'Asterisk',
-            path: '/integrations/asterisk',
-            icon: ICONS.asterisk,
-          },
-          // {
-          //   title: 'FreeSWITCH',
-          //   path: '/integrations/freeswitch',
-          //   icon: ICONS.freeswitch,
-          // },
-          { 
-            title: 'SIP URI',
-            path: '/integrations/sip-uri',
-            icon: ICONS.sip
-          },
-          { 
-            title: 'DID Forwarding',
-            path: '/integrations/did-forwarding',
-            icon: ICONS.did
-          },
-        ],
-      },
-      {
-        title: 'Logs',
-        path: '/logs',
-        icon: ICONS.logs,
-      },
-      {
-        title: 'Users',
-        path: '/users',
-        icon: ICONS.users,
-      },
-      {
-        title: 'Rebranding',
-        path: '/rebranding',
-        icon: ICONS.rebranding,
-      }, 
-      {
-        title: 'Admin mode',
-        path: '/admin-mode',
-        icon: ICONS.adminMode
-      }
-    ],
-  },
-  {
-    subheader: 'Help Center',
-    items: [
-      {
-        title: 'Docs',
-        path: 'https://docs.fone.ai',
-        icon: ICONS.docs
-      },
-      {
-        title: 'Support',
-        path: '/support',
-        icon: ICONS.help,
-      }
-    ],
-  },
-];
+export function navData(t: TFunction<any, any>) {
+  return [
+    {
+      subheader: t('Overview'),
+      permission: 'dashboard.view',
+      items: [
+        // {
+        //   title: 'Get Started',
+        //   path: '/get-started',
+        //   icon: ICONS.getStarted,
+        // },
+        {
+          title: t('Dashboard'),
+          path: '/dashboard',
+          icon: ICONS.dashboard,
+        },
+      ],
+    },
+    {
+      subheader: t('App'),
+      items: [
+        {
+          title: t('Agents'),
+          path: '/agents',
+          icon: ICONS.agents,
+        },
+        {
+          title: t('Campaigns'),
+          path: '/campaigns',
+          icon: ICONS.campaigns,
+        },
+        {
+          title: t('KnowledgeBases'),
+          path: '/knowledge-bases',
+          icon: ICONS.knowledgeBase,
+        },
+        {
+          title: t('APIManager'),
+          path: '/apiEndpoints',
+          icon: ICONS.apiManager,
+        },
+        {
+          title: t('Actions'),
+          path: '/actions',
+          icon: ICONS.actions,
+        },
+      ],
+    },
+    {
+      subheader: t('Management'),
+      items: [
+        {
+          title: t('Integrations'),
+          path: '/integrations',
+          icon: ICONS.integrations,
+          children: [
+            { 
+              title: t('Asterisk'),
+              path: '/integrations/asterisk',
+              icon: ICONS.asterisk,
+            },
+            // {
+            //   title: 'FreeSWITCH',
+            //   path: '/integrations/freeswitch',
+            //   icon: ICONS.freeswitch,
+            // },
+            { 
+              title: t('SIP_URI'),
+              path: '/integrations/sip-uri',
+              icon: ICONS.sip
+            },
+            { 
+              title: t('DID_Forwarding'),
+              path: '/integrations/did-forwarding',
+              icon: ICONS.did
+            },
+          ],
+        },
+        {
+          title: t('Logs'),
+          path: '/logs',
+          icon: ICONS.logs,
+        },
+        {
+          title: t('Users'),
+          path: '/users',
+          icon: ICONS.users,
+        },
+        {
+          title: t('Rebranding'),
+          path: '/rebranding',
+          icon: ICONS.rebranding,
+        }, 
+        {
+          title: t('AdminMode'),
+          path: '/admin-mode',
+          icon: ICONS.adminMode
+        }
+      ],
+    },
+    {
+      subheader: t('HelpCenter'),
+      items: [
+        {
+          title: t('Docs'),
+          path: 'https://docs.fone.ai',
+          icon: ICONS.docs
+        },
+        {
+          title: t('Support'),
+          path: '/support',
+          icon: ICONS.help,
+        }
+      ],
+    },
+  ]
+}
