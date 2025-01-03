@@ -17,14 +17,13 @@ const PaddleDialog: React.FC<{
   // Create a local state to store Paddle instance
   const [paddle, setPaddle] = useState<Paddle>();
   const {currentLang, t} = useTranslate();
-  console.log(currentLang);
   const { user } = useAuth();
   const router = useRouter();
   // Download and initialize Paddle instance from CDN
   useEffect(() => {
     initializePaddle({ 
-      environment: 'sandbox', 
-      token: 'test_0dfd24e934851ebe5e6d1f36210',
+      environment: 'production', 
+      token: 'test_00615432d675e7329205b26c64a',
       eventCallback: (data) => {
         console.log(data);
         if(data.name === "checkout.completed") {

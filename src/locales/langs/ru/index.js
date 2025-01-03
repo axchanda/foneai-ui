@@ -10,6 +10,7 @@ const navbar = {
     "Management": "Управление",
     "Integrations": "Интеграции",
     "Asterisk": "Asterisk",
+    "Asterisk (ARI)": "Asterisk (ARI)",
     "SIP_URI": "SIP URI",
     "DID_Forwarding": "Перенаправление DID",
     "Logs": "Журналы",

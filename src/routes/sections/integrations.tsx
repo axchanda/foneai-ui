@@ -9,7 +9,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 import { AuthGuard } from 'src/auth/guard';
 import { ComingSoonView } from 'src/sections/coming-soon/view';
 
-const AsteriskPage = lazy(() => import('src/pages/integrations/asterisk'));
+const AsteriskPage = lazy(() => import('src/pages/integrations/asterisk-ari'));
 
 const layoutContent = (
   <DashboardLayout>
@@ -21,7 +21,7 @@ const layoutContent = (
 
 export const integrationsRoutes = [
   {
-    path: '/integrations/asterisk',
+    path: '/integrations/asterisk-ari',
     element: CONFIG.auth.skip ? <>{layoutContent}</> : <AuthGuard>{layoutContent}</AuthGuard>,
     children: [{ element: <AsteriskPage />, index: true }],
   },

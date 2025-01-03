@@ -10,6 +10,7 @@ const navbar = {
     "Management": "الإدارة",
     "Integrations": "التكاملات",
     "Asterisk": "نجمة",
+    "Asterisk (ARI)": "نجمة (ARI)",
     "SIP_URI": "SIP URI",
     "DID_Forwarding": "تحويل DID",
     "Logs": "السجلات",

@@ -10,6 +10,7 @@ const navbar = {
     "Management": "Gestión",
     "Integrations": "Integraciones",
     "Asterisk": "Asterisk",
+    "Asterisk (ARI)": "Asterisk (ARI)",
     "SIP_URI": "URI SIP",
     "DID_Forwarding": "Reenvío DID",
     "Logs": "Registros",

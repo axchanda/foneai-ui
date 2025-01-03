@@ -108,8 +108,8 @@ export function navData(t: TFunction<any, any>) {
           icon: ICONS.integrations,
           children: [
             { 
-              title: t('Asterisk'),
-              path: '/integrations/asterisk',
+              title: t('Asterisk (ARI)'),
+              path: '/integrations/asterisk-ari',
               icon: ICONS.asterisk,
             },
             // {

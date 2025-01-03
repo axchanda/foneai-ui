@@ -78,7 +78,17 @@ const AsteriskIntegrationPage: React.FC = () => {
     }
   }, [comment]);
   
-
+  const filePath = 'https://foneai-integrations.s3.us-east-1.amazonaws.com/asterisk-ari/foneai-asterisk-ari-client.zip';
+  const handleClientAppDownload = () => {
+    // Trigger file download by opening the file path in a new tab or directly downloading
+    const link = document.createElement("a");
+    link.href = filePath; // S3 file path or pre-signed URL
+    // link.download = fileName; // Suggested file name for download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
   return (
     <>
       <Helmet>
@@ -92,7 +102,7 @@ const AsteriskIntegrationPage: React.FC = () => {
         <Grid container spacing={12}>
           <Grid item xs={12} md={4}>
             <Typography variant="h4" sx={{ whiteSpace: 'pre-line', mb: 1 }}>
-              Download Asterisk Client
+              Asterisk ARI Client (v16.6+)
             </Typography>
             <Typography mb={4} mt={2} variant="subtitle2" textAlign="justify">
               This executable application integrates Asterisk with Fone AI for real-time audio
@@ -100,7 +110,7 @@ const AsteriskIntegrationPage: React.FC = () => {
               feature to control and manage audio streams dynamically, facilitating advanced call
               handling and external audio processing in real time.
             </Typography>
-            <Button size="large" variant="contained" color="primary">
+            <Button size="large" variant="contained" color="primary" onClick={handleClientAppDownload}>
               <Iconify icon="bx:bx-download" mr={2} />
               <Divider orientation="vertical" color="white" />
               <Typography ml={2} variant="subtitle1">
